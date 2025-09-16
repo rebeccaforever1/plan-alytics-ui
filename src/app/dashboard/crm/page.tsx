@@ -630,25 +630,29 @@ const ShapleyAttributionAnalysis = ({ shapleyData }) => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div>
             <h3 className="font-semibold mb-3">Channel Contribution Distribution</h3>
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={shapleyData}
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={100}
-                    dataKey="shapleyValue"
-                    label={({ channel, contributionPercentage }) => `${channel}: ${contributionPercentage.toFixed(1)}%`}
-                  >
-                    {shapleyData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={pieColors[index % pieColors.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip formatter={(value) => formatCurrency(Number(value))} />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
+           <div className="h-80">
+  <ResponsiveContainer width="80%" height="100%">
+    <BarChart data={shapleyData} layout="vertical">
+      <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+      <XAxis 
+        type="number" 
+        tickFormatter={(value) => formatCurrency(Number(value))}
+        fontSize={11}
+        stroke="#6b7280"
+      />
+      <YAxis 
+        type="category" 
+        dataKey="channel" 
+        width={80}
+        fontSize={11}
+        stroke="#6b7280"
+      />
+      <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+      <Bar dataKey="shapleyValue" radius={[0, 4, 4, 0]} fill="#3b82f6">
+      </Bar>
+    </BarChart>
+  </ResponsiveContainer>
+</div>
           </div>
           
           <div>
@@ -741,33 +745,44 @@ const AILeadScoringDashboard = ({ aiData }) => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div>
-            <h3 className="font-semibold mb-3">Feature Importance</h3>
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={aiData.slice(0, 6)} layout="horizontal">
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis type="number" domain={[0, 100]} />
-                  <YAxis dataKey="feature" type="category" width={120} />
-                  <Tooltip formatter={(value) => `${Number(value).toFixed(1)}%`} />
-                  <Bar dataKey="predictivePower" fill="#8b5cf6" name="Predictive Power">
-                    {aiData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={categoryColors[entry.category]} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="flex justify-center gap-4 mt-2">
-              {Object.entries(categoryColors).map(([category, color]) => (
-                <div key={category} className="flex items-center gap-1">
-                  <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: color }}></div>
-                  <span className="text-xs">{category}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <div>
+    <h3 className="font-semibold mb-3">Feature Importance</h3>
+    <div className="h-80">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={aiData.slice(0, 6)} layout="vertical">
+          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+          <XAxis 
+            type="number" 
+            domain={[0, 100]} 
+            fontSize={12}
+            stroke="#6b7280"
+          />
+          <YAxis 
+            dataKey="feature" 
+            type="category" 
+            width={120}
+            fontSize={12}
+            stroke="#6b7280"
+          />
+          <Tooltip formatter={(value) => `${Number(value).toFixed(1)}%`} />
+          <Bar dataKey="predictivePower" fill="#8b5cf6" name="Predictive Power">
+            {aiData.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={categoryColors[entry.category]} />
+            ))}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+    <div className="flex justify-center gap-4 mt-2">
+      {Object.entries(categoryColors).map(([category, color]) => (
+        <div key={category} className="flex items-center gap-1">
+          <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: color }}></div>
+          <span className="text-xs">{category}</span>
+        </div>
+      ))}
+    </div>
+  </div>
           
           <div>
             <h3 className="font-semibold mb-3">Model Performance & Recommendations</h3>
