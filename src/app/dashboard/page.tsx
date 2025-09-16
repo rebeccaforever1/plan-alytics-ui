@@ -687,6 +687,35 @@ export default function SubscriptionsPage() {
   const cohortData = useMemo(() => generateCohortRetentionData(), [])
   const churnData = useMemo(() => generateChurnPredictionData(subscriptionData), [subscriptionData])
   const pricingData = useMemo(() => generatePricingSensitivityData(), [])
+      const transformCohortData = (cohorts: any[]) => {
+  const result: { month: number; [key: string]: number }[] = []
+
+  for (let i = 0; i < 12; i++) {
+    const row: { month: number; [key: string]: number } = { month: i }
+    cohorts.forEach((cohort) => {
+      row[cohort.cohort] = cohort[`month${i}`]
+    })
+    result.push(row)
+  }
+
+  return result
+}
+
+const prepareSurvivalChartData = (cohorts: any[]) => {
+  const months = 12
+  const result = []
+
+  for (let i = 0; i < months; i++) {
+    const row: { month: number; [key: string]: number } = { month: i }
+    cohorts.forEach((cohort) => {
+      const cohortLabel = cohort.cohort || `Cohort ${i}`
+      row[cohortLabel] = cohort[`month${i}`] ?? 0
+    })
+    result.push(row)
+  }
+
+  return result
+}
 
   const filteredData = useMemo(() => {
     return subscriptionData.filter(customer => {
@@ -738,39 +767,37 @@ export default function SubscriptionsPage() {
           <CohortRetentionHeatmap cohortData={cohortData} />
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Cohort Survival Curves</CardTitle>
-                <CardDescription>Kaplan-Meier survival analysis by signup month</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={cohortData.slice(0, 6)}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="cohort" />
-                      <YAxis label={{ value: 'Retention %', angle: -90, position: 'insideLeft' }} />
-                      <Tooltip />
-                      <Legend />
-                      {cohortData.slice(0, 6).map((cohort, index) => (
-                        <Line
-                          key={cohort.cohort}
-                          type="monotone"
-                          dataKey={`month11`}
-                          stroke={`hsl(${index * 60}, 70%, 50%)`}
-                          strokeWidth={2}
-                          name={cohort.cohort}
-                          data={Array.from({ length: 12 }, (_, i) => ({
-                            month: i,
-                            value: cohort[`month${i}`]
-                          }))}
-                        />
-                      ))}
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </CardContent>
-            </Card>
+     
+<Card>
+  <CardHeader>
+    <CardTitle>Cohort Survival Curves</CardTitle>
+    <CardDescription>Kaplan-Meier survival analysis by signup month</CardDescription>
+  </CardHeader>
+  <CardContent>
+    <div className="h-80">
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart data={transformCohortData(cohortData.slice(0, 6))}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="month" />
+          <YAxis domain={[0, 100]} label={{ value: 'Retention %', angle: -90, position: 'insideLeft' }} />
+          <Tooltip />
+          <Legend />
+          {cohortData.slice(0, 6).map((cohort, index) => (
+            <Line
+              key={cohort.cohort}
+              type="monotone"
+              dataKey={cohort.cohort}
+              stroke={`hsl(${index * 60}, 70%, 50%)`}
+              strokeWidth={2}
+              dot={false}
+            />
+          ))}
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  </CardContent>
+</Card>
+
 
             <Card>
               <CardHeader>
