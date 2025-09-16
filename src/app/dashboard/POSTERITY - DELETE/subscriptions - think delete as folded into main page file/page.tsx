@@ -1,6 +1,3 @@
-// changed to subscriptions content instead of overview as that should be teh default-
-
-
 // src/app/dashboard/subscriptions/page.tsx
 'use client'
 
@@ -75,12 +72,6 @@ import {
   ArrowDownRight,
   Activity,
   Filter,
-  Sparkles, 
-  Bell, 
-  CircleAlert, 
-  Minus, 
-  ArrowRight, 
-  ChevronDown,
 } from 'lucide-react'
 
 // ————————————————————————
@@ -219,56 +210,24 @@ const generatePricingSensitivityData = () => {
 
 const SubscriptionExecutiveSummary = ({ data, metric }: { data: any[]; metric: string }) => {
   const kpis = useMemo(() => {
-    // Debug: Let's see what we're working with
-    console.log('Total data length:', data.length);
-    console.log('Sample data item:', data[0]);
-    console.log('Subscription statuses:', [...new Set(data.map(d => d.subscriptionStatus))]);
+    const activeSubs = data.filter(d => d.subscriptionStatus === 'active').length
+    const totalMRR = data.reduce((sum, d) => sum + (d.subscriptionStatus === 'active' ? d.monthlyRecurringRevenue : 0), 0)
+    const arpu = activeSubs > 0 ? totalMRR / activeSubs : 0
+    const churnRate = data.length > 0 ? (data.filter(d => d.subscriptionStatus === 'churned').length / data.length) * 100 : 0
     
-    // More robust filtering
-    const activeSubs = data.filter(d => 
-      d.subscriptionStatus === 'active' || 
-      d.subscriptionStatus === 'Active' || 
-      !d.subscriptionStatus // fallback if status is missing
-    ).length;
-    
-    const totalMRR = data.reduce((sum, d) => {
-      const isActive = d.subscriptionStatus === 'active' || d.subscriptionStatus === 'Active' || !d.subscriptionStatus;
-      return sum + (isActive ? (d.monthlyRecurringRevenue || 0) : 0);
-    }, 0);
-    
-    const arpu = activeSubs > 0 ? totalMRR / activeSubs : 0;
-    
-    const churnedCount = data.filter(d => 
-      d.subscriptionStatus === 'churned' || 
-      d.subscriptionStatus === 'Churned'
-    ).length;
-    
-    const churnRate = data.length > 0 ? (churnedCount / data.length) * 100 : 0;
-    
-    // Debug output
-    console.log('KPI Calculations:', {
-      activeSubs,
-      totalMRR,
-      arpu,
-      churnedCount,
-      churnRate
-    });
-    
-    // If we still have zeros, use fallback values for demo
-    const fallbackKPIs = {
-      activeSubscriptions: { current: activeSubs || 847, change: 12.5 },
-      mrr: { current: totalMRR || 89450, change: 8.2 },
-      arpu: { current: arpu || 105.62, change: 5.7 },
-      churnRate: { current: churnRate || 15.3, change: -3.2 }
-    };
-    
-    return fallbackKPIs;
-  }, [data]);
+    // For demo purposes - you'd want real trend calculations
+    return {
+      activeSubscriptions: { current: activeSubs, change: 12.5 },
+      mrr: { current: totalMRR, change: 8.2 },
+      arpu: { current: arpu, change: 5.7 },
+      churnRate: { current: churnRate, change: -3.2 }
+    }
+  }, [data])
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       {/* Active Subscriptions Card */}
-     <Card className="border-l-4 border-l-green-500">
+      <Card className="border-l-4 border-l-green-500">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Active Subscriptions</CardTitle>
           <Users className="h-4 w-4 text-green-600" />
@@ -427,108 +386,85 @@ const PlanDistributionCharts = ({ data }: { data: any[] }) => {
         revenue,
         avgRevenue: revenue / planCustomers.length || 0,
         churnRate: (data.filter(d => d.plan === plan && d.subscriptionStatus === 'churned').length / data.filter(d => d.plan === plan).length) * 100,
-        growth: Math.random() * 20 - 5, // Replace with real data later
       }
     })
   }, [data])
 
-  const COLORS = {
-    Basic: '#10b981',      // Fresh emerald green
-    Pro: '#6366f1',        // Professional indigo  
-    Enterprise: '#8b5cf6'   // Premium purple
-  }
-
-  const totalRevenue = planData.reduce((sum, item) => sum + item.revenue, 0)
-
-  const formatPercent = (value: number) => {
-    return `${value.toFixed(1)}%`
-  }
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28']
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      {planData.map((plan) => {
-        const percentage = totalRevenue > 0 ? (plan.revenue / totalRevenue) * 100 : 0;
-        return (
-          <Card key={plan.plan} className="relative overflow-hidden hover:shadow-lg transition-shadow">
-            {/* Color accent bar */}
-            <div 
-              className="absolute top-0 left-0 w-full h-1"
-              style={{ backgroundColor: COLORS[plan.plan] }}
-            />
-            
-            <CardContent>
-              <div className="pt-6">
-                <div className="flex items-center justify-between mb-2">
-                  <h4 className="font-medium text-gray-900">{plan.plan}</h4>
-                  <div className="flex items-center text-xs">
-                    {plan.growth > 0 ? (
-                      <span className="text-emerald-600 flex items-center">
-                        ↗ {formatPercent(plan.growth)}
-                      </span>
-                    ) : (
-                      <span className="text-red-600 flex items-center">
-                        ↘ {formatPercent(Math.abs(plan.growth))}
-                      </span>
-                    )}
-                  </div>
-                </div>
-                
-                <div className="space-y-3">
-                  <div>
-                    <div className="text-2xl font-bold text-gray-900">
-                      {formatCurrency(plan.revenue)}
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      {percentage.toFixed(1)}% of total revenue
-                    </div>
-                  </div>
-                  
-                  {/* Elegant progress bar */}
-                  <div className="w-full bg-gray-100 rounded-full h-2">
-                    <div
-                      className="h-2 rounded-full transition-all duration-700 ease-out"
-                      style={{
-                        width: `${Math.min(percentage, 100)}%`,
-                        backgroundColor: COLORS[plan.plan]
-                      }}
-                    />
-                  </div>
-                  
-                  <div className="flex items-center justify-between text-sm text-gray-500">
-                    <span>{plan.customers} customers</span>
-                    <span>{plan.customers > 0 ? formatCurrency(plan.avgRevenue) : '$0'} avg</span>
-                  </div>
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <Card>
+        <CardHeader>
+          <CardTitle>Revenue Distribution by Plan</CardTitle>
+          <CardDescription>Breakdown of monthly recurring revenue by subscription tier</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={planData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ plan, revenue }) => `${plan}: ${formatCurrency(revenue)}`}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="revenue"
+                >
+                  {planData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </CardContent>
+      </Card>
 
-                  {/* Churn indicator */}
-                  <div className="pt-2 border-t border-gray-100">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="text-gray-500">Churn Rate</span>
-                      <span className={`font-medium ${
-                        plan.churnRate > 20 ? 'text-red-600' : 
-                        plan.churnRate > 10 ? 'text-yellow-600' : 
-                        'text-green-600'
-                      }`}>
-                        {formatPercent(plan.churnRate)}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        );
-  })}
-</div>
-
+      <Card>
+        <CardHeader>
+          <CardTitle>Plan Performance Metrics</CardTitle>
+          <CardDescription>Key metrics across subscription tiers</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Plan</TableHead>
+                <TableHead>Customers</TableHead>
+                <TableHead>Avg Revenue</TableHead>
+                <TableHead>Churn Rate</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {planData.map((plan) => (
+                <TableRow key={plan.plan}>
+                  <TableCell className="font-medium">{plan.plan}</TableCell>
+                  <TableCell>{plan.customers}</TableCell>
+                  <TableCell>{formatCurrency(plan.avgRevenue)}</TableCell>
+                  <TableCell>
+                    <Badge variant={plan.churnRate > 20 ? 'destructive' : plan.churnRate > 10 ? 'secondary' : 'default'}>
+                      {plan.churnRate.toFixed(1)}%
+                    </Badge>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
   )
 }
-
 
 const CohortRetentionHeatmap = ({ cohortData }: { cohortData: any[] }) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Cohort Analysis</CardTitle>
+        <CardTitle>Cohort Retention Analysis</CardTitle>
         <CardDescription>
           Retention rates by signup cohort - each row represents customers who joined in that month
         </CardDescription>
@@ -587,9 +523,9 @@ const ChurnRiskDashboard = ({ churnData }: { churnData: any[] }) => {
     const low = churnData.filter(c => c.riskCategory === 'Low').length
     
     return [
-      { risk: 'High', count: high, color: '#ef4444' },
-      { risk: 'Medium', count: medium, color: '#f59e0b' },
-      { risk: 'Low', count: low, color: '#22c55e' },
+      { risk: 'High Risk', count: high, color: '#ef4444' },
+      { risk: 'Medium Risk', count: medium, color: '#f59e0b' },
+      { risk: 'Low Risk', count: low, color: '#22c55e' },
     ]
   }, [churnData])
 
@@ -599,14 +535,14 @@ const ChurnRiskDashboard = ({ churnData }: { churnData: any[] }) => {
     .slice(0, 10)
 
   return (
-    <div className="grid grid-cols-1 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <Card>
         <CardHeader>
           <CardTitle>Churn Risk Distribution</CardTitle>
           <CardDescription>Customer segmentation by churn probability</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="h-35">
+          <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={riskDistribution}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -620,7 +556,42 @@ const ChurnRiskDashboard = ({ churnData }: { churnData: any[] }) => {
         </CardContent>
       </Card>
 
-    
+      <Card>
+        <CardHeader>
+          <CardTitle>High Risk Customers</CardTitle>
+          <CardDescription>Customers most likely to churn - requiring immediate attention</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Customer</TableHead>
+                <TableHead>Risk Score</TableHead>
+                <TableHead>Plan</TableHead>
+                <TableHead>Last Login</TableHead>
+                <TableHead>Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {highRiskCustomers.map((customer) => (
+                <TableRow key={customer.id}>
+                  <TableCell className="font-medium">{customer.name}</TableCell>
+                  <TableCell>
+                    <Badge variant="destructive">
+                      {Math.round(customer.churnProbability * 100)}%
+                    </Badge>
+                  </TableCell>
+                  <TableCell>{customer.plan}</TableCell>
+                  <TableCell>{customer.lastLogin} days ago</TableCell>
+                  <TableCell>
+                    <Button size="sm" variant="outline">Contact</Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   )
 }
@@ -700,15 +671,73 @@ export default function SubscriptionsPage() {
     <div className="container mx-auto py-8 space-y-8">
       <div className="flex justify-between items-start mb-8">
         <div>
-          <h1 className="text-3xl font-bold">Subscription Analytics</h1>
+          <h1 className="text-3xl font-bold">Subscription Analytics Dashboard</h1>
           <p className="text-muted-foreground">
-            Subscription metrics with churn prediction and pricing analysis
+            Comprehensive subscription metrics with academic frameworks for churn prediction and retention analysis
           </p>
         </div>
         <div className="flex flex-wrap gap-4">
-      
- 
-          
+          <div className="flex items-center gap-2">
+            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <Input
+              type="date"
+              placeholder="Start date"
+              value={dateRange.start}
+              onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
+              className="w-32"
+            />
+            <span className="text-muted-foreground">to</span>
+            <Input
+              type="date"
+              placeholder="End date"
+              value={dateRange.end}
+              onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
+              className="w-32"
+            />
+          </div>
+          <Select value={timeframe} onValueChange={setTimeframe}>
+            <SelectTrigger className="w-32">
+              <SelectValue placeholder="Timeframe" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="daily">Daily</SelectItem>
+              <SelectItem value="weekly">Weekly</SelectItem>
+              <SelectItem value="monthly">Monthly</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={metric} onValueChange={setMetric}>
+            <SelectTrigger className="w-36">
+              <SelectValue placeholder="Metric" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="mrr">MRR</SelectItem>
+              <SelectItem value="customers">Customers</SelectItem>
+              <SelectItem value="arpu">ARPU</SelectItem>
+              <SelectItem value="churn">Churn Rate</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={filters.plan} onValueChange={(value) => setFilters({...filters, plan: value})}>
+            <SelectTrigger className="w-36">
+              <SelectValue placeholder="Plan" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Plans</SelectItem>
+              <SelectItem value="Basic">Basic</SelectItem>
+              <SelectItem value="Pro">Pro</SelectItem>
+              <SelectItem value="Enterprise">Enterprise</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={filters.status} onValueChange={(value) => setFilters({...filters, status: value})}>
+            <SelectTrigger className="w-36">
+              <SelectValue placeholder="Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="active">Active</SelectItem>
+              <SelectItem value="churned">Churned</SelectItem>
+              <SelectItem value="paused">Paused</SelectItem>
+            </SelectContent>
+          </Select>
           <Button variant="outline" onClick={() => exportEnhancedCSV(filteredData, filters, 'subscription_data.csv')}>
             <Download className="mr-2 h-4 w-4" />
             Export
@@ -716,20 +745,19 @@ export default function SubscriptionsPage() {
         </div>
       </div>
 
-      
+      <SubscriptionExecutiveSummary data={filteredData} metric={metric} />
 
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="flex overflow-x-auto md:grid md:grid-cols-6 w-full">  
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="cohorts">Cohort Analysis</TabsTrigger>
           <TabsTrigger value="churn">Churn Prediction</TabsTrigger>
           <TabsTrigger value="pricing">Price Sensitivity</TabsTrigger>
           <TabsTrigger value="funnel">AARRR Funnel</TabsTrigger>
-         
+          <TabsTrigger value="advanced">Advanced Models</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
-          <SubscriptionExecutiveSummary data={filteredData} metric={metric} />
           <SubscriptionTrendsChart data={filteredData} />
           <PlanDistributionCharts data={filteredData} />
         </TabsContent>
@@ -809,276 +837,95 @@ export default function SubscriptionsPage() {
           </div>
         </TabsContent>
 
-      <TabsContent value="churn" className="space-y-6">
-  {/* Enhanced Dashboard Header with Key Metrics */}
-  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border">
-    <div>
-      <h2 className="text-2xl font-bold text-gray-800">Customer Churn Prediction</h2>
-      <p className="text-sm text-muted-foreground">
-        Proactively identify at-risk customers and take preventive actions
-      </p>
-    </div>
-    <div className="flex flex-wrap gap-4">
-      <div className="text-center p-3 bg-white rounded-lg shadow-sm border">
-        <p className="text-sm text-muted-foreground">Total At-Risk</p>
-        <p className="text-2xl font-bold text-amber-600">1442</p>
-      </div>
-      <div className="text-center p-3 bg-white rounded-lg shadow-sm border">
-        <p className="text-sm text-muted-foreground">Churn Rate</p>
-        <p className="text-2xl font-bold text-red-600">15.7%</p>
-      </div>
-      <div className="text-center p-3 bg-white rounded-lg shadow-sm border">
-        <p className="text-sm text-muted-foreground">Saved This Month</p>
-        <p className="text-2xl font-bold text-green-600">728</p>
-      </div>
-    </div>
-  </div>
-  
-  {/* Enhanced Dashboard Component */}
-  <ChurnRiskDashboard churnData={churnData} />
-  
-  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    {/* Enhanced Model Performance Card */}
-    <Card className="shadow-md hover:shadow-lg transition-shadow">
-      <CardHeader className="bg-gradient-to-r from-gray-50 to-blue-50 border-b">
-        <div className="flex justify-between items-center">
-          <div>
-            <CardTitle>Churn Prediction Model Performance</CardTitle>
-            <CardDescription>Machine learning model accuracy and feature importance</CardDescription>
-          </div>
-          <div className="relative">
-            <select className="text-xs p-2 pr-8 rounded border bg-white appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500">
-              <option>Last 30 Days</option>
-              <option>Last 90 Days</option>
-              <option>Year to Date</option>
-            </select>
-            <ChevronDown className="absolute right-2 top-3 h-4 w-4 text-muted-foreground pointer-events-none" />
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent className="pt-6">
-        <div className="space-y-6">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="text-center p-4 bg-blue-50 rounded-lg border border-blue-100">
-              <p className="text-sm text-muted-foreground">Model Accuracy</p>
-              <p className="text-2xl font-bold text-blue-600">87.3%</p>
-              <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
-                <div className="bg-blue-600 h-1.5 rounded-full" style={{ width: "87.3%" }}></div>
-              </div>
-            </div>
-            <div className="text-center p-4 bg-green-50 rounded-lg border border-green-100">
-              <p className="text-sm text-muted-foreground">Precision</p>
-              <p className="text-2xl font-bold text-green-600">82.1%</p>
-              <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
-                <div className="bg-green-600 h-1.5 rounded-full" style={{ width: "82.1%" }}></div>
-              </div>
-            </div>
-          </div>
+        <TabsContent value="churn" className="space-y-6">
+          <ChurnRiskDashboard churnData={churnData} />
           
-          <div>
-            <div className="flex justify-between items-center mb-3">
-              <h4 className="font-semibold">Feature Importance</h4>
-              <span className="text-xs text-muted-foreground">Impact on churn prediction</span>
-            </div>
-            <div className="space-y-3">
-              {[
-                { feature: 'Days Since Last Login', importance: 89, trend: 'up' },
-                { feature: 'Usage Score Decline', importance: 76, trend: 'up' },
-                { feature: 'Support Tickets', importance: 62, trend: 'neutral' },
-                { feature: 'Payment Failures', importance: 54, trend: 'down' },
-                { feature: 'Feature Adoption', importance: 43, trend: 'down' },
-              ].map((item) => (
-                <div key={item.feature} className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-md transition-colors">
-                  <div className="flex items-center gap-3">
-                    <div className={`p-1 rounded-md ${
-                      item.trend === 'up' ? 'bg-red-100 text-red-600' : 
-                      item.trend === 'down' ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600'
-                    }`}>
-                      {item.trend === 'up' ? <TrendingUp className="h-4 w-4" /> : 
-                       item.trend === 'down' ? <TrendingDown className="h-4 w-4" /> : 
-                       <Minus className="h-4 w-4" />}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Churn Prediction Model Performance</CardTitle>
+                <CardDescription>Machine learning model accuracy and feature importance</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center p-3 bg-blue-50 rounded-lg">
+                      <p className="text-sm text-muted-foreground">Model Accuracy</p>
+                      <p className="text-2xl font-bold text-blue-600">87.3%</p>
                     </div>
-                    <span className="text-sm">{item.feature}</span>
+                    <div className="text-center p-3 bg-green-50 rounded-lg">
+                      <p className="text-sm text-muted-foreground">Precision</p>
+                      <p className="text-2xl font-bold text-green-600">82.1%</p>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-20 h-2 bg-gray-200 rounded-full overflow-hidden">
-                      <div 
-                        className="h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full" 
-                        style={{ width: `${item.importance}%` }}
-                      />
+                  
+                  <div>
+                    <h4 className="font-semibold mb-3">Feature Importance</h4>
+                    <div className="space-y-2">
+                      {[
+                        { feature: 'Days Since Last Login', importance: 89 },
+                        { feature: 'Usage Score Decline', importance: 76 },
+                        { feature: 'Support Tickets', importance: 62 },
+                        { feature: 'Payment Failures', importance: 54 },
+                        { feature: 'Feature Adoption', importance: 43 },
+                      ].map((item) => (
+                        <div key={item.feature} className="flex items-center justify-between">
+                          <span className="text-sm">{item.feature}</span>
+                          <div className="flex items-center gap-2">
+                            <div className="w-20 h-2 bg-gray-200 rounded-full">
+                              <div 
+                                className="h-2 bg-blue-500 rounded-full" 
+                                style={{ width: `${item.importance}%` }}
+                              />
+                            </div>
+                            <span className="text-xs text-muted-foreground w-8">{item.importance}%</span>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                    <span className="text-xs font-medium text-gray-700 w-8">{item.importance}%</span>
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
-          
-          <div className="pt-2 border-t">
-            <button className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors">
-              <span>View detailed model metrics</span>
-              <ArrowRight className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+              </CardContent>
+            </Card>
 
-    {/* Enhanced Prevention Strategies Card */}
-    <Card className="shadow-md hover:shadow-lg transition-shadow">
-      <CardHeader className="bg-gradient-to-r from-gray-50 to-blue-50 border-b">
-        <div className="flex justify-between items-center">
-          <div>
-            <CardTitle>Churn Prevention Strategies</CardTitle>
-            <CardDescription>Recommended actions based on risk factors</CardDescription>
+            <Card>
+              <CardHeader>
+                <CardTitle>Churn Prevention Strategies</CardTitle>
+                <CardDescription>Recommended actions based on risk factors</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                    <h4 className="font-semibold text-red-800 mb-2">High Risk (Immediate Action)</h4>
+                    <ul className="text-sm text-red-700 space-y-1">
+                      <li>• Personal outreach within 24 hours</li>
+                      <li>• Offer discount or plan downgrade</li>
+                      <li>• Schedule product demo or training</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                    <h4 className="font-semibold text-amber-800 mb-2">Medium Risk (Proactive)</h4>
+                    <ul className="text-sm text-amber-700 space-y-1">
+                      <li>• Send engagement email campaign</li>
+                      <li>• Highlight unused features</li>
+                      <li>• Provide success stories and tips</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                    <h4 className="font-semibold text-green-800 mb-2">Low Risk (Nurture)</h4>
+                    <ul className="text-sm text-green-700 space-y-1">
+                      <li>• Regular newsletter and updates</li>
+                      <li>• Upsell opportunities</li>
+                      <li>• Loyalty program enrollment</li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
-          <Button variant="outline" size="sm" className="flex items-center gap-2">
-            <Download className="h-4 w-4" />
-            Export Actions
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent className="pt-6">
-        <div className="space-y-4">
-          <div className="p-4 bg-red-50 border border-red-200 rounded-lg transition-transform hover:scale-[1.01]">
-            <div className="flex items-start justify-between mb-2">
-              <h4 className="font-semibold text-red-800">High Risk (Immediate Action)</h4>
-              <Badge variant="destructive" className="ml-2">23 customers</Badge>
-            </div>
-            <ul className="text-sm text-red-700 space-y-2">
-              <li className="flex items-start">
-                <CircleAlert className="h-4 w-4 mt-0.5 mr-2 flex-shrink-0" />
-                <span>Personal outreach within 24 hours</span>
-              </li>
-              <li className="flex items-start">
-                <CircleAlert className="h-4 w-4 mt-0.5 mr-2 flex-shrink-0" />
-                <span>Offer discount or plan downgrade</span>
-              </li>
-              <li className="flex items-start">
-                <CircleAlert className="h-4 w-4 mt-0.5 mr-2 flex-shrink-0" />
-                <span>Schedule product demo or training</span>
-              </li>
-            </ul>
-            <div className="mt-3 pt-2 border-t border-red-200">
-              <Button variant="outline" size="sm" className="text-red-700 border-red-300 hover:bg-red-100">
-                Create Action Plan
-              </Button>
-            </div>
-          </div>
-          
-          <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg transition-transform hover:scale-[1.01]">
-            <div className="flex items-start justify-between mb-2">
-              <h4 className="font-semibold text-amber-800">Medium Risk (Proactive)</h4>
-              <Badge variant="secondary" className="ml-2 bg-amber-200 text-amber-900">56 customers</Badge>
-            </div>
-            <ul className="text-sm text-amber-700 space-y-2">
-              <li className="flex items-start">
-                <Bell className="h-4 w-4 mt-0.5 mr-2 flex-shrink-0" />
-                <span>Send engagement email campaign</span>
-              </li>
-              <li className="flex items-start">
-                <Bell className="h-4 w-4 mt-0.5 mr-2 flex-shrink-0" />
-                <span>Highlight unused features</span>
-              </li>
-              <li className="flex items-start">
-                <Bell className="h-4 w-4 mt-0.5 mr-2 flex-shrink-0" />
-                <span>Provide success stories and tips</span>
-              </li>
-            </ul>
-            <div className="mt-3 pt-2 border-t border-amber-200">
-              <Button variant="outline" size="sm" className="text-amber-700 border-amber-300 hover:bg-amber-100">
-                Schedule Campaign
-              </Button>
-            </div>
-          </div>
-          
-          <div className="p-4 bg-green-50 border border-green-200 rounded-lg transition-transform hover:scale-[1.01]">
-            <div className="flex items-start justify-between mb-2">
-              <h4 className="font-semibold text-green-800">Low Risk (Nurture)</h4>
-              <Badge variant="outline" className="ml-2 bg-green-200 text-green-900">63 customers</Badge>
-            </div>
-            <ul className="text-sm text-green-700 space-y-2">
-              <li className="flex items-start">
-                <Sparkles className="h-4 w-4 mt-0.5 mr-2 flex-shrink-0" />
-                <span>Regular newsletter and updates</span>
-              </li>
-              <li className="flex items-start">
-                <Sparkles className="h-4 w-4 mt-0.5 mr-2 flex-shrink-0" />
-                <span>Upsell opportunities</span>
-              </li>
-              <li className="flex items-start">
-                <Sparkles className="h-4 w-4 mt-0.5 mr-2 flex-shrink-0" />
-                <span>Loyalty program enrollment</span>
-              </li>
-            </ul>
-            <div className="mt-3 pt-2 border-t border-green-200">
-              <Button variant="outline" size="sm" className="text-green-700 border-green-300 hover:bg-green-100">
-                View Opportunities
-              </Button>
-            </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  </div>
-  
-  {/* Additional Section: Recent Interventions */}
-  <Card>
-    <CardHeader className="bg-gradient-to-r from-gray-50 to-blue-50 border-b">
-      <CardTitle>Recent Intervention Results</CardTitle>
-      <CardDescription>Outcomes of recently executed churn prevention strategies</CardDescription>
-    </CardHeader>
-    <CardContent className="pt-6">
-      <div className="border rounded-lg overflow-hidden">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="py-3 px-4 text-left font-medium">Customer</th>
-              <th className="py-3 px-4 text-left font-medium">Risk Level</th>
-              <th className="py-3 px-4 text-left font-medium">Intervention</th>
-              <th className="py-3 px-4 text-left font-medium">Date</th>
-              <th className="py-3 px-4 text-left font-medium">Result</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y">
-            {[
-              { customer: "Acme Corp", risk: "High", intervention: "Personal Call", date: "2023-06-12", result: "Retained" },
-              { customer: "XYZ Ltd", risk: "Medium", intervention: "Email Campaign", date: "2023-06-11", result: "Pending" },
-              { customer: "Tech Solutions", risk: "High", intervention: "Discount Offer", date: "2023-06-10", result: "Retained" },
-              { customer: "Global Inc", risk: "Low", intervention: "Newsletter", date: "2023-06-09", result: "Engaged" },
-              { customer: "Innovate Co", risk: "Medium", intervention: "Feature Demo", date: "2023-06-08", result: "Retained" },
-            ].map((item, index) => (
-              <tr key={index} className="hover:bg-gray-50 transition-colors">
-                <td className="py-3 px-4">{item.customer}</td>
-                <td className="py-3 px-4">
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    item.risk === "High" ? "bg-red-100 text-red-800" :
-                    item.risk === "Medium" ? "bg-amber-100 text-amber-800" :
-                    "bg-green-100 text-green-800"
-                  }`}>
-                    {item.risk}
-                  </span>
-                </td>
-                <td className="py-3 px-4">{item.intervention}</td>
-                <td className="py-3 px-4">{item.date}</td>
-                <td className="py-3 px-4">
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    item.result === "Retained" ? "bg-green-100 text-green-800" :
-                    item.result === "Engaged" ? "bg-blue-100 text-blue-800" :
-                    "bg-gray-100 text-gray-800"
-                  }`}>
-                    {item.result}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </CardContent>
-  </Card>
-</TabsContent>
-
+        </TabsContent>
 
         <TabsContent value="pricing" className="space-y-6">
           <PricingSensitivityAnalysis pricingData={pricingData} />
@@ -1303,7 +1150,231 @@ export default function SubscriptionsPage() {
           </div>
         </TabsContent>
 
-     
+        <TabsContent value="advanced" className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Pareto/NBD Model Results</CardTitle>
+                <CardDescription>Probabilistic customer lifetime value modeling using academic frameworks</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center p-3 bg-blue-50 rounded-lg">
+                      <p className="text-sm text-muted-foreground">Model Parameters</p>
+                      <p className="text-xs mt-1">r = 0.243, α = 4.414</p>
+                      <p className="text-xs">s = 0.793, β = 2.426</p>
+                    </div>
+                    <div className="text-center p-3 bg-green-50 rounded-lg">
+                      <p className="text-sm text-muted-foreground">Model Fit</p>
+                      <p className="text-2xl font-bold text-green-600">94.2%</p>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-semibold mb-2">Expected Customer Behavior</h4>
+                    <div className="text-sm space-y-1">
+                      <div className="flex justify-between">
+                        <span>Avg Expected Lifetime</span>
+                        <span className="font-medium">28.4 months</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Expected Transactions</span>
+                        <span className="font-medium">12.7</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Probability Alive (90 days)</span>
+                        <span className="font-medium">73.2%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Gamma-Gamma Model</CardTitle>
+                <CardDescription>Monetary value modeling for heterogeneous customer spending</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center p-3 bg-purple-50 rounded-lg">
+                      <p className="text-sm text-muted-foreground">Shape Parameters</p>
+                      <p className="text-xs mt-1">p = 6.25, q = 3.74</p>
+                      <p className="text-xs">γ = 15.44</p>
+                    </div>
+                    <div className="text-center p-3 bg-orange-50 rounded-lg">
+                      <p className="text-sm text-muted-foreground">Expected Spending</p>
+                      <p className="text-2xl font-bold text-orange-600">$142</p>
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-semibold mb-2">Spending Distribution</h4>
+                    <div className="space-y-2">
+                      {[
+                        { percentile: '10th', value: 67 },
+                        { percentile: '25th', value: 89 },
+                        { percentile: '50th', value: 127 },
+                        { percentile: '75th', value: 186 },
+                        { percentile: '90th', value: 267 },
+                      ].map((item) => (
+                        <div key={item.percentile} className="flex justify-between text-sm">
+                          <span>{item.percentile} percentile</span>
+                          <span className="font-medium">${item.value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Customer Lifetime Value Prediction</CardTitle>
+              <CardDescription>12-month forward-looking CLV using combined Pareto/NBD and Gamma-Gamma models</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="h-96">
+                <ResponsiveContainer width="100%" height="100%">
+                  <ComposedChart data={Array.from({ length: 12 }, (_, i) => ({
+                    month: i + 1,
+                    predicted: 2240 + (i * 45) + (Math.random() * 100),
+                    actual: i < 6 ? 2180 + (i * 52) + (Math.random() * 120) : null,
+                    confidence_upper: 2340 + (i * 48) + (Math.random() * 80),
+                    confidence_lower: 2140 + (i * 42) + (Math.random() * 80),
+                  }))}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" label={{ value: 'Months from Now', position: 'insideBottom', offset: -5 }} />
+                    <YAxis label={{ value: 'CLV ($)', angle: -90, position: 'insideLeft' }} />
+                    <Tooltip formatter={(value) => [formatCurrency(Number(value)), 'CLV']} />
+                    <Legend />
+                    <Area 
+                      type="monotone" 
+                      dataKey="confidence_upper" 
+                      stroke="transparent" 
+                      fill="#e0e7ff" 
+                      fillOpacity={0.4}
+                      name="95% Confidence Interval"
+                    />
+                    <Area 
+                      type="monotone" 
+                      dataKey="confidence_lower" 
+                      stroke="transparent" 
+                      fill="#ffffff" 
+                      fillOpacity={1}
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="predicted" 
+                      stroke="#4f46e5" 
+                      strokeWidth={3} 
+                      name="Predicted CLV"
+                      dot={false}
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="actual" 
+                      stroke="#059669" 
+                      strokeWidth={2} 
+                      name="Actual CLV"
+                      strokeDasharray="5 5"
+                    />
+                  </ComposedChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Model Validation</CardTitle>
+                <CardDescription>Statistical tests and model performance</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {[
+                    { test: 'Kolmogorov-Smirnov', pValue: 0.127, result: 'Pass' },
+                    { test: 'Anderson-Darling', pValue: 0.089, result: 'Pass' },
+                    { test: 'Chi-Square GOF', pValue: 0.234, result: 'Pass' },
+                    { test: 'Mean Absolute Error', pValue: 12.4, result: '$12.40' },
+                  ].map((test) => (
+                    <div key={test.test} className="flex justify-between items-center">
+                      <span className="text-sm">{test.test}</span>
+                      <Badge variant={test.result === 'Pass' ? 'default' : 'secondary'}>
+                        {test.result}
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Heterogeneity Analysis</CardTitle>
+                <CardDescription>Customer behavior variance and segmentation</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="text-center p-3 bg-blue-50 rounded-lg">
+                    <p className="text-sm text-muted-foreground">Heterogeneity Index</p>
+                    <p className="text-2xl font-bold text-blue-600">0.68</p>
+                    <p className="text-xs text-muted-foreground">Moderate variance</p>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <h4 className="font-semibold text-sm">Behavioral Segments</h4>
+                    <div className="text-xs space-y-1">
+                      <div className="flex justify-between">
+                        <span>Heavy Users (top 20%)</span>
+                        <span className="font-medium">67% of revenue</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Regular Users (60%)</span>
+                        <span className="font-medium">29% of revenue</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Light Users (bottom 20%)</span>
+                        <span className="font-medium">4% of revenue</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Business Recommendations</CardTitle>
+                <CardDescription>Strategic insights from academic models</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="p-2 bg-green-50 border border-green-200 rounded">
+                    <p className="font-semibold text-green-800 text-sm">Focus on Heavy Users</p>
+                    <p className="text-xs text-green-700">Top 20% generate 67% of revenue - prioritize retention</p>
+                  </div>
+                  
+                  <div className="p-2 bg-blue-50 border border-blue-200 rounded">
+                    <p className="font-semibold text-blue-800 text-sm">Upgrade Regular Users</p>
+                    <p className="text-xs text-blue-700">60% of users have growth potential with targeted campaigns</p>
+                  </div>
+                  
+                  <div className="p-2 bg-amber-50 border border-amber-200 rounded">
+                    <p className="font-semibold text-amber-800 text-sm">Re-engage Light Users</p>
+                    <p className="text-xs text-amber-700">Bottom 20% need activation programs or should be deprioritized</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
       </Tabs>
     </div>
   )

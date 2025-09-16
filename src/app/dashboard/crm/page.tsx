@@ -329,8 +329,8 @@ const Tabs = ({ children, defaultValue, className = "" }) => {
   )
 }
 
-const TabsList = ({ children, activeTab, setActiveTab }) => (
-  <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg">
+const TabsList = ({ children, activeTab, setActiveTab, className = "" }) => (
+  <div className={`bg-gray-100 p-1 rounded-lg ${className}`}>
     {React.Children.map(children, child =>
       React.cloneElement(child, { activeTab, setActiveTab })
     )}
@@ -1389,11 +1389,6 @@ export default function CRMDashboard() {
                 className="w-36"
               />
             </div>
-            <Select value={timeframe} onValueChange={setTimeframe} className="w-36">
-              <SelectItem value="daily">Daily</SelectItem>
-              <SelectItem value="weekly">Weekly</SelectItem>
-              <SelectItem value="monthly">Monthly</SelectItem>
-            </Select>
             <Button variant="outline" onClick={handleExport}>
               <Download className="mr-2 h-4 w-4" />
               Export Data
@@ -1402,16 +1397,16 @@ export default function CRMDashboard() {
         </div>
 
         {/* Main Dashboard */}
-        <Tabs defaultValue="overview" className="space-y-6" activeTab={activeTab} setActiveTab={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-7">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="attribution">Attribution</TabsTrigger>
-            <TabsTrigger value="ai-scoring">AI Scoring</TabsTrigger>
-            <TabsTrigger value="journey">Journey</TabsTrigger>
-            <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
-            <TabsTrigger value="integrations">Integrations</TabsTrigger>
-            <TabsTrigger value="definitions">Definitions</TabsTrigger>
-          </TabsList>
+            <Tabs defaultValue="overview">
+            <TabsList className="flex overflow-x-auto md:grid md:grid-cols-7 w-full">
+                <TabsTrigger value="overview">Overview</TabsTrigger>
+                <TabsTrigger value="attribution">Attribution</TabsTrigger>
+                <TabsTrigger value="ai-scoring">AI Scoring</TabsTrigger>
+                <TabsTrigger value="journey">Journey</TabsTrigger>
+                <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
+                <TabsTrigger value="integrations">Integrations</TabsTrigger>
+                <TabsTrigger value="definitions">Definitions</TabsTrigger>
+              </TabsList>
 
           <TabsContent value="overview" className="space-y-6">
             <CRMKPIOverview crmData={crmData} mixData={mixData} />

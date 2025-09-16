@@ -58,59 +58,58 @@ import {
   CheckCircle,
   Clock,
   Star,
-  Bookmark
+  Bookmark,
+   DollarSign,
+   Server
 } from 'lucide-react'
 
 // Enhanced navigation with icons and categories
-const navItems = [
-  { 
-    label: 'Snapshot', 
-    href: '/dashboard', 
-    icon: BarChart3,
-    description: 'Overview of key metrics'
-  },
-  { 
-    label: 'CLV', 
-    href: '/dashboard/clv', 
-    icon: TrendingUp,
-    description: 'Customer lifetime value analysis'
-  },
+const analyticsItems = [
   { 
     label: 'Subscriptions', 
-    href: '/dashboard/subscriptions', 
+    href: '/dashboard', 
     icon: Wallet,
-    description: 'Subscription management'
+    description: 'Subscription management',
+    roles: ['Admin', 'User', 'Viewer']
   },
   { 
     label: 'Revenue', 
     href: '/dashboard/revenue', 
-    icon: TrendingUp,
-    description: 'Revenue analytics'
+    icon: DollarSign,
+    description: 'Revenue analytics',
+    roles: ['Admin', 'User', 'Viewer']
   },
   { 
-    label: 'Product Usage', 
-    href: '/dashboard/usage', 
-    icon: Activity,
-    description: 'Product engagement metrics'
+    label: 'Retention', 
+    href: '/dashboard/retention', 
+    icon: UserCheck,
+    description: 'Retention intervention',
+    roles: ['Admin', 'User', 'Viewer']
   },
   { 
     label: 'CRM', 
     href: '/dashboard/crm', 
     icon: Users,
-    description: 'Customer relationship management'
+    description: 'Customer relationship management',
+    roles: ['Admin', 'User']
   },
   { 
-    label: 'Retention', 
-    href: '/dashboard/segments', 
-    icon: UserCheck,
-    description: 'Retention intervention'
+    label: 'Product Usage', 
+    href: '/dashboard/usage', 
+    icon: Activity,
+    description: 'Product engagement metrics',
+    roles: ['Admin', 'User', 'Viewer']
   },
   { 
-    label: 'Forecasts', 
-    href: '/dashboard/forecasts', 
-    icon: Calendar,
-    description: 'Predictive analytics'
-  },
+    label: 'CLV', 
+    href: '/dashboard/clv', 
+    icon: TrendingUp,
+    description: 'Customer lifetime value analysis',
+    roles: ['Admin', 'User']
+  }
+]
+
+const dataAdminItems = [
   { 
     label: 'Alerts', 
     href: '/dashboard/alerts', 
@@ -367,7 +366,66 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           </TooltipProvider>
         </div>
         
-        {navItems.map((item) => {
+        {/* Analytics Items */}
+        {analyticsItems.map((item) => {
+          // Fix for Subscriptions staying active - check exact match for dashboard home
+          const isActive = item.href === '/dashboard' 
+            ? pathname === '/dashboard'
+            : pathname === item.href || pathname.startsWith(item.href + '/')
+          const Icon = item.icon
+          
+          return (
+            <TooltipProvider key={item.href}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    href={item.href}
+                    className={cn(
+                      'text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative',
+                      'hover:scale-[1.02] active:scale-[0.98]',
+                      isActive
+                        ? 'bg-primary/10 text-primary font-medium shadow-sm border border-primary/20'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                    )}
+                    onClick={() => setSidebarOpen(false)}
+                  >
+                    <Icon className={cn(
+                      "h-4 w-4 transition-colors",
+                      sidebarCollapsed ? "mr-0" : "mr-3"
+                    )} />
+                    {!sidebarCollapsed && (
+                      <>
+                        <span className="truncate">{item.label}</span>
+                        {isActive && (
+                          <div className="absolute right-2 w-1.5 h-1.5 bg-primary rounded-full" />
+                        )}
+                      </>
+                    )}
+                  </Link>
+                </TooltipTrigger>
+                {sidebarCollapsed && (
+                  <TooltipContent side="right">
+                    <div>
+                      <div className="font-medium">{item.label}</div>
+                      <div className="text-xs text-muted-foreground">{item.description}</div>
+                    </div>
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            </TooltipProvider>
+          )
+        })}
+
+        {/* Data Admin Section */}
+        {!sidebarCollapsed && (
+          <div className="mt-4 mb-2">
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+              Data Admin
+            </span>
+          </div>
+        )}
+        
+        {dataAdminItems.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + '/')
           const Icon = item.icon
           
