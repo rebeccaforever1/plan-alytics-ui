@@ -198,7 +198,6 @@ const mockNotifications = [
 
 const recentItems = [
   { name: 'Q4 Revenue Analysis', type: 'report', href: '/dashboard/revenue' },
-  { name: 'Customer Segmentation', type: 'dashboard', href: '/dashboard/segments' },
   { name: 'CLV Forecast Model', type: 'model', href: '/dashboard/clv' },
 ]
 
