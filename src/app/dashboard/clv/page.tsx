@@ -1532,24 +1532,7 @@ export default function CLVPage() {
           </p>
         </div>
         <div className="flex gap-4">
-          <div className="flex items-center gap-2">
-            <Calendar className="h-4 w-4 text-muted-foreground" />
-            <Input
-              type="date"
-              placeholder="Start date"
-              value={dateRange.start}
-              onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
-              className="w-32"
-            />
-            <span className="text-muted-foreground">to</span>
-            <Input
-              type="date"
-              placeholder="End date"
-              value={dateRange.end}
-              onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
-              className="w-32"
-            />
-          </div>
+         
 
     
         </div>

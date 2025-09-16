@@ -783,8 +783,8 @@ export default function ProductUsageDashboard() {
         <div className="bg-white rounded-lg shadow-sm p-6">
           <div className="flex justify-between items-start">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Product Analytics</h1>
-              <p className="text-gray-600 mt-1">
+               <h1 className="text-3xl font-bold">Product Usage</h1>
+               <p className="text-muted-foreground">
                 Make data-driven product decisions with actionable user insights
               </p>
             </div>

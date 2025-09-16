@@ -119,4 +119,29 @@
   body {
     @apply bg-background text-foreground;
   }
+
+h1 {
+  @apply text-2xl font-bold text-gray-900 ;
 }
+
+  h2 {
+    @apply text-xl font-semibold text-gray-800;
+  }
+
+  h3 {
+    @apply text-lg font-semibold text-gray-800;
+  }
+
+  h4 {
+    @apply text-base font-medium text-gray-700;
+  }
+
+  h5 {
+    @apply text-sm font-medium text-gray-600;
+  }
+
+  h6 {
+    @apply text-xs font-medium text-gray-500;
+  }
+}
+

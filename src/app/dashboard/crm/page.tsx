@@ -1365,30 +1365,13 @@ export default function CRMDashboard() {
         {/* Header */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-8">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">CRM & Marketing Attribution</h1>
-            <p className="text-gray-600 text-lg">
-              Advanced attribution modeling, AI-powered lead scoring, and campaign optimization
+            <h1 className="text-3xl font-bold">CRM & Marketing Attribution</h1>
+             <p className="text-muted-foreground">
+              Advanced attribution modeling, AI-powered recommendations, and campaign optimization
             </p>
           </div>
           <div className="flex flex-wrap gap-4">
-            <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-gray-500" />
-              <Input
-                type="date"
-                placeholder="Start date"
-                value={dateRange.start}
-                onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
-                className="w-36"
-              />
-              <span className="text-gray-500">to</span>
-              <Input
-                type="date"
-                placeholder="End date"
-                value={dateRange.end}
-                onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
-                className="w-36"
-              />
-            </div>
+          
             <Button variant="outline" onClick={handleExport}>
               <Download className="mr-2 h-4 w-4" />
               Export Data

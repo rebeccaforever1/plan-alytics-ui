@@ -1034,12 +1034,14 @@ export default function SegmentsPage() {
   const overallROI = (totalExpectedSavings - totalInvestment) / totalInvestment
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
-      <div className="flex justify-between items-center">
+       <div className="container mx-auto py-8 space-y-8">
+      <div className="flex justify-between items-start mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Strategic Retention Dashboard</h1>
-          <p className="text-sm text-gray-600">Tiered retention effort allocation based on churn risk</p>
+          <h1 className="text-3xl font-bold">Strategic Retention</h1>
+          <p className="text-muted-foreground">Retention recommendations based on churn risk</p>
         </div>
+
+        
         <div className="flex gap-2">
           <Select value={selectedCategory} onValueChange={(value) => {
             setSelectedCategory(value)
