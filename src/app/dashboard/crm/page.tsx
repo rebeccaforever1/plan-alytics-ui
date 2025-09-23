@@ -187,6 +187,85 @@ const formatNumber = (value) => {
   return new Intl.NumberFormat('en-US').format(value)
 }
 
+// FIXED: Enhanced CSV Export Function
+const exportCSV = (data, filename) => {
+  if (!data || data.length === 0) {
+    console.error('No data to export')
+    alert('No data available to export')
+    return
+  }
+
+  try {
+    // Flatten objects and handle special values
+    const flattenObject = (obj) => {
+      const flattened = {}
+      
+      Object.keys(obj).forEach(key => {
+        const value = obj[key]
+        
+        // Handle Date objects
+        if (value instanceof Date) {
+          flattened[key] = value.toISOString().split('T')[0] // YYYY-MM-DD format
+        }
+        // Handle nested objects by converting to JSON string
+        else if (typeof value === 'object' && value !== null) {
+          flattened[key] = JSON.stringify(value)
+        }
+        // Handle null/undefined
+        else if (value === null || value === undefined) {
+          flattened[key] = ''
+        }
+        // Handle everything else
+        else {
+          flattened[key] = value
+        }
+      })
+      
+      return flattened
+    }
+
+    // Flatten all data objects
+    const flattenedData = data.map(item => flattenObject(item))
+    
+    // Get headers from first object
+    const headers = Object.keys(flattenedData[0])
+    
+    // Create CSV content with proper escaping
+    const csvHeader = headers.map(header => `"${header.replace(/"/g, '""')}"`).join(',') + '\n'
+    
+    const csvRows = flattenedData.map(row => {
+      return headers.map(header => {
+        const value = row[header] ?? ''
+        // Escape quotes and wrap in quotes
+        const escapedValue = String(value).replace(/"/g, '""')
+        return `"${escapedValue}"`
+      }).join(',')
+    })
+    
+    const csvString = csvHeader + csvRows.join('\n')
+
+    // Create and trigger download
+    const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    
+    const link = document.createElement('a')
+    link.setAttribute('href', url)
+    link.setAttribute('download', filename)
+    link.style.visibility = 'hidden'
+    
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    
+    URL.revokeObjectURL(url)
+    console.log('Export completed successfully')
+    
+  } catch (error) {
+    console.error('Export error:', error)
+    alert('Error exporting data: ' + error.message)
+  }
+}
+
 // UI Components
 const Card = ({ children, className = "" }) => (
   <div className={`bg-white rounded-lg border shadow-sm ${className}`}>
@@ -238,15 +317,16 @@ const Badge = ({ children, variant = "default", className = "", style = {} }) =>
 
 const Button = ({ children, onClick, variant = "default", className = "" }) => {
   const variants = {
-    default: "bg-blue-600 text-white hover:bg-blue-700",
-    outline: "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50",
-    ghost: "bg-transparent text-gray-700 hover:bg-gray-50"
+    default: "bg-blue-600 text-white hover:bg-blue-700 border-0 px-4 py-2",
+    outline: "border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 border-[1px] px-3 py-2.5", // Less padding
+    ghost: "bg-transparent text-gray-700 hover:bg-gray-50 border-0 px-4 py-2"
   }
-  
+
+
   return (
     <button
       onClick={onClick}
-      className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md ${variants[variant]} transition-colors ${className}`}
+      className={`inline-flex items-center px-4 py-2 text-sm font-medium rounded-md ${variants[variant]} transition-colors ${className}`}
     >
       {children}
     </button>
@@ -354,7 +434,7 @@ const TabsContent = ({ children, value, activeTab }) => (
   activeTab === value ? <div>{children}</div> : null
 )
 
-// NEW: Insight Card Component
+// Insight Card Component
 const InsightCard = ({ title, description, impact, confidence, actions, priority = "medium" }) => {
   const priorityColors = {
     high: "border-l-red-500",
@@ -496,21 +576,6 @@ const CRMKPIOverview = ({ crmData, mixData }) => {
 }
 
 const MarketingMixAnalysis = ({ mixData, onGenerateRecommendations }) => {
-  // Calculate channel efficiency metrics
-  const efficiencyMetrics = useMemo(() => {
-    const currentMonth = mixData[mixData.length - 1];
-    const previousMonth = mixData[mixData.length - 2];
-    
-    return {
-      currentCAC: currentMonth?.cac || 0,
-      previousCAC: previousMonth?.cac || 0,
-      cacChange: previousMonth?.cac ? ((currentMonth?.cac - previousMonth?.cac) / previousMonth?.cac) * 100 : 0,
-      currentROAS: currentMonth?.roas || 0,
-      previousROAS: previousMonth?.roas || 0,
-      roasChange: previousMonth?.roas ? ((currentMonth?.roas - previousMonth?.roas) / previousMonth?.roas) * 100 : 0,
-    };
-  }, [mixData]);
-
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
       <Card>
@@ -520,7 +585,7 @@ const MarketingMixAnalysis = ({ mixData, onGenerateRecommendations }) => {
               <CardTitle>Marketing Mix Performance</CardTitle>
               <CardDescription>Channel spend efficiency and ROI trends</CardDescription>
             </div>
-            <Button variant="ghost" size="sm" onClick={onGenerateRecommendations}>
+            <Button variant="ghost" onClick={onGenerateRecommendations}>
               <Sparkles className="h-4 w-4 mr-1" />
               Generate Insights
             </Button>
@@ -535,7 +600,7 @@ const MarketingMixAnalysis = ({ mixData, onGenerateRecommendations }) => {
                 <YAxis yAxisId="left" />
                 <YAxis yAxisId="right" orientation="right" />
                 <Tooltip formatter={(value, name) => 
-                  name === 'Total Spend' ? formatCurrency(value) : name === 'ROAS' ? `${Number(value).toFixed(2)}x` : value
+                  name === 'totalSpend' ? formatCurrency(value) : name === 'roas' ? `${Number(value).toFixed(2)}x` : value
                 } />
                 <Legend />
                 <Bar yAxisId="left" dataKey="totalSpend" fill="#3b82f6" name="Total Spend" />
@@ -565,7 +630,7 @@ const MarketingMixAnalysis = ({ mixData, onGenerateRecommendations }) => {
                   label={{ value: 'Return on Ad Spend', angle: -90, position: 'insideLeft' }} 
                 />
                 <Tooltip formatter={(value, name) => 
-                  name === 'CAC' ? formatCurrency(value) : `${Number(value).toFixed(2)}x`
+                  name === 'cac' ? formatCurrency(value) : `${Number(value).toFixed(2)}x`
                 } />
                 <ZAxis dataKey="totalRevenue" />
                 <Scatter name="Monthly Performance" data={mixData} fill="#8b5cf6" />
@@ -591,17 +656,8 @@ const MarketingMixAnalysis = ({ mixData, onGenerateRecommendations }) => {
 }
 
 const ShapleyAttributionAnalysis = ({ shapleyData }) => {
-  const pieColors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4']
-  
-  // Calculate performance metrics for recommendations
   const performanceMetrics = useMemo(() => {
     const totalRevenue = shapleyData.reduce((sum, channel) => sum + channel.revenue, 0);
-    const avgROAS = shapleyData.reduce((sum, channel) => {
-      // Simplified ROAS calculation for demo
-      const channelROAS = channel.revenue / (channel.conversions * 150); // Assume $150 CAC per conversion
-      return sum + (isFinite(channelROAS) ? channelROAS : 0);
-    }, 0) / shapleyData.length;
-    
     const bestPerforming = [...shapleyData].sort((a, b) => 
       (b.revenue / b.conversions) - (a.revenue / a.conversions)
     )[0];
@@ -612,13 +668,18 @@ const ShapleyAttributionAnalysis = ({ shapleyData }) => {
     
     return {
       totalRevenue,
-      avgROAS,
       bestPerforming,
       worstPerforming
     };
   }, [shapleyData]);
   
-  return (
+    // Create a sorted copy for rendering
+  const sortedShapleyData = useMemo(() => 
+    [...shapleyData].sort((a, b) => b.shapleyValue - a.shapleyValue),
+    [shapleyData]
+  );
+  
+   return (
     <Card>
       <CardHeader>
         <CardTitle>Shapley Value Attribution Analysis</CardTitle>
@@ -630,29 +691,28 @@ const ShapleyAttributionAnalysis = ({ shapleyData }) => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div>
             <h3 className="font-semibold mb-3">Channel Contribution Distribution</h3>
-           <div className="h-80">
-  <ResponsiveContainer width="80%" height="100%">
-    <BarChart data={shapleyData} layout="vertical">
-      <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-      <XAxis 
-        type="number" 
-        tickFormatter={(value) => formatCurrency(Number(value))}
-        fontSize={11}
-        stroke="#6b7280"
-      />
-      <YAxis 
-        type="category" 
-        dataKey="channel" 
-        width={80}
-        fontSize={11}
-        stroke="#6b7280"
-      />
-      <Tooltip formatter={(value) => formatCurrency(Number(value))} />
-      <Bar dataKey="shapleyValue" radius={[0, 4, 4, 0]} fill="#3b82f6">
-      </Bar>
-    </BarChart>
-  </ResponsiveContainer>
-</div>
+            <div className="h-80">
+              <ResponsiveContainer width="80%" height="100%">
+                <BarChart data={shapleyData} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis 
+                    type="number" 
+                    tickFormatter={(value) => formatCurrency(Number(value))}
+                    fontSize={11}
+                    stroke="#6b7280"
+                  />
+                  <YAxis 
+                    type="category" 
+                    dataKey="channel" 
+                    width={80}
+                    fontSize={11}
+                    stroke="#6b7280"
+                  />
+                  <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                  <Bar dataKey="shapleyValue" radius={[0, 4, 4, 0]} fill="#3b82f6" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </div>
           
           <div>
@@ -667,24 +727,21 @@ const ShapleyAttributionAnalysis = ({ shapleyData }) => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {shapleyData
-                  .sort((a, b) => b.shapleyValue - a.shapleyValue)
-                  .map((channel) => {
-                    // Simplified ROAS calculation for demo
-                    const estimatedROAS = channel.revenue / (channel.conversions * 150);
-                    return (
-                      <TableRow key={channel.channel}>
-                        <TableCell className="font-medium">{channel.channel}</TableCell>
-                        <TableCell>{formatCurrency(channel.shapleyValue)}</TableCell>
-                        <TableCell>{channel.conversions}</TableCell>
-                        <TableCell>
-                          <span className={estimatedROAS > 3 ? "text-green-600 font-medium" : estimatedROAS > 2 ? "text-yellow-600" : "text-red-600"}>
-                            {isFinite(estimatedROAS) ? estimatedROAS.toFixed(2) + 'x' : 'N/A'}
-                          </span>
-                        </TableCell>
-                      </TableRow>
-                    )
-                  })}
+                {sortedShapleyData.map((channel) => {
+                  const estimatedROAS = channel.revenue / (channel.conversions * 150);
+                  return (
+                    <TableRow key={channel.channel}>
+                      <TableCell className="font-medium">{channel.channel}</TableCell>
+                      <TableCell>{formatCurrency(channel.shapleyValue)}</TableCell>
+                      <TableCell>{channel.conversions}</TableCell>
+                      <TableCell>
+                        <span className={estimatedROAS > 3 ? "text-green-600 font-medium" : estimatedROAS > 2 ? "text-yellow-600" : "text-red-600"}>
+                          {isFinite(estimatedROAS) ? estimatedROAS.toFixed(2) + 'x' : 'N/A'}
+                        </span>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
               </TableBody>
             </Table>
             <p className="text-xs text-gray-500 mt-2">*ROAS estimated based on average CAC of $150 per conversion</p>
@@ -714,28 +771,6 @@ const AILeadScoringDashboard = ({ aiData }) => {
     'Demographic': '#f59e0b'
   }
 
-  // Calculate model performance insights
-  const modelInsights = useMemo(() => {
-    const behavioralFeatures = aiData.filter(f => f.category === 'Behavioral');
-    const firmographicFeatures = aiData.filter(f => f.category === 'Firmographic');
-    const demographicFeatures = aiData.filter(f => f.category === 'Demographic');
-    
-    const avgBehavioralImportance = behavioralFeatures.reduce((sum, f) => sum + f.importance, 0) / behavioralFeatures.length;
-    const avgFirmographicImportance = firmographicFeatures.reduce((sum, f) => sum + f.importance, 0) / firmographicFeatures.length;
-    const avgDemographicImportance = demographicFeatures.reduce((sum, f) => sum + f.importance, 0) / demographicFeatures.length;
-    
-    const topFeature = aiData[0];
-    const weakestFeature = aiData[aiData.length - 1];
-    
-    return {
-      avgBehavioralImportance,
-      avgFirmographicImportance,
-      avgDemographicImportance,
-      topFeature,
-      weakestFeature
-    };
-  }, [aiData]);
-  
   return (
     <Card>
       <CardHeader>
@@ -745,44 +780,44 @@ const AILeadScoringDashboard = ({ aiData }) => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-  <div>
-    <h3 className="font-semibold mb-3">Feature Importance</h3>
-    <div className="h-80">
-      <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={aiData.slice(0, 6)} layout="vertical">
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-          <XAxis 
-            type="number" 
-            domain={[0, 100]} 
-            fontSize={12}
-            stroke="#6b7280"
-          />
-          <YAxis 
-            dataKey="feature" 
-            type="category" 
-            width={120}
-            fontSize={12}
-            stroke="#6b7280"
-          />
-          <Tooltip formatter={(value) => `${Number(value).toFixed(1)}%`} />
-          <Bar dataKey="predictivePower" fill="#8b5cf6" name="Predictive Power">
-            {aiData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={categoryColors[entry.category]} />
-            ))}
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
-    </div>
-    <div className="flex justify-center gap-4 mt-2">
-      {Object.entries(categoryColors).map(([category, color]) => (
-        <div key={category} className="flex items-center gap-1">
-          <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: color }}></div>
-          <span className="text-xs">{category}</span>
-        </div>
-      ))}
-    </div>
-  </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div>
+            <h3 className="font-semibold mb-3">Feature Importance</h3>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={aiData.slice(0, 6)} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis 
+                    type="number" 
+                    domain={[0, 100]} 
+                    fontSize={12}
+                    stroke="#6b7280"
+                  />
+                  <YAxis 
+                    dataKey="feature" 
+                    type="category" 
+                    width={120}
+                    fontSize={12}
+                    stroke="#6b7280"
+                  />
+                  <Tooltip formatter={(value) => `${Number(value).toFixed(1)}%`} />
+                  <Bar dataKey="predictivePower" fill="#8b5cf6" name="Predictive Power">
+                    {aiData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={categoryColors[entry.category]} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="flex justify-center gap-4 mt-2">
+              {Object.entries(categoryColors).map(([category, color]) => (
+                <div key={category} className="flex items-center gap-1">
+                  <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: color }}></div>
+                  <span className="text-xs">{category}</span>
+                </div>
+              ))}
+            </div>
+          </div>
           
           <div>
             <h3 className="font-semibold mb-3">Model Performance & Recommendations</h3>
@@ -798,32 +833,13 @@ const AILeadScoringDashboard = ({ aiData }) => {
                 </div>
               </div>
               
-              <div className="space-y-3">
-                <h4 className="font-semibold text-sm">Feature Categories Impact</h4>
-                {Object.entries(categoryColors).map(([category, color]) => {
-                  const categoryFeatures = aiData.filter(f => f.category === category)
-                  const avgImportance = categoryFeatures.length > 0 ? 
-                    categoryFeatures.reduce((sum, f) => sum + f.importance, 0) / categoryFeatures.length : 0
-                  
-                  return (
-                    <div key={category} className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
-                        <span className="text-sm">{category}</span>
-                      </div>
-                      <span className="text-sm font-medium">{avgImportance.toFixed(1)}%</span>
-                    </div>
-                  )
-                })}
-              </div>
-              
               <div className="p-3 bg-yellow-50 rounded-lg">
                 <h4 className="font-semibold text-sm flex items-center gap-2 mb-2">
                   <Lightbulb className="h-4 w-4 text-yellow-600" />
                   Data Collection Recommendation
                 </h4>
                 <p className="text-xs text-yellow-700">
-                  {modelInsights.topFeature.feature} is your strongest predictor. Focus on collecting more data in this area to improve model accuracy by 5-8%.
+                  {aiData[0]?.feature} is your strongest predictor. Focus on collecting more data in this area to improve model accuracy by 5-8%.
                 </p>
               </div>
             </div>
@@ -835,20 +851,12 @@ const AILeadScoringDashboard = ({ aiData }) => {
 }
 
 const MarkovJourneyAnalysis = ({ markovData }) => {
-  // Calculate journey optimization insights
   const journeyInsights = useMemo(() => {
     const highestDropoff = markovData.reduce((max, stage) => 
-      stage.dropoffProbability > max.dropoffProbability ? stage : max, markovData[0]);
-    
-    const highestConversionLift = markovData.reduce((max, stage, index) => {
-      if (index === 0) return max;
-      const conversionLift = stage.conversionProbability - markovData[index - 1].conversionProbability;
-      return conversionLift > max.conversionLift ? { stage, conversionLift } : max;
-    }, { stage: markovData[0], conversionLift: 0 });
+      stage.dropoffProbability > max.dropoffProbability ? stage : markovData[0], markovData[0]);
     
     return {
-      highestDropoff,
-      highestConversionLift
+      highestDropoff
     };
   }, [markovData]);
   
@@ -892,25 +900,6 @@ const MarkovJourneyAnalysis = ({ markovData }) => {
           </ResponsiveContainer>
         </div>
         
-        <div className="mt-4 grid grid-cols-3 gap-4">
-          <div className="text-center p-3 bg-green-50 rounded-lg">
-            <p className="text-sm text-gray-500">Final Conversion Rate</p>
-            <p className="text-2xl font-bold text-green-600">
-              {markovData[markovData.length - 1]?.conversionProbability.toFixed(1)}%
-            </p>
-          </div>
-          <div className="text-center p-3 bg-blue-50 rounded-lg">
-            <p className="text-sm text-gray-500">Journey Efficiency</p>
-            <p className="text-2xl font-bold text-blue-600">67.3%</p>
-          </div>
-          <div className="text-center p-3 bg-purple-50 rounded-lg">
-            <p className="text-sm text-gray-500">Expected LTV</p>
-            <p className="text-2xl font-bold text-purple-600">
-              {formatCurrency(markovData.reduce((sum, stage) => sum + (stage.expectedValue || 0), 0))}
-            </p>
-          </div>
-        </div>
-        
         <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="p-3 border-2 border-red-200 rounded-lg bg-red-50">
             <h4 className="font-semibold text-red-800 flex items-center gap-2 mb-2">
@@ -929,8 +918,7 @@ const MarkovJourneyAnalysis = ({ markovData }) => {
               Conversion Opportunity
             </h4>
             <p className="text-sm text-green-700">
-              {journeyInsights.highestConversionLift.stage.touchpoint} stage shows the highest conversion lift.
-              Double down on tactics that drive progression to this stage.
+              Focus on tactics that drive progression through the customer journey, particularly at stages with high conversion probability.
             </p>
           </div>
         </div>
@@ -939,39 +927,19 @@ const MarkovJourneyAnalysis = ({ markovData }) => {
   )
 }
 
-// NEW: Recommendations Engine
+// Recommendations Engine
 const RecommendationsEngine = ({ crmData, mixData, shapleyData, aiData, markovData }) => {
   const [recommendations, setRecommendations] = useState([]);
   
   const generateRecommendations = useCallback(() => {
-    // Calculate performance metrics for recommendations
-    const currentMonth = mixData[mixData.length - 1];
-    const previousMonth = mixData[mixData.length - 2];
-    
-    // Channel performance analysis
     const channelPerformance = shapleyData.map(channel => {
-      const estimatedROAS = channel.revenue / (channel.conversions * 150); // Simplified calculation
+      const estimatedROAS = channel.revenue / (channel.conversions * 150);
       return {
         channel: channel.channel,
-        revenue: channel.revenue,
-        conversions: channel.conversions,
         roas: estimatedROAS,
-        contribution: channel.contributionPercentage
       };
     }).sort((a, b) => b.roas - a.roas);
     
-    // Seasonal trends analysis
-    const monthlyTrends = mixData.map(month => ({
-      month: month.month,
-      efficiency: month.efficiency,
-      roas: month.roas
-    }));
-    
-    // Find best and worst performing months
-    const bestMonth = [...monthlyTrends].sort((a, b) => b.roas - a.roas)[0];
-    const worstMonth = [...monthlyTrends].sort((a, b) => a.roas - b.roas)[0];
-    
-    // Generate recommendations based on analysis
     const newRecommendations = [
       {
         id: 1,
@@ -982,48 +950,22 @@ const RecommendationsEngine = ({ crmData, mixData, shapleyData, aiData, markovDa
         actions: [
           `Reduce ${channelPerformance[channelPerformance.length - 1].channel} spend by 20%`,
           `Increase ${channelPerformance[0].channel} budget by 15%`,
-          "Implement A/B testing for creative assets in underperforming channel"
+          "Implement A/B testing for creative assets"
         ],
         priority: "high"
       },
       {
         id: 2,
-        title: "Capitalize on Seasonal Trends",
-        description: `Schedule major campaigns during ${bestMonth.month} when ROAS is ${bestMonth.roas.toFixed(2)}x compared to ${worstMonth.month}'s ${worstMonth.roas.toFixed(2)}x`,
-        impact: "Potential 25-30% higher conversion rates during optimal months",
-        confidence: 78,
-        actions: [
-          `Plan Q4 campaign launch for ${bestMonth.month}`,
-          "Reduce spend during low-performance months by 15%",
-          "Develop season-specific messaging and offers"
-        ],
-        priority: "medium"
-      },
-      {
-        id: 3,
         title: "Improve Lead Scoring Data Quality",
-        description: `Enhance data collection for ${aiData[aiData.length - 1].feature} which has low predictive power but high potential`,
+        description: `Enhance data collection for ${aiData[aiData.length - 1]?.feature} which has low predictive power but high potential`,
         impact: "5-8% improvement in lead qualification accuracy",
         confidence: 72,
         actions: [
-          `Add additional tracking for ${aiData[aiData.length - 1].feature} related behaviors`,
+          `Add additional tracking for ${aiData[aiData.length - 1]?.feature} related behaviors`,
           "Implement progressive profiling forms",
-          "Set up data validation rules for new entries"
+          "Set up data validation rules"
         ],
         priority: "medium"
-      },
-      {
-        id: 4,
-        title: "Address Journey Drop-off Points",
-        description: `Implement retargeting campaigns for the ${markovData.reduce((max, stage) => stage.dropoffProbability > max.dropoffProbability ? stage : markovData[0]).touchpoint} stage with ${markovData.reduce((max, stage) => stage.dropoffProbability > max.dropoffProbability ? stage : markovData[0]).dropoffProbability.toFixed(1)}% drop-off rate`,
-        impact: "Potential 12-18% improvement in overall conversion rate",
-        confidence: 80,
-        actions: [
-          "Create specific content for drop-off stage",
-          "Set up automated email sequence for abandoned journeys",
-          "Implement exit-intent popups with special offers"
-        ],
-        priority: "high"
       }
     ];
     
@@ -1091,7 +1033,7 @@ const DefinitionsTab = () => (
           <div>
             <h4 className="font-semibold text-sm">Customer Acquisition Cost (CAC)</h4>
             <p className="text-xs text-gray-600 mt-1">
-              Total cost of acquiring a new customer, including all marketing and sales expenses divided by the number of customers acquired.
+              Total cost of acquiring a new customer, including all marketing and sales expenses.
             </p>
           </div>
           
@@ -1099,20 +1041,6 @@ const DefinitionsTab = () => (
             <h4 className="font-semibold text-sm">Customer Lifetime Value (LTV)</h4>
             <p className="text-xs text-gray-600 mt-1">
               Predicted net profit from the entire future relationship with a customer.
-            </p>
-          </div>
-          
-          <div>
-            <h4 className="font-semibold text-sm">LTV:CAC Ratio</h4>
-            <p className="text-xs text-gray-600 mt-1">
-              Ratio of lifetime value to acquisition cost. A ratio above 3:1 is generally considered healthy.
-            </p>
-          </div>
-          
-          <div>
-            <h4 className="font-semibold text-sm">Return on Ad Spend (ROAS)</h4>
-            <p className="text-xs text-gray-600 mt-1">
-              Revenue generated for every dollar spent on advertising. Calculated as revenue divided by ad spend.
             </p>
           </div>
         </CardContent>
@@ -1127,246 +1055,21 @@ const DefinitionsTab = () => (
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <h4 className="font-semibold text-sm">First-Click Attribution</h4>
-            <p className="text-xs text-gray-600 mt-1">
-              Assigns 100% credit to the first touchpoint in the customer journey.
-            </p>
-          </div>
-          
-          <div>
-            <h4 className="font-semibold text-sm">Last-Click Attribution</h4>
-            <p className="text-xs text-gray-600 mt-1">
-              Assigns 100% credit to the last touchpoint before conversion.
-            </p>
-          </div>
-          
-          <div>
             <h4 className="font-semibold text-sm">Shapley Value Attribution</h4>
             <p className="text-xs text-gray-600 mt-1">
-              Game theory approach that fairly distributes credit based on each channel's marginal contribution across all possible combinations.
-            </p>
-          </div>
-          
-          <div>
-            <h4 className="font-semibold text-sm">Markov Chain Attribution</h4>
-            <p className="text-xs text-gray-600 mt-1">
-              Uses probabilistic modeling to understand the likelihood of conversion and removal effect of each touchpoint.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-green-600" />
-            AI & Lead Scoring
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <h4 className="font-semibold text-sm">Predictive Power</h4>
-            <p className="text-xs text-gray-600 mt-1">
-              A feature's ability to predict conversion likelihood, calculated using importance, correlation, and data quality.
-            </p>
-          </div>
-          
-          <div>
-            <h4 className="font-semibold text-sm">Feature Importance</h4>
-            <p className="text-xs text-gray-600 mt-1">
-              Statistical measure of how much a feature contributes to the model's prediction accuracy.
-            </p>
-          </div>
-          
-          <div>
-            <h4 className="font-semibold text-sm">Behavioral Features</h4>
-            <p className="text-xs text-gray-600 mt-1">
-              User actions and engagement patterns: email opens, website visits, content downloads, demo requests.
-            </p>
-          </div>
-          
-          <div>
-            <h4 className="font-semibold text-sm">Firmographic Features</h4>
-            <p className="text-xs text-gray-600 mt-1">
-              Company characteristics: size, industry, technology stack, budget indicators.
-            </p>
-          </div>
-          
-          <div>
-            <h4 className="font-semibold text-sm">Demographic Features</h4>
-            <p className="text-xs text-gray-600 mt-1">
-              Individual characteristics: location, job title, seniority, social engagement.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BarChart3 className="h-5 w-5 text-orange-600" />
-            Campaign Metrics
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <h4 className="font-semibold text-sm">Conversion Rate</h4>
-            <p className="text-xs text-gray-600 mt-1">
-              Percentage of visitors who complete a desired action (purchase, signup, etc.).
-            </p>
-          </div>
-          
-          <div>
-            <h4 className="font-semibold text-sm">Campaign Lift</h4>
-            <p className="text-xs text-gray-600 mt-1">
-              Performance improvement compared to a control group or baseline, expressed as a percentage.
-            </p>
-          </div>
-          
-          <div>
-            <h4 className="font-semibold text-sm">Lead Efficiency</h4>
-            <p className="text-xs text-gray-600 mt-1">
-              Number of qualified leads generated per $1000 of marketing spend.
-            </p>
-          </div>
-          
-          <div>
-            <h4 className="font-semibold text-sm">Marketing Mix Modeling (MMM)</h4>
-            <p className="text-xs text-gray-600 mt-1">
-              Statistical analysis technique that measures the impact of various marketing channels on sales outcomes.
+              Game theory approach that fairly distributes credit based on each channel's marginal contribution.
             </p>
           </div>
         </CardContent>
       </Card>
     </div>
-
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <HelpCircle className="h-5 w-5 text-indigo-600" />
-          Customer Journey Stages
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div className="p-3 bg-blue-50 rounded-lg">
-            <h4 className="font-semibold text-sm text-blue-800">Awareness</h4>
-            <p className="text-xs text-blue-700 mt-1">
-              Customer becomes aware of your brand or product through various channels.
-            </p>
-          </div>
-          
-          <div className="p-3 bg-green-50 rounded-lg">
-            <h4 className="font-semibold text-sm text-green-800">Interest</h4>
-            <p className="text-xs text-green-700 mt-1">
-              Customer shows initial interest by engaging with content or visiting your website.
-            </p>
-          </div>
-          
-          <div className="p-3 bg-yellow-50 rounded-lg">
-            <h4 className="font-semibold text-sm text-yellow-800">Consideration</h4>
-            <p className="text-xs text-yellow-700 mt-1">
-              Customer actively evaluates your solution against alternatives and competitors.
-            </p>
-          </div>
-          
-          <div className="p-3 bg-purple-50 rounded-lg">
-            <h4 className="font-semibold text-sm text-purple-800">Intent</h4>
-            <p className="text-xs text-purple-700 mt-1">
-              Customer demonstrates strong buying intent through actions like requesting demos or pricing.
-            </p>
-          </div>
-          
-          <div className="p-3 bg-red-50 rounded-lg">
-            <h4 className="font-semibold text-sm text-red-800">Purchase</h4>
-            <p className="text-xs text-red-700 mt-1">
-              Customer completes the transaction and becomes a paying customer.
-            </p>
-          </div>
-          
-          <div className="p-3 bg-indigo-50 rounded-lg">
-            <h4 className="font-semibold text-sm text-indigo-800">Retention</h4>
-            <p className="text-xs text-indigo-700 mt-1">
-              Post-purchase engagement, support, and efforts to maintain long-term customer relationship.
-            </p>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <BookOpen className="h-5 w-5 text-teal-600" />
-          Statistical Methods & Formulas
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <div className="p-4 bg-gray-50 rounded-lg">
-            <h4 className="font-semibold text-sm mb-2">Shapley Value Calculation</h4>
-            <p className="text-xs text-gray-600 mb-2">
-              For each marketing channel, calculate its average marginal contribution across all possible coalitions:
-            </p>
-            <code className="text-xs bg-white p-2 rounded border block">
-              φᵢ(v) = Σ [|S|!(n-|S|-1)!/n!] × [v(S∪&#123;i&#125;) - v(S)]
-            </code>
-            <p className="text-xs text-gray-500 mt-2">
-              Where S is a subset of channels not containing i, and v(S) is the value function.
-            </p>
-          </div>
-          
-          <div className="p-4 bg-gray-50 rounded-lg">
-            <h4 className="font-semibold text-sm mb-2">Lead Score Formula</h4>
-            <p className="text-xs text-gray-600 mb-2">
-              Weighted sum of feature scores based on their predictive importance:
-            </p>
-            <code className="text-xs bg-white p-2 rounded border block">
-              Lead Score = Σ (Feature Value × Feature Weight × Data Quality)
-            </code>
-          </div>
-          
-          <div className="p-4 bg-gray-50 rounded-lg">
-            <h4 className="font-semibold text-sm mb-2">Markov Transition Probability</h4>
-            <p className="text-xs text-gray-600 mb-2">
-              Probability of moving from one journey stage to another:
-            </p>
-            <code className="text-xs bg-white p-2 rounded border block">
-              P(j|i) = Number of transitions from i to j / Total transitions from i
-            </code>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
   </div>
 )
 
-// Export Data Function
-const exportCSV = (data, filename) => {
-  const csvHeader = Object.keys(data[0]).join(',') + '\n'
-  const csvRows = data.map(row =>
-    Object.values(row).map(val => `"${val}"`).join(',')
-  )
-  const csvString = csvHeader + csvRows.join('\n')
-
-  const blob = new Blob([csvString], { type: 'text/csv' })
-  const url = URL.createObjectURL(blob)
-
-  const link = document.createElement('a')
-  link.href = url
-  link.download = filename
-  link.click()
-
-  URL.revokeObjectURL(url)
-}
-
 // Main CRM Dashboard
 export default function CRMDashboard() {
-  const [timeframe, setTimeframe] = useState('monthly')
-  const [dateRange, setDateRange] = useState({ start: '', end: '' })
   const [activeTab, setActiveTab] = useState('overview')
   
-  // This would be replaced with: import { generateFakeData } from '@/lib/fakeData'
   const data = useMemo(() => generateFakeData(), [])
   const { crmData, mixData, shapleyData, aiData, markovData } = data
 
@@ -1375,181 +1078,107 @@ export default function CRMDashboard() {
   }, [crmData])
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto py-8 px-4 space-y-8">
-        {/* Header */}
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-8">
-          <div>
-            <h1 className="text-3xl font-bold">CRM & Marketing Attribution</h1>
-             <p className="text-muted-foreground">
-              Advanced attribution modeling, AI-powered recommendations, and campaign optimization
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-4">
-          
-            <Button variant="outline" onClick={handleExport}>
-              <Download className="mr-2 h-4 w-4" />
-              Export Data
-            </Button>
-          </div>
+    <div className="container mx-auto py-8 space-y-8">
+      <div className="flex justify-between items-start mb-8">
+        <div>
+          <h1 className="text-3xl font-bold">CRM & Marketing Attribution</h1>
+          <p className="text-gray-600">
+            Advanced attribution modeling, AI-powered recommendations, and campaign optimization
+          </p>
         </div>
+        <div className="flex gap-4">
 
-        {/* Main Dashboard */}
-            <Tabs defaultValue="overview">
-            <TabsList className="flex overflow-x-auto md:grid md:grid-cols-7 w-full">
-                <TabsTrigger value="overview">Overview</TabsTrigger>
-                <TabsTrigger value="attribution">Attribution</TabsTrigger>
-                <TabsTrigger value="ai-scoring">AI Scoring</TabsTrigger>
-                <TabsTrigger value="journey">Journey</TabsTrigger>
-                <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
-                <TabsTrigger value="integrations">Integrations</TabsTrigger>
-                <TabsTrigger value="definitions">Definitions</TabsTrigger>
-              </TabsList>
 
-          <TabsContent value="overview" className="space-y-6">
-            <CRMKPIOverview crmData={crmData} mixData={mixData} />
-            <MarketingMixAnalysis 
-              mixData={mixData} 
-              onGenerateRecommendations={() => setActiveTab('recommendations')} 
-            />
-          </TabsContent>
 
-          <TabsContent value="attribution" className="space-y-6">
-            <ShapleyAttributionAnalysis shapleyData={shapleyData} />
-            
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Attribution Model Comparison</CardTitle>
-                  <CardDescription>Revenue attribution across different modeling approaches</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Model</TableHead>
-                        <TableHead>Paid Search</TableHead>
-                        <TableHead>Social</TableHead>
-                        <TableHead>Email</TableHead>
-                        <TableHead>Organic</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      <TableRow>
-                        <TableCell>First-Click</TableCell>
-                        <TableCell>35%</TableCell>
-                        <TableCell>25%</TableCell>
-                        <TableCell>15%</TableCell>
-                        <TableCell>25%</TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell>Last-Click</TableCell>
-                        <TableCell>45%</TableCell>
-                        <TableCell>20%</TableCell>
-                        <TableCell>20%</TableCell>
-                        <TableCell>15%</TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell className="font-medium">Shapley Value</TableCell>
-                        <TableCell className="font-medium">38%</TableCell>
-                        <TableCell className="font-medium">23%</TableCell>
-                        <TableCell className="font-medium">22%</TableCell>
-                        <TableCell className="font-medium">17%</TableCell>
-                      </TableRow>
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
+          
+          <Button variant="outline" onClick={handleExport}
+             className="border border-gray-300"  >
+            <Download className="mr-2 h-4 w-4" />
+            Export
+          </Button>
+        </div>
+      </div>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Attribution Accuracy Comparison</CardTitle>
-                  <CardDescription>Model performance vs traditional methods</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
-                      <span className="text-sm font-medium">Shapley Value</span>
-                      <Badge variant="default">94.2% Accurate</Badge>
+      <Tabs defaultValue="overview">
+        <TabsList className="flex overflow-x-auto md:grid md:grid-cols-7 w-full">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="attribution">Attribution</TabsTrigger>
+          <TabsTrigger value="ai-scoring">AI Scoring</TabsTrigger>
+          <TabsTrigger value="journey">Journey</TabsTrigger>
+          <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
+          <TabsTrigger value="integrations">Integrations</TabsTrigger>
+          <TabsTrigger value="definitions">Definitions</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview" className="space-y-6">
+          <CRMKPIOverview crmData={crmData} mixData={mixData} />
+          <MarketingMixAnalysis 
+            mixData={mixData} 
+            onGenerateRecommendations={() => setActiveTab('recommendations')} 
+          />
+        </TabsContent>
+
+        <TabsContent value="attribution" className="space-y-6">
+          <ShapleyAttributionAnalysis shapleyData={shapleyData} />
+        </TabsContent>
+
+        <TabsContent value="ai-scoring" className="space-y-6">
+          <AILeadScoringDashboard aiData={aiData} />
+        </TabsContent>
+
+        <TabsContent value="journey" className="space-y-6">
+          <MarkovJourneyAnalysis markovData={markovData} />
+        </TabsContent>
+
+        <TabsContent value="recommendations" className="space-y-6">
+          <RecommendationsEngine 
+            crmData={crmData}
+            mixData={mixData}
+            shapleyData={shapleyData}
+            aiData={aiData}
+            markovData={markovData}
+          />
+        </TabsContent>
+
+        <TabsContent value="integrations" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Platform Integrations</CardTitle>
+              <CardDescription>Connected marketing and CRM platforms</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {[
+                  { name: 'HubSpot', status: 'Connected', type: 'CRM', records: 45234 },
+                  { name: 'Google Ads', status: 'Connected', type: 'Advertising', records: 12890 },
+                ].map((integration) => (
+                  <div key={integration.name} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-3 h-3 rounded-full ${
+                        integration.status === 'Connected' ? 'bg-green-500' : 'bg-yellow-500'
+                      }`} />
+                      <div>
+                        <p className="font-medium">{integration.name}</p>
+                        <p className="text-xs text-gray-500">{integration.type}</p>
+                      </div>
                     </div>
-                    <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
-                      <span className="text-sm font-medium">Markov Chain</span>
-                      <Badge variant="default">89.1% Accurate</Badge>
-                    </div>
-                    <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                      <span className="text-sm font-medium">Linear Attribution</span>
-                      <Badge variant="secondary">73.6% Accurate</Badge>
-                    </div>
-                    <div className="flex justify-between items-center p-3 bg-red-50 rounded-lg">
-                      <span className="text-sm font-medium">Last-Click</span>
-                      <Badge variant="destructive">67.0% Accurate</Badge>
+                    <div className="text-right">
+                      <p className="text-sm font-medium">{formatNumber(integration.records)} records</p>
+                      <Badge variant={integration.status === 'Connected' ? 'default' : 'secondary'}>
+                        {integration.status}
+                      </Badge>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-          <TabsContent value="ai-scoring" className="space-y-6">
-            <AILeadScoringDashboard aiData={aiData} />
-          </TabsContent>
-
-          <TabsContent value="journey" className="space-y-6">
-            <MarkovJourneyAnalysis markovData={markovData} />
-          </TabsContent>
-
-          <TabsContent value="recommendations" className="space-y-6">
-            <RecommendationsEngine 
-              crmData={crmData}
-              mixData={mixData}
-              shapleyData={shapleyData}
-              aiData={aiData}
-              markovData={markovData}
-            />
-          </TabsContent>
-
-          <TabsContent value="integrations" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Platform Integrations</CardTitle>
-                <CardDescription>Connected marketing and CRM platforms</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {[
-                    { name: 'HubSpot', status: 'Connected', type: 'CRM', records: 45234 },
-                    { name: 'Google Ads', status: 'Connected', type: 'Advertising', records: 12890 },
-                    { name: 'Facebook Ads', status: 'Connected', type: 'Advertising', records: 8745 },
-                    { name: 'LinkedIn Ads', status: 'Pending', type: 'Advertising', records: 0 },
-                  ].map((integration) => (
-                    <div key={integration.name} className="flex items-center justify-between p-3 border rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-3 h-3 rounded-full ${
-                          integration.status === 'Connected' ? 'bg-green-500' : 'bg-yellow-500'
-                        }`} />
-                        <div>
-                          <p className="font-medium">{integration.name}</p>
-                          <p className="text-xs text-gray-500">{integration.type}</p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm font-medium">{formatNumber(integration.records)} records</p>
-                        <Badge variant={integration.status === 'Connected' ? 'default' : 'secondary'}>
-                          {integration.status}
-                        </Badge>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="definitions" className="space-y-6">
-            <DefinitionsTab />
-          </TabsContent>
-        </Tabs>
-      </div>
+        <TabsContent value="definitions" className="space-y-6">
+          <DefinitionsTab />
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }

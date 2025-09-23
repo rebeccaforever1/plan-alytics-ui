@@ -1,0 +1,2820 @@
+[
+  {
+    "url": "https://www.plan-alytics-demo.com/dashboard",
+    "page_title": "Plan-alytics",
+    "headings": [
+      {
+        "level": "h1",
+        "text": "Subscription Analytics",
+        "id": ""
+      },
+      {
+        "level": "h4",
+        "text": "Basic",
+        "id": ""
+      },
+      {
+        "level": "h4",
+        "text": "Pro",
+        "id": ""
+      },
+      {
+        "level": "h4",
+        "text": "Enterprise",
+        "id": ""
+      }
+    ],
+    "tabs": [
+      {
+        "text": "Acme CorporationEnterprise • 24 members",
+        "href": "",
+        "class": "border-input data-[placeholder]:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 w-full",
+        "data_state": "closed"
+      },
+      {
+        "text": "Subscriptions",
+        "href": "/dashboard",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] bg-primary/10 text-primary font-medium shadow-sm border border-primary/20",
+        "data_state": "closed"
+      },
+      {
+        "text": "Revenue",
+        "href": "/dashboard/revenue",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "Retention",
+        "href": "/dashboard/retention",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "CRM",
+        "href": "/dashboard/crm",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "Product Usage",
+        "href": "/dashboard/usage",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "CLV",
+        "href": "/dashboard/clv",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "Alerts",
+        "href": "/dashboard/alerts",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "Data Sources",
+        "href": "/dashboard/connections",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "RSRebecca SmithAdmin",
+        "href": "",
+        "class": "justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:text-accent-foreground dark:hover:bg-accent/50 h-9 py-2 has-[>svg]:px-3 flex items-center gap-2 px-2 hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "Overview",
+        "href": "",
+        "class": "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "data_state": "active"
+      },
+      {
+        "text": "Cohort Analysis",
+        "href": "",
+        "class": "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "data_state": "inactive"
+      },
+      {
+        "text": "Churn Prediction",
+        "href": "",
+        "class": "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "data_state": "inactive"
+      },
+      {
+        "text": "Price Sensitivity",
+        "href": "",
+        "class": "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "data_state": "inactive"
+      },
+      {
+        "text": "AARRR Funnel",
+        "href": "",
+        "class": "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "data_state": "inactive"
+      },
+      {
+        "text": "Active Subscriptions857+12.5%vs previousMonthly Recurring Revenue$116,703+8.2%Avg Revenue Per User$136+5.7%Churn Rate6.2%-3.2%Subscription Growth TrendsMonthly subscription acquisition and churn patternsRevenue & Churn RateMonthly recurring revenue and churn correlationBasic↘ 1.0%$8,7587.5% of total revenue302 customers$29 avgChurn Rate4.3%Pro↗ 10.5%$28,71024.6% of total revenue290 customers$99 avgChurn Rate8.1%Enterprise↗ 3.9%$79,23567.9% of total revenue265 customers$299 avgChurn Rate6.2%",
+        "href": "",
+        "class": "flex-1 outline-none space-y-6",
+        "data_state": "active"
+      }
+    ],
+    "cards": [
+      {
+        "type": "card",
+        "title": "",
+        "content": "Organization",
+        "classes": "fixed lg:static inset-y-0 left-0 z-50 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 border-r transition-all duration-300 ease-in-out lg:translate-x-0 shadow-lg lg:shadow-sm px-4 py-6 space-y-6 flex flex-col -translate-x-full w-64"
+      },
+      {
+        "type": "card",
+        "title": "Untitled Card",
+        "content": "",
+        "classes": "lucide lucide-credit-card h-4 w-4 mr-2 group-hover:text-blue-500 transition-colors"
+      },
+      {
+        "type": "card",
+        "title": "",
+        "content": "",
+        "classes": "sticky top-0 z-30 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 border-b"
+      },
+      {
+        "type": "metric_card",
+        "title": "Active Subscriptions",
+        "content": "+12.5%vs previous",
+        "border_color": "green",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm border-l-4 border-l-green-500"
+      },
+      {
+        "type": "card",
+        "title": "Active Subscriptions",
+        "content": "",
+        "classes": "@container/card-header auto-rows-min grid-rows-[auto_auto] gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 flex flex-row items-center justify-between space-y-0 pb-2"
+      },
+      {
+        "type": "metric_card",
+        "title": "Monthly Recurring Revenue",
+        "content": "+8.2%",
+        "border_color": "blue",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm border-l-4 border-l-blue-500"
+      },
+      {
+        "type": "card",
+        "title": "Monthly Recurring Revenue",
+        "content": "",
+        "classes": "@container/card-header auto-rows-min grid-rows-[auto_auto] gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 flex flex-row items-center justify-between space-y-0 pb-2"
+      },
+      {
+        "type": "metric_card",
+        "title": "Avg Revenue Per User",
+        "content": "+5.7%",
+        "border_color": "purple",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm border-l-4 border-l-purple-500"
+      },
+      {
+        "type": "card",
+        "title": "Avg Revenue Per User",
+        "content": "",
+        "classes": "@container/card-header auto-rows-min grid-rows-[auto_auto] gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 flex flex-row items-center justify-between space-y-0 pb-2"
+      },
+      {
+        "type": "metric_card",
+        "title": "Churn Rate",
+        "content": "-3.2%",
+        "border_color": "red",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm border-l-4 border-l-red-500"
+      },
+      {
+        "type": "card",
+        "title": "Churn Rate",
+        "content": "",
+        "classes": "@container/card-header auto-rows-min grid-rows-[auto_auto] gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 flex flex-row items-center justify-between space-y-0 pb-2"
+      },
+      {
+        "type": "card",
+        "title": "Monthly subscription acquisition and churn patterns",
+        "content": "Monthly subscription acquisition and churn patterns",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+      },
+      {
+        "type": "card",
+        "title": "Monthly subscription acquisition and churn patterns",
+        "content": "Monthly subscription acquisition and churn patterns",
+        "classes": "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6"
+      },
+      {
+        "type": "card",
+        "title": "Monthly recurring revenue and churn correlation",
+        "content": "Monthly recurring revenue and churn correlation",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+      },
+      {
+        "type": "card",
+        "title": "Monthly recurring revenue and churn correlation",
+        "content": "Monthly recurring revenue and churn correlation",
+        "classes": "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6"
+      },
+      {
+        "type": "card",
+        "title": "Basic",
+        "content": "↘ 1.0%",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm relative overflow-hidden hover:shadow-lg transition-shadow"
+      },
+      {
+        "type": "card",
+        "title": "Pro",
+        "content": "↗ 10.5%",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm relative overflow-hidden hover:shadow-lg transition-shadow"
+      },
+      {
+        "type": "card",
+        "title": "Enterprise",
+        "content": "↗ 3.9%",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm relative overflow-hidden hover:shadow-lg transition-shadow"
+      }
+    ],
+    "charts": [
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-x h-4 w-4"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-building h-4 w-4"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-chevron-down size-4 opacity-50"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-plus h-3 w-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-bookmark h-3 w-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-bookmark h-3 w-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-chevron-down h-3 w-3 transition-transform duration-200 rotate-0"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-wallet h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-dollar-sign h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-user-check h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-users h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-activity h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-trending-up h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-triangle-alert h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-database h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-database h-4 w-4 mr-2 group-hover:text-blue-500 transition-colors"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-zap h-3 w-3 ml-auto opacity-50"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-users h-4 w-4 mr-2 group-hover:text-green-500 transition-colors"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-download h-4 w-4 mr-2 group-hover:text-purple-500 transition-colors"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-credit-card h-4 w-4 mr-2 group-hover:text-blue-500 transition-colors"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-sun h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-moon absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-menu h-5 w-5"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-search h-4 w-4 text-muted-foreground"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-command h-3 w-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-search h-4 w-4"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-circle-question-mark h-4 w-4"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-bell h-4 w-4"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-chevrons-up-down h-4 w-4 text-muted-foreground"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-download mr-2 h-4 w-4"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-users h-4 w-4 text-green-600"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-trending-up h-3 w-3 text-green-500 mr-1"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-dollar-sign h-4 w-4 text-blue-600"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-trending-up h-3 w-3 text-green-500 mr-1"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-target h-4 w-4 text-purple-600"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-trending-up h-3 w-3 text-green-500 mr-1"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-user-x h-4 w-4 text-red-600"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-trending-down h-3 w-3 text-green-500 mr-1"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "div",
+        "classes": "recharts-responsive-container"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "div",
+        "classes": "recharts-responsive-container"
+      }
+    ],
+    "status": "success"
+  },
+  {
+    "url": "https://www.plan-alytics-demo.com/dashboard/revenue",
+    "page_title": "Plan-alytics",
+    "headings": [
+      {
+        "level": "h1",
+        "text": "Revenue Analytics",
+        "id": ""
+      }
+    ],
+    "tabs": [
+      {
+        "text": "Acme CorporationEnterprise • 24 members",
+        "href": "",
+        "class": "border-input data-[placeholder]:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 w-full",
+        "data_state": "closed"
+      },
+      {
+        "text": "Subscriptions",
+        "href": "/dashboard",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "Revenue",
+        "href": "/dashboard/revenue",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] bg-primary/10 text-primary font-medium shadow-sm border border-primary/20",
+        "data_state": "closed"
+      },
+      {
+        "text": "Retention",
+        "href": "/dashboard/retention",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "CRM",
+        "href": "/dashboard/crm",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "Product Usage",
+        "href": "/dashboard/usage",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "CLV",
+        "href": "/dashboard/clv",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "Alerts",
+        "href": "/dashboard/alerts",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "Data Sources",
+        "href": "/dashboard/connections",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "RSRebecca SmithAdmin",
+        "href": "",
+        "class": "justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:text-accent-foreground dark:hover:bg-accent/50 h-9 py-2 has-[>svg]:px-3 flex items-center gap-2 px-2 hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "Overview",
+        "href": "",
+        "class": "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "data_state": "active"
+      },
+      {
+        "text": "Revenue Quality",
+        "href": "",
+        "class": "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "data_state": "inactive"
+      },
+      {
+        "text": "Forecasting & Modeling",
+        "href": "",
+        "class": "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "data_state": "inactive"
+      },
+      {
+        "text": "Definitions",
+        "href": "",
+        "class": "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "data_state": "inactive"
+      },
+      {
+        "text": "Total Revenue$95,1173.0% vs last monthAnnual Recurring Revenue$1,022,209NRR: 110.6%Revenue Quality Index83.9ExcellentRevenue Predictability89.6%Highly PredictableRevenue Composition TrendsMonthly breakdown of recurring vs. one-time revenueRevenue by Customer SegmentPerformance across subscription tiersRevenue Growth Rate9.2%Month-over-monthCustomer Concentration78.9%Top 20% revenue shareRevenue Volatility24.6%Stability measureDiversification Index100.0%Risk reduction score",
+        "href": "",
+        "class": "flex-1 outline-none space-y-6",
+        "data_state": "active"
+      }
+    ],
+    "cards": [
+      {
+        "type": "card",
+        "title": "",
+        "content": "Organization",
+        "classes": "fixed lg:static inset-y-0 left-0 z-50 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 border-r transition-all duration-300 ease-in-out lg:translate-x-0 shadow-lg lg:shadow-sm px-4 py-6 space-y-6 flex flex-col -translate-x-full w-64"
+      },
+      {
+        "type": "card",
+        "title": "Untitled Card",
+        "content": "",
+        "classes": "lucide lucide-credit-card h-4 w-4 mr-2 group-hover:text-blue-500 transition-colors"
+      },
+      {
+        "type": "card",
+        "title": "",
+        "content": "",
+        "classes": "sticky top-0 z-30 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 border-b"
+      },
+      {
+        "type": "metric_card",
+        "title": "Total Revenue",
+        "content": "3.0% vs last month",
+        "border_color": "green",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm border-l-4 border-l-green-500"
+      },
+      {
+        "type": "card",
+        "title": "Total Revenue",
+        "content": "",
+        "classes": "@container/card-header auto-rows-min grid-rows-[auto_auto] gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 flex flex-row items-center justify-between space-y-0 pb-2"
+      },
+      {
+        "type": "metric_card",
+        "title": "Annual Recurring Revenue",
+        "content": "NRR: 110.6%",
+        "border_color": "blue",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm border-l-4 border-l-blue-500"
+      },
+      {
+        "type": "card",
+        "title": "Annual Recurring Revenue",
+        "content": "",
+        "classes": "@container/card-header auto-rows-min grid-rows-[auto_auto] gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 flex flex-row items-center justify-between space-y-0 pb-2"
+      },
+      {
+        "type": "metric_card",
+        "title": "Revenue Quality Index",
+        "content": "Excellent",
+        "border_color": "purple",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm border-l-4 border-l-purple-500"
+      },
+      {
+        "type": "card",
+        "title": "Revenue Quality Index",
+        "content": "",
+        "classes": "@container/card-header auto-rows-min grid-rows-[auto_auto] gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 flex flex-row items-center justify-between space-y-0 pb-2"
+      },
+      {
+        "type": "metric_card",
+        "title": "Revenue Predictability",
+        "content": "Highly Predictable",
+        "border_color": "",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm border-l-4 border-l-orange-500"
+      },
+      {
+        "type": "card",
+        "title": "Revenue Predictability",
+        "content": "",
+        "classes": "@container/card-header auto-rows-min grid-rows-[auto_auto] gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 flex flex-row items-center justify-between space-y-0 pb-2"
+      },
+      {
+        "type": "card",
+        "title": "Monthly breakdown of recurring vs. one-time revenue",
+        "content": "Monthly breakdown of recurring vs. one-time revenue",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+      },
+      {
+        "type": "card",
+        "title": "Monthly breakdown of recurring vs. one-time revenue",
+        "content": "Monthly breakdown of recurring vs. one-time revenue",
+        "classes": "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6"
+      },
+      {
+        "type": "card",
+        "title": "Performance across subscription tiers",
+        "content": "Performance across subscription tiers",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+      },
+      {
+        "type": "card",
+        "title": "Performance across subscription tiers",
+        "content": "Performance across subscription tiers",
+        "classes": "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6"
+      },
+      {
+        "type": "card",
+        "title": "9.2%",
+        "content": "Month-over-month",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+      },
+      {
+        "type": "card",
+        "title": "Untitled Card",
+        "content": "",
+        "classes": "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 pb-2"
+      },
+      {
+        "type": "card",
+        "title": "78.9%",
+        "content": "Top 20% revenue share",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+      },
+      {
+        "type": "card",
+        "title": "Untitled Card",
+        "content": "",
+        "classes": "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 pb-2"
+      },
+      {
+        "type": "card",
+        "title": "24.6%",
+        "content": "Stability measure",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+      },
+      {
+        "type": "card",
+        "title": "Untitled Card",
+        "content": "",
+        "classes": "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 pb-2"
+      },
+      {
+        "type": "card",
+        "title": "100.0%",
+        "content": "Risk reduction score",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+      },
+      {
+        "type": "card",
+        "title": "Untitled Card",
+        "content": "",
+        "classes": "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 pb-2"
+      }
+    ],
+    "charts": [
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-x h-4 w-4"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-building h-4 w-4"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-chevron-down size-4 opacity-50"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-plus h-3 w-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-bookmark h-3 w-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-bookmark h-3 w-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-chevron-down h-3 w-3 transition-transform duration-200 rotate-0"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-wallet h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-dollar-sign h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-user-check h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-users h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-activity h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-trending-up h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-triangle-alert h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-database h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-database h-4 w-4 mr-2 group-hover:text-blue-500 transition-colors"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-zap h-3 w-3 ml-auto opacity-50"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-users h-4 w-4 mr-2 group-hover:text-green-500 transition-colors"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-download h-4 w-4 mr-2 group-hover:text-purple-500 transition-colors"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-credit-card h-4 w-4 mr-2 group-hover:text-blue-500 transition-colors"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-sun h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-moon absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-menu h-5 w-5"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-search h-4 w-4 text-muted-foreground"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-command h-3 w-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-search h-4 w-4"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-circle-question-mark h-4 w-4"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-bell h-4 w-4"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-chevrons-up-down h-4 w-4 text-muted-foreground"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-download mr-2 h-4 w-4"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-dollar-sign h-4 w-4 text-green-600"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-arrow-down-right h-3 w-3 mr-1"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-activity h-4 w-4 text-blue-600"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-target h-3 w-3 mr-1"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-brain h-4 w-4 text-purple-600"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-calculator h-4 w-4 text-orange-600"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "div",
+        "classes": "recharts-responsive-container"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "div",
+        "classes": "recharts-responsive-container"
+      }
+    ],
+    "status": "success"
+  },
+  {
+    "url": "https://www.plan-alytics-demo.com/dashboard/retention",
+    "page_title": "Plan-alytics",
+    "headings": [
+      {
+        "level": "h1",
+        "text": "Strategic Retention",
+        "id": ""
+      },
+      {
+        "level": "h3",
+        "text": "Platinum Tier",
+        "id": ""
+      },
+      {
+        "level": "h3",
+        "text": "Gold Tier",
+        "id": ""
+      },
+      {
+        "level": "h3",
+        "text": "Silver Tier",
+        "id": ""
+      },
+      {
+        "level": "h4",
+        "text": "High Risk Platinum",
+        "id": ""
+      },
+      {
+        "level": "h4",
+        "text": "Medium Risk Platinum",
+        "id": ""
+      },
+      {
+        "level": "h4",
+        "text": "Low Risk Platinum",
+        "id": ""
+      },
+      {
+        "level": "h4",
+        "text": "Executive Outreach",
+        "id": ""
+      },
+      {
+        "level": "h4",
+        "text": "Expected Outcomes",
+        "id": ""
+      }
+    ],
+    "tabs": [
+      {
+        "text": "Acme CorporationEnterprise • 24 members",
+        "href": "",
+        "class": "border-input data-[placeholder]:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 w-full",
+        "data_state": "closed"
+      },
+      {
+        "text": "Subscriptions",
+        "href": "/dashboard",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "Revenue",
+        "href": "/dashboard/revenue",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "Retention",
+        "href": "/dashboard/retention",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] bg-primary/10 text-primary font-medium shadow-sm border border-primary/20",
+        "data_state": "closed"
+      },
+      {
+        "text": "CRM",
+        "href": "/dashboard/crm",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "Product Usage",
+        "href": "/dashboard/usage",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "CLV",
+        "href": "/dashboard/clv",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "Alerts",
+        "href": "/dashboard/alerts",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "Data Sources",
+        "href": "/dashboard/connections",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "RSRebecca SmithAdmin",
+        "href": "",
+        "class": "justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:text-accent-foreground dark:hover:bg-accent/50 h-9 py-2 has-[>svg]:px-3 flex items-center gap-2 px-2 hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "Retention Strategy",
+        "href": "",
+        "class": "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "data_state": "active"
+      },
+      {
+        "text": "Cohort Analysis",
+        "href": "",
+        "class": "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "data_state": "inactive"
+      },
+      {
+        "text": "Investment Analysis",
+        "href": "",
+        "class": "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "data_state": "inactive"
+      },
+      {
+        "text": "Intervention Plan",
+        "href": "",
+        "class": "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "data_state": "inactive"
+      },
+      {
+        "text": "Segment Growth ProjectionsExpected growth and risk by customer segmentSegmentCurrentProjectedGrowthRisk LevelAction RequiredPlatinum180195+8.3%LowMaintainGold420445+5.9%MediumMonitor closelySilver550485-11.8%HighStrategic planningPower Users320340+6.3%LowMaintainLoyalists420435+3.6%LowMaintainEstablished580520-10.3%CriticalImmediate actionValue-based SegmentsSegmented by customer lifetime value and revenue contributionPlatinum Tier180 customersAvg MRR:$587Retention:96%Gold Tier420 customersAvg MRR:$287Retention:88%Silver Tier550 customersAvg MRR:$98Retention:72%Platinum Tier - Risk-based Sub-segmentsStratified retention effort allocationHigh Risk PlatinumHigh RiskCustomers:15Churn Risk:68%Predicted Churn:10Effort Level:Intensive EffortMedium Risk PlatinumMedium RiskCustomers:45Churn Risk:32%Predicted Churn:14Effort Level:Moderate EffortLow Risk PlatinumLow RiskCustomers:120Churn Risk:8%Predicted Churn:10Effort Level:Light EffortRecommended Intervention StrategyFor High Risk Platinum sub-segmentExecutive OutreachC-level executive personal contactChannel:Phone + Personal MeetingFrequency:WeeklyTeam:Executive TeamCost per Customer:$250Expected Outcomes• Success Rate: 85%• Customers Targeted: 15• Total Investment: $3750• Expected Revenue Saved: $7969Deploy Intervention Strategy",
+        "href": "",
+        "class": "flex-1 outline-none space-y-6",
+        "data_state": "active"
+      }
+    ],
+    "cards": [
+      {
+        "type": "card",
+        "title": "",
+        "content": "Organization",
+        "classes": "fixed lg:static inset-y-0 left-0 z-50 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 border-r transition-all duration-300 ease-in-out lg:translate-x-0 shadow-lg lg:shadow-sm px-4 py-6 space-y-6 flex flex-col -translate-x-full w-64"
+      },
+      {
+        "type": "card",
+        "title": "Untitled Card",
+        "content": "",
+        "classes": "lucide lucide-credit-card h-4 w-4 mr-2 group-hover:text-blue-500 transition-colors"
+      },
+      {
+        "type": "card",
+        "title": "",
+        "content": "",
+        "classes": "sticky top-0 z-30 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 border-b"
+      },
+      {
+        "type": "card",
+        "title": "Expected growth and risk by customer segment",
+        "content": "Expected growth and risk by customer segment",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+      },
+      {
+        "type": "card",
+        "title": "Expected growth and risk by customer segment",
+        "content": "Expected growth and risk by customer segment",
+        "classes": "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6"
+      },
+      {
+        "type": "card",
+        "title": "Segmented by customer lifetime value and revenue contribution",
+        "content": "Segmented by customer lifetime value and revenue contribution",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+      },
+      {
+        "type": "card",
+        "title": "Segmented by customer lifetime value and revenue contribution",
+        "content": "Segmented by customer lifetime value and revenue contribution",
+        "classes": "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6"
+      },
+      {
+        "type": "card",
+        "title": "Platinum Tier",
+        "content": "180 customers",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm cursor-pointer ring-2 ring-blue-500"
+      },
+      {
+        "type": "card",
+        "title": "Gold Tier",
+        "content": "420 customers",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm cursor-pointer"
+      },
+      {
+        "type": "card",
+        "title": "Silver Tier",
+        "content": "550 customers",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm cursor-pointer"
+      },
+      {
+        "type": "card",
+        "title": "Stratified retention effort allocation",
+        "content": "Stratified retention effort allocation",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+      },
+      {
+        "type": "card",
+        "title": "Stratified retention effort allocation",
+        "content": "Stratified retention effort allocation",
+        "classes": "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6"
+      },
+      {
+        "type": "card",
+        "title": "High Risk Platinum",
+        "content": "High Risk",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm cursor-pointer ring-2 ring-blue-500"
+      },
+      {
+        "type": "card",
+        "title": "Medium Risk Platinum",
+        "content": "Medium Risk",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm cursor-pointer"
+      },
+      {
+        "type": "card",
+        "title": "Low Risk Platinum",
+        "content": "Low Risk",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm cursor-pointer"
+      },
+      {
+        "type": "card",
+        "title": "For High Risk Platinum sub-segment",
+        "content": "For High Risk Platinum sub-segment",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+      },
+      {
+        "type": "card",
+        "title": "For High Risk Platinum sub-segment",
+        "content": "For High Risk Platinum sub-segment",
+        "classes": "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6"
+      }
+    ],
+    "charts": [
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-x h-4 w-4"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-building h-4 w-4"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-chevron-down size-4 opacity-50"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-plus h-3 w-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-bookmark h-3 w-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-bookmark h-3 w-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-chevron-down h-3 w-3 transition-transform duration-200 rotate-0"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-wallet h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-dollar-sign h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-user-check h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-users h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-activity h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-trending-up h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-triangle-alert h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-database h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-database h-4 w-4 mr-2 group-hover:text-blue-500 transition-colors"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-zap h-3 w-3 ml-auto opacity-50"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-users h-4 w-4 mr-2 group-hover:text-green-500 transition-colors"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-download h-4 w-4 mr-2 group-hover:text-purple-500 transition-colors"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-credit-card h-4 w-4 mr-2 group-hover:text-blue-500 transition-colors"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-sun h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-moon absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-menu h-5 w-5"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-search h-4 w-4 text-muted-foreground"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-command h-3 w-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-search h-4 w-4"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-circle-question-mark h-4 w-4"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-bell h-4 w-4"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-chevrons-up-down h-4 w-4 text-muted-foreground"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-chevron-down size-4 opacity-50"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "div",
+        "classes": "recharts-responsive-container"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-triangle-alert h-3 w-3 mr-1"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-shield h-3 w-3 mr-1"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-shield h-3 w-3 mr-1"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-target h-3 w-3 mr-1"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "h-3 w-3 mr-1"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-star h-3 w-3 mr-1"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-mail h-4 w-4 mr-2"
+      }
+    ],
+    "status": "success"
+  },
+  {
+    "url": "https://www.plan-alytics-demo.com/dashboard/crm",
+    "page_title": "Plan-alytics",
+    "headings": [
+      {
+        "level": "h1",
+        "text": "CRM & Marketing Attribution",
+        "id": ""
+      },
+      {
+        "level": "h3",
+        "text": "Customer Acquisition Cost",
+        "id": ""
+      },
+      {
+        "level": "h3",
+        "text": "Return on Ad Spend",
+        "id": ""
+      },
+      {
+        "level": "h3",
+        "text": "Lead Quality Score",
+        "id": ""
+      },
+      {
+        "level": "h3",
+        "text": "Conversion Rate",
+        "id": ""
+      },
+      {
+        "level": "h3",
+        "text": "Marketing Mix Performance",
+        "id": ""
+      },
+      {
+        "level": "h3",
+        "text": "Channel Efficiency Analysis",
+        "id": ""
+      }
+    ],
+    "tabs": [
+      {
+        "text": "Acme CorporationEnterprise • 24 members",
+        "href": "",
+        "class": "border-input data-[placeholder]:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 w-full",
+        "data_state": "closed"
+      },
+      {
+        "text": "Subscriptions",
+        "href": "/dashboard",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "Revenue",
+        "href": "/dashboard/revenue",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "Retention",
+        "href": "/dashboard/retention",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "CRM",
+        "href": "/dashboard/crm",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] bg-primary/10 text-primary font-medium shadow-sm border border-primary/20",
+        "data_state": "closed"
+      },
+      {
+        "text": "Product Usage",
+        "href": "/dashboard/usage",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "CLV",
+        "href": "/dashboard/clv",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "Alerts",
+        "href": "/dashboard/alerts",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "Data Sources",
+        "href": "/dashboard/connections",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "RSRebecca SmithAdmin",
+        "href": "",
+        "class": "justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:text-accent-foreground dark:hover:bg-accent/50 h-9 py-2 has-[>svg]:px-3 flex items-center gap-2 px-2 hover:bg-muted/50",
+        "data_state": "closed"
+      }
+    ],
+    "cards": [
+      {
+        "type": "card",
+        "title": "",
+        "content": "Organization",
+        "classes": "fixed lg:static inset-y-0 left-0 z-50 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 border-r transition-all duration-300 ease-in-out lg:translate-x-0 shadow-lg lg:shadow-sm px-4 py-6 space-y-6 flex flex-col -translate-x-full w-64"
+      },
+      {
+        "type": "card",
+        "title": "Untitled Card",
+        "content": "",
+        "classes": "lucide lucide-credit-card h-4 w-4 mr-2 group-hover:text-blue-500 transition-colors"
+      },
+      {
+        "type": "card",
+        "title": "",
+        "content": "",
+        "classes": "sticky top-0 z-30 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 border-b"
+      },
+      {
+        "type": "metric_card",
+        "title": "Customer Acquisition Cost",
+        "content": "LTV:CAC ratio 12.2:1",
+        "border_color": "green",
+        "classes": "bg-white rounded-lg border shadow-sm border-l-4 border-l-green-500"
+      },
+      {
+        "type": "metric_card",
+        "title": "Return on Ad Spend",
+        "content": "27.1% vs last month",
+        "border_color": "blue",
+        "classes": "bg-white rounded-lg border shadow-sm border-l-4 border-l-blue-500"
+      },
+      {
+        "type": "metric_card",
+        "title": "Lead Quality Score",
+        "content": "AI-scored above 70 points",
+        "border_color": "purple",
+        "classes": "bg-white rounded-lg border shadow-sm border-l-4 border-l-purple-500"
+      },
+      {
+        "type": "metric_card",
+        "title": "Conversion Rate",
+        "content": "$18,478 monthly spend",
+        "border_color": "",
+        "classes": "bg-white rounded-lg border shadow-sm border-l-4 border-l-orange-500"
+      }
+    ],
+    "charts": [
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-x h-4 w-4"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-building h-4 w-4"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-chevron-down size-4 opacity-50"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-plus h-3 w-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-bookmark h-3 w-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-bookmark h-3 w-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-chevron-down h-3 w-3 transition-transform duration-200 rotate-0"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-wallet h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-dollar-sign h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-user-check h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-users h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-activity h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-trending-up h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-triangle-alert h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-database h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-database h-4 w-4 mr-2 group-hover:text-blue-500 transition-colors"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-zap h-3 w-3 ml-auto opacity-50"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-users h-4 w-4 mr-2 group-hover:text-green-500 transition-colors"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-download h-4 w-4 mr-2 group-hover:text-purple-500 transition-colors"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-credit-card h-4 w-4 mr-2 group-hover:text-blue-500 transition-colors"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-sun h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-moon absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-menu h-5 w-5"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-search h-4 w-4 text-muted-foreground"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-command h-3 w-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-search h-4 w-4"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-circle-question-mark h-4 w-4"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-bell h-4 w-4"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-chevrons-up-down h-4 w-4 text-muted-foreground"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-download mr-2 h-4 w-4"
+      },
+      {
+        "type": "chart",
+        "title": "Customer Acquisition Cost",
+        "element_type": "svg",
+        "classes": "lucide lucide-target h-4 w-4 text-green-600"
+      },
+      {
+        "type": "chart",
+        "title": "Return on Ad Spend",
+        "element_type": "svg",
+        "classes": "lucide lucide-chart-column h-4 w-4 text-blue-600"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-arrow-up-right h-3 w-3 mr-1"
+      },
+      {
+        "type": "chart",
+        "title": "Lead Quality Score",
+        "element_type": "svg",
+        "classes": "lucide lucide-brain h-4 w-4 text-purple-600"
+      },
+      {
+        "type": "chart",
+        "title": "Conversion Rate",
+        "element_type": "svg",
+        "classes": "lucide lucide-zap h-4 w-4 text-orange-600"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-sparkles h-4 w-4 mr-1"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "div",
+        "classes": "recharts-responsive-container"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "div",
+        "classes": "recharts-responsive-container"
+      }
+    ],
+    "status": "success"
+  },
+  {
+    "url": "https://www.plan-alytics-demo.com/dashboard/usage",
+    "page_title": "Plan-alytics",
+    "headings": [
+      {
+        "level": "h1",
+        "text": "Product Usage",
+        "id": ""
+      }
+    ],
+    "tabs": [
+      {
+        "text": "Acme CorporationEnterprise • 24 members",
+        "href": "",
+        "class": "border-input data-[placeholder]:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 w-full",
+        "data_state": "closed"
+      },
+      {
+        "text": "Subscriptions",
+        "href": "/dashboard",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "Revenue",
+        "href": "/dashboard/revenue",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "Retention",
+        "href": "/dashboard/retention",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "CRM",
+        "href": "/dashboard/crm",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "Product Usage",
+        "href": "/dashboard/usage",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] bg-primary/10 text-primary font-medium shadow-sm border border-primary/20",
+        "data_state": "closed"
+      },
+      {
+        "text": "CLV",
+        "href": "/dashboard/clv",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "Alerts",
+        "href": "/dashboard/alerts",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "Data Sources",
+        "href": "/dashboard/connections",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "RSRebecca SmithAdmin",
+        "href": "",
+        "class": "justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:text-accent-foreground dark:hover:bg-accent/50 h-9 py-2 has-[>svg]:px-3 flex items-center gap-2 px-2 hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "Health",
+        "href": "",
+        "class": "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "data_state": "active"
+      },
+      {
+        "text": "Features",
+        "href": "",
+        "class": "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "data_state": "inactive"
+      },
+      {
+        "text": "Segments",
+        "href": "",
+        "class": "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "data_state": "inactive"
+      },
+      {
+        "text": "Engagement",
+        "href": "",
+        "class": "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "data_state": "inactive"
+      },
+      {
+        "text": "Insights",
+        "href": "",
+        "class": "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "data_state": "inactive"
+      },
+      {
+        "text": "Product-Market Fit8.5%Champions segment size2.1% vs previous periodFeature Adoption60%Core features used0.0% vs previous periodTime to Value10 daysUntil first success0.0% vs previous periodUser Retention78%30-day retention rate0.0% vs previous periodChurn Risk10%At-risk user segment1.5% vs previous periodActivation Rate76%Successful onboarding0.0% vs previous periodProduct Health TrendsPercentage of users returning after 30 daysRetentionAdoptionActivationTime to Value78%Below TargetTarget: 80%",
+        "href": "",
+        "class": "flex-1 outline-none space-y-6",
+        "data_state": "active"
+      }
+    ],
+    "cards": [
+      {
+        "type": "card",
+        "title": "",
+        "content": "Organization",
+        "classes": "fixed lg:static inset-y-0 left-0 z-50 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 border-r transition-all duration-300 ease-in-out lg:translate-x-0 shadow-lg lg:shadow-sm px-4 py-6 space-y-6 flex flex-col -translate-x-full w-64"
+      },
+      {
+        "type": "card",
+        "title": "Untitled Card",
+        "content": "",
+        "classes": "lucide lucide-credit-card h-4 w-4 mr-2 group-hover:text-blue-500 transition-colors"
+      },
+      {
+        "type": "card",
+        "title": "",
+        "content": "",
+        "classes": "sticky top-0 z-30 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 border-b"
+      },
+      {
+        "type": "metric_card",
+        "title": "Product-Market Fit",
+        "content": "Champions segment size",
+        "border_color": "",
+        "classes": "text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm border-l-4 border-l-yellow-500 bg-white-50"
+      },
+      {
+        "type": "card",
+        "title": "Product-Market Fit",
+        "content": "",
+        "classes": "@container/card-header auto-rows-min grid-rows-[auto_auto] gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 flex flex-row items-center justify-between space-y-0 pb-2"
+      },
+      {
+        "type": "metric_card",
+        "title": "Feature Adoption",
+        "content": "Core features used",
+        "border_color": "",
+        "classes": "text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm border-l-4 border-l-yellow-500 bg-white-50"
+      },
+      {
+        "type": "card",
+        "title": "Feature Adoption",
+        "content": "",
+        "classes": "@container/card-header auto-rows-min grid-rows-[auto_auto] gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 flex flex-row items-center justify-between space-y-0 pb-2"
+      },
+      {
+        "type": "metric_card",
+        "title": "Time to Value",
+        "content": "Until first success",
+        "border_color": "green",
+        "classes": "text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm border-l-4 border-l-green-500 bg-white-50"
+      },
+      {
+        "type": "card",
+        "title": "Time to Value",
+        "content": "",
+        "classes": "@container/card-header auto-rows-min grid-rows-[auto_auto] gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 flex flex-row items-center justify-between space-y-0 pb-2"
+      },
+      {
+        "type": "metric_card",
+        "title": "User Retention",
+        "content": "30-day retention rate",
+        "border_color": "",
+        "classes": "text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm border-l-4 border-l-yellow-500 bg-white-50"
+      },
+      {
+        "type": "card",
+        "title": "User Retention",
+        "content": "",
+        "classes": "@container/card-header auto-rows-min grid-rows-[auto_auto] gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 flex flex-row items-center justify-between space-y-0 pb-2"
+      },
+      {
+        "type": "metric_card",
+        "title": "Churn Risk",
+        "content": "At-risk user segment",
+        "border_color": "green",
+        "classes": "text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm border-l-4 border-l-green-500 bg-white-50"
+      },
+      {
+        "type": "card",
+        "title": "Churn Risk",
+        "content": "",
+        "classes": "@container/card-header auto-rows-min grid-rows-[auto_auto] gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 flex flex-row items-center justify-between space-y-0 pb-2"
+      },
+      {
+        "type": "metric_card",
+        "title": "Activation Rate",
+        "content": "Successful onboarding",
+        "border_color": "green",
+        "classes": "text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm border-l-4 border-l-green-500 bg-white-50"
+      },
+      {
+        "type": "card",
+        "title": "Activation Rate",
+        "content": "",
+        "classes": "@container/card-header auto-rows-min grid-rows-[auto_auto] gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 flex flex-row items-center justify-between space-y-0 pb-2"
+      },
+      {
+        "type": "card",
+        "title": "Percentage of users returning after 30 days",
+        "content": "Percentage of users returning after 30 days",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+      },
+      {
+        "type": "card",
+        "title": "Percentage of users returning after 30 days",
+        "content": "Percentage of users returning after 30 days",
+        "classes": "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6"
+      }
+    ],
+    "charts": [
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-x h-4 w-4"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-building h-4 w-4"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-chevron-down size-4 opacity-50"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-plus h-3 w-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-bookmark h-3 w-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-bookmark h-3 w-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-chevron-down h-3 w-3 transition-transform duration-200 rotate-0"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-wallet h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-dollar-sign h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-user-check h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-users h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-activity h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-trending-up h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-triangle-alert h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-database h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-database h-4 w-4 mr-2 group-hover:text-blue-500 transition-colors"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-zap h-3 w-3 ml-auto opacity-50"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-users h-4 w-4 mr-2 group-hover:text-green-500 transition-colors"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-download h-4 w-4 mr-2 group-hover:text-purple-500 transition-colors"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-credit-card h-4 w-4 mr-2 group-hover:text-blue-500 transition-colors"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-sun h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-moon absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-menu h-5 w-5"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-search h-4 w-4 text-muted-foreground"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-command h-3 w-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-search h-4 w-4"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-circle-question-mark h-4 w-4"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-bell h-4 w-4"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-chevrons-up-down h-4 w-4 text-muted-foreground"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-chevron-down size-4 opacity-50"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-download h-4 w-4 mr-2"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-target h-4 w-4 text-yellow-600"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-arrow-up h-3 w-3 mr-1"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-zap h-4 w-4 text-yellow-600"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-arrow-up h-3 w-3 mr-1"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-clock h-4 w-4 text-green-600"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-arrow-down h-3 w-3 mr-1"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-user-check h-4 w-4 text-yellow-600"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-arrow-up h-3 w-3 mr-1"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-triangle-alert h-4 w-4 text-green-600"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-arrow-down h-3 w-3 mr-1"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-circle-check-big h-4 w-4 text-green-600"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-arrow-up h-3 w-3 mr-1"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-triangle-alert h-4 w-4 mr-1"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "div",
+        "classes": "recharts-responsive-container"
+      }
+    ],
+    "status": "success"
+  },
+  {
+    "url": "https://www.plan-alytics-demo.com/dashboard/clv",
+    "page_title": "Plan-alytics",
+    "headings": [
+      {
+        "level": "h1",
+        "text": "Customer Lifetime Value Analysis",
+        "id": ""
+      },
+      {
+        "level": "h3",
+        "text": "By Subscription Plan",
+        "id": ""
+      },
+      {
+        "level": "h3",
+        "text": "By Usage Level",
+        "id": ""
+      },
+      {
+        "level": "h4",
+        "text": "High Impact Opportunities",
+        "id": ""
+      },
+      {
+        "level": "h4",
+        "text": "Actionable Insights",
+        "id": ""
+      },
+      {
+        "level": "h4",
+        "text": "Calculation Formula",
+        "id": ""
+      }
+    ],
+    "tabs": [
+      {
+        "text": "Acme CorporationEnterprise • 24 members",
+        "href": "",
+        "class": "border-input data-[placeholder]:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hover:bg-input/50 flex items-center justify-between gap-2 rounded-md border bg-transparent px-3 py-2 text-sm whitespace-nowrap shadow-xs transition-[color,box-shadow] outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 data-[size=default]:h-9 data-[size=sm]:h-8 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 w-full",
+        "data_state": "closed"
+      },
+      {
+        "text": "Subscriptions",
+        "href": "/dashboard",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "Revenue",
+        "href": "/dashboard/revenue",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "Retention",
+        "href": "/dashboard/retention",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "CRM",
+        "href": "/dashboard/crm",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "Product Usage",
+        "href": "/dashboard/usage",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "CLV",
+        "href": "/dashboard/clv",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] bg-primary/10 text-primary font-medium shadow-sm border border-primary/20",
+        "data_state": "closed"
+      },
+      {
+        "text": "Alerts",
+        "href": "/dashboard/alerts",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "Data Sources",
+        "href": "/dashboard/connections",
+        "class": "text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative hover:scale-[1.02] active:scale-[0.98] text-muted-foreground hover:text-foreground hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "RSRebecca SmithAdmin",
+        "href": "",
+        "class": "justify-center whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:text-accent-foreground dark:hover:bg-accent/50 h-9 py-2 has-[>svg]:px-3 flex items-center gap-2 px-2 hover:bg-muted/50",
+        "data_state": "closed"
+      },
+      {
+        "text": "Overview",
+        "href": "",
+        "class": "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "data_state": "active"
+      },
+      {
+        "text": "Prediction",
+        "href": "",
+        "class": "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "data_state": "inactive"
+      },
+      {
+        "text": "Heterogeneity",
+        "href": "",
+        "class": "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "data_state": "inactive"
+      },
+      {
+        "text": "Segmentation",
+        "href": "",
+        "class": "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "data_state": "inactive"
+      },
+      {
+        "text": "Advanced Models",
+        "href": "",
+        "class": "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "data_state": "inactive"
+      },
+      {
+        "text": "Definitions",
+        "href": "",
+        "class": "data-[state=active]:bg-background dark:data-[state=active]:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:outline-ring dark:data-[state=active]:border-input dark:data-[state=active]:bg-input/30 text-foreground dark:text-muted-foreground inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] focus-visible:outline-1 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:shadow-sm [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "data_state": "inactive"
+      },
+      {
+        "text": "Average CLV$3,280+94.4% from previous periodPredicted CLV$2,975Model-based estimationLTV:CAC Ratio2.7AcceptableHeterogeneity Index0.53Moderate variancePayback Period3.7 mosMonths to recover CACCustomer Lifetime Value MetricsPerformance summaryMean$2,909Median$3,227Std Dev$1,389Range$673 - $4,957Trend-31.5%CLV Drivers AnalysisFactors influencing Customer Lifetime ValueBy Subscription PlanBy Usage LevelCLV DecompositionBreakdown of CLV into frequency, monetary value, and retention componentsPurchase Frequency2.8avg purchases/periodMonetary Value$242avg order valueRetention Rate91.3%customer retentionUsage Score50.5engagement levelHigh Impact Opportunities• Increase purchase frequency → +15% CLV per additional purchase• Improve retention by 5% → +25% CLV increase• Boost usage scores → Higher retention & expansionActionable Insights• Focus on high-frequency, low-retention segments• Target low-usage customers for engagement• Optimize pricing for monetary value growthCustomer Equity CalculationTotal discounted lifetime value of your customer baseSum of CLV$151,266Avg Retention91.3%Discount Rate10.0%Customer Equity$737,113Calculation FormulaCustomer Equity = Σ(CLV) × (Retention Rate) / (1 + Discount Rate - Retention Rate)This calculation estimates the total net present value of all future cash flows from your current customer base, accounting for retention rates and the time value of money.",
+        "href": "",
+        "class": "flex-1 outline-none",
+        "data_state": "active"
+      }
+    ],
+    "cards": [
+      {
+        "type": "card",
+        "title": "",
+        "content": "Organization",
+        "classes": "fixed lg:static inset-y-0 left-0 z-50 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 border-r transition-all duration-300 ease-in-out lg:translate-x-0 shadow-lg lg:shadow-sm px-4 py-6 space-y-6 flex flex-col -translate-x-full w-64"
+      },
+      {
+        "type": "card",
+        "title": "Untitled Card",
+        "content": "",
+        "classes": "lucide lucide-credit-card h-4 w-4 mr-2 group-hover:text-blue-500 transition-colors"
+      },
+      {
+        "type": "card",
+        "title": "",
+        "content": "",
+        "classes": "sticky top-0 z-30 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 border-b"
+      },
+      {
+        "type": "card",
+        "title": "Average CLV",
+        "content": "",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+      },
+      {
+        "type": "card",
+        "title": "Average CLV",
+        "content": "",
+        "classes": "@container/card-header auto-rows-min grid-rows-[auto_auto] gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 flex flex-row items-center justify-between space-y-0 pb-2"
+      },
+      {
+        "type": "card",
+        "title": "Predicted CLV",
+        "content": "",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+      },
+      {
+        "type": "card",
+        "title": "Predicted CLV",
+        "content": "",
+        "classes": "@container/card-header auto-rows-min grid-rows-[auto_auto] gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 flex flex-row items-center justify-between space-y-0 pb-2"
+      },
+      {
+        "type": "card",
+        "title": "LTV:CAC Ratio",
+        "content": "",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+      },
+      {
+        "type": "card",
+        "title": "LTV:CAC Ratio",
+        "content": "",
+        "classes": "@container/card-header auto-rows-min grid-rows-[auto_auto] gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 flex flex-row items-center justify-between space-y-0 pb-2"
+      },
+      {
+        "type": "card",
+        "title": "Heterogeneity Index",
+        "content": "",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+      },
+      {
+        "type": "card",
+        "title": "Heterogeneity Index",
+        "content": "",
+        "classes": "@container/card-header auto-rows-min grid-rows-[auto_auto] gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 flex flex-row items-center justify-between space-y-0 pb-2"
+      },
+      {
+        "type": "card",
+        "title": "Payback Period",
+        "content": "",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+      },
+      {
+        "type": "card",
+        "title": "Payback Period",
+        "content": "",
+        "classes": "@container/card-header auto-rows-min grid-rows-[auto_auto] gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 flex flex-row items-center justify-between space-y-0 pb-2"
+      },
+      {
+        "type": "card",
+        "title": "Performance summary",
+        "content": "Performance summary",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+      },
+      {
+        "type": "card",
+        "title": "Performance summary",
+        "content": "Performance summary",
+        "classes": "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6"
+      },
+      {
+        "type": "card",
+        "title": "Factors influencing Customer Lifetime Value",
+        "content": "Factors influencing Customer Lifetime Value",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+      },
+      {
+        "type": "card",
+        "title": "Factors influencing Customer Lifetime Value",
+        "content": "Factors influencing Customer Lifetime Value",
+        "classes": "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6"
+      },
+      {
+        "type": "card",
+        "title": "Breakdown of CLV into frequency, monetary value, and retention components",
+        "content": "Breakdown of CLV into frequency, monetary value, and retention components",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+      },
+      {
+        "type": "card",
+        "title": "Breakdown of CLV into frequency, monetary value, and retention components",
+        "content": "Breakdown of CLV into frequency, monetary value, and retention components",
+        "classes": "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6"
+      },
+      {
+        "type": "metric_card",
+        "title": "High Impact Opportunities",
+        "content": "• Increase purchase frequency → +15% CLV per additional purchase• Improve retention by 5% → +25% CLV increase• Boost usage scores → Higher retention & expansion",
+        "border_color": "",
+        "classes": "p-4 bg-slate-50 rounded-lg border-l-4 border-slate-400"
+      },
+      {
+        "type": "metric_card",
+        "title": "Actionable Insights",
+        "content": "• Focus on high-frequency, low-retention segments• Target low-usage customers for engagement• Optimize pricing for monetary value growth",
+        "border_color": "",
+        "classes": "p-4 bg-slate-50 rounded-lg border-l-4 border-slate-600"
+      },
+      {
+        "type": "card",
+        "title": "Total discounted lifetime value of your customer base",
+        "content": "Total discounted lifetime value of your customer base",
+        "classes": "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+      },
+      {
+        "type": "card",
+        "title": "Total discounted lifetime value of your customer base",
+        "content": "Total discounted lifetime value of your customer base",
+        "classes": "@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6"
+      }
+    ],
+    "charts": [
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-x h-4 w-4"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-building h-4 w-4"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-chevron-down size-4 opacity-50"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-plus h-3 w-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-bookmark h-3 w-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-bookmark h-3 w-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-chevron-down h-3 w-3 transition-transform duration-200 rotate-0"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-wallet h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-dollar-sign h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-user-check h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-users h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-activity h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-trending-up h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-triangle-alert h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-database h-4 w-4 transition-colors mr-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-database h-4 w-4 mr-2 group-hover:text-blue-500 transition-colors"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-zap h-3 w-3 ml-auto opacity-50"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-users h-4 w-4 mr-2 group-hover:text-green-500 transition-colors"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-download h-4 w-4 mr-2 group-hover:text-purple-500 transition-colors"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-credit-card h-4 w-4 mr-2 group-hover:text-blue-500 transition-colors"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-sun h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-moon absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-menu h-5 w-5"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-search h-4 w-4 text-muted-foreground"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-command h-3 w-3"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-search h-4 w-4"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-circle-question-mark h-4 w-4"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-bell h-4 w-4"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-chevrons-up-down h-4 w-4 text-muted-foreground"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-dollar-sign h-4 w-4 text-muted-foreground"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-calculator h-4 w-4 text-muted-foreground"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-chart-column h-4 w-4 text-muted-foreground"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-sigma h-4 w-4 text-muted-foreground"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-calendar h-4 w-4 text-muted-foreground"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "svg",
+        "classes": "lucide lucide-chevron-down size-4 opacity-50"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "div",
+        "classes": "recharts-responsive-container"
+      },
+      {
+        "type": "chart",
+        "title": null,
+        "element_type": "div",
+        "classes": "recharts-responsive-container"
+      }
+    ],
+    "status": "success"
+  }
+]

@@ -776,18 +776,24 @@ export default function ProductUsageDashboard() {
     return usageData.slice(0, timeframe === 'daily' ? 90 : timeframe === 'monthly' ? 12 : 52)
   }, [usageData, timeframe])
 
-  return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <div className="flex justify-between items-start">
-            <div>
-               <h1 className="text-3xl font-bold">Product Usage</h1>
-               <p className="text-muted-foreground">
-                Make data-driven product decisions with actionable user insights
-              </p>
-            </div>
+
+
+
+
+
+   return (
+    <div className="container mx-auto py-8 space-y-8">
+      <div className="flex justify-between items-start mb-8">
+        <div>
+          <h1 className="text-3xl font-bold">Product Usage</h1>
+          <p className="text-muted-foreground">
+           Make data-driven product decisions with actionable user insights
+          </p>
+        </div>
+
+        
+        <div className="flex flex-wrap gap-4">
+
             <div className="flex gap-3">
               <Select value={timeframe} onValueChange={setTimeframe}>
                 <SelectTrigger className="w-32">
@@ -799,12 +805,11 @@ export default function ProductUsageDashboard() {
                   <SelectItem value="monthly">Monthly</SelectItem>
                 </SelectContent>
               </Select>
-              <Button variant="outline">
-                <Download className="h-4 w-4 mr-2" />
-                Export
-              </Button>
-            </div>
-          </div>
+</div>
+
+        </div>
+</div>
+<div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
            <TabsList className="flex overflow-x-auto md:grid md:grid-cols-5 w-full">
@@ -844,6 +849,6 @@ export default function ProductUsageDashboard() {
           </Tabs>
         </div>
       </div>
-    </div>
+
   )
 }
