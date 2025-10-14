@@ -247,7 +247,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
   const SidebarContent = () => (
     <>
-      {/* Logo */}
+      {/* Logo - Always visible */}
       <div className="flex items-center justify-center mb-6 px-2">
         <Image
           src="/plan-alytics_logo.png"
@@ -256,7 +256,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           height={60}
           className={cn(
             "h-auto object-contain transition-all duration-200",
-            sidebarCollapsed ? "w-8 max-w-[32px]" : "w-full max-w-[200px]"
+            sidebarCollapsed ? "w-10 max-w-[40px]" : "w-full max-w-[200px]"
           )}
           priority
         />
@@ -365,55 +365,89 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           </TooltipProvider>
         </div>
         
-        {/* Analytics Items */}
-        {analyticsItems.map((item) => {
-          // Fix for Subscriptions staying active - check exact match for dashboard home
-          const isActive = item.href === '/dashboard' 
-            ? pathname === '/dashboard'
-            : pathname === item.href || pathname.startsWith(item.href + '/')
-          const Icon = item.icon
-          
-          return (
-            <TooltipProvider key={item.href}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Link
-                    href={item.href}
-                    className={cn(
-                      'text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative',
-                      'hover:scale-[1.02] active:scale-[0.98]',
-                      isActive
-                        ? 'bg-primary/10 text-primary font-medium shadow-sm border border-primary/20'
-                        : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                    )}
-                    onClick={() => setSidebarOpen(false)}
-                  >
-                    <Icon className={cn(
-                      "h-4 w-4 transition-colors",
-                      sidebarCollapsed ? "mr-0" : "mr-3"
-                    )} />
-                    {!sidebarCollapsed && (
-                      <>
+        {/* Analytics Items - Dropdown when collapsed */}
+        {sidebarCollapsed ? (
+          // Collapsed: Show dropdown menu
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                className="w-full justify-center h-10 mb-2"
+              >
+                <BarChart3 className="h-5 w-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-56">
+              <DropdownMenuLabel>Analytics Pages</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {analyticsItems.map((item) => {
+                const isActive = item.href === '/dashboard' 
+                  ? pathname === '/dashboard'
+                  : pathname === item.href || pathname.startsWith(item.href + '/')
+                const Icon = item.icon
+                
+                return (
+                  <DropdownMenuItem key={item.href} asChild>
+                    <Link
+                      href={item.href}
+                      className={cn(
+                        "flex items-center gap-3 py-2",
+                        isActive && "bg-accent"
+                      )}
+                      onClick={() => setSidebarOpen(false)}
+                    >
+                      <Icon className="h-4 w-4 flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium">{item.label}</div>
+                        <div className="text-xs text-muted-foreground">{item.description}</div>
+                      </div>
+                      {isActive && (
+                        <div className="w-1.5 h-1.5 bg-primary rounded-full" />
+                      )}
+                    </Link>
+                  </DropdownMenuItem>
+                )
+              })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          // Expanded: Show full navigation
+          <>
+            {analyticsItems.map((item) => {
+              const isActive = item.href === '/dashboard' 
+                ? pathname === '/dashboard'
+                : pathname === item.href || pathname.startsWith(item.href + '/')
+              const Icon = item.icon
+              
+              return (
+                <TooltipProvider key={item.href}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Link
+                        href={item.href}
+                        className={cn(
+                          'text-sm rounded-lg px-3 py-2.5 transition-all duration-200 flex items-center group relative',
+                          'hover:scale-[1.02] active:scale-[0.98]',
+                          isActive
+                            ? 'bg-primary/10 text-primary font-medium shadow-sm border border-primary/20'
+                            : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                        )}
+                        onClick={() => setSidebarOpen(false)}
+                      >
+                        <Icon className="h-4 w-4 mr-3" />
                         <span className="truncate">{item.label}</span>
                         {isActive && (
                           <div className="absolute right-2 w-1.5 h-1.5 bg-primary rounded-full" />
                         )}
-                      </>
-                    )}
-                  </Link>
-                </TooltipTrigger>
-                {sidebarCollapsed && (
-                  <TooltipContent side="right">
-                    <div>
-                      <div className="font-medium">{item.label}</div>
-                      <div className="text-xs text-muted-foreground">{item.description}</div>
-                    </div>
-                  </TooltipContent>
-                )}
-              </Tooltip>
-            </TooltipProvider>
-          )
-        })}
+                      </Link>
+                    </TooltipTrigger>
+                  </Tooltip>
+                </TooltipProvider>
+              )
+            })}
+          </>
+        )}
 
         {/* Data Admin Section */}
         {!sidebarCollapsed && (
