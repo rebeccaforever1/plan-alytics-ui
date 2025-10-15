@@ -22,7 +22,7 @@ import {
   Scatter,
   ZAxis,
 } from 'recharts'
-
+import { generateSegmentationAnalysis } from '@/lib/fakeData'
 import { formatCurrency } from '@/lib/utils'
 
 // ————————————————————————
@@ -116,71 +116,11 @@ const CustomerSegmentationMatrix = ({ modelData }: { modelData: any }) => {
   )
 }
 
-
 // ————————————————————————
 // CustomerSegmentation
 // ————————————————————————
 const CustomerSegmentation = ({ data }: { data: any[] }) => {
-  const analysis = useMemo(() => {
-    if (!data || data.length === 0) return null
-
-    // safe copy before sorting
-    const values = [...data.map((d) => d.clv)].sort((a, b) => a - b)
-    const total = values.length
-    if (total === 0) return null
-
-    const median = values[Math.floor(total / 2)]
-    const q1 = values[Math.floor(total * 0.75)]
-    const q3 = values[Math.floor(total * 0.25)]
-
-    const segments = [
-      {
-        name: 'Champions',
-        icon: '👑',
-        description: 'Top 25% highest value customers',
-        count: Math.floor(total * 0.25),
-        percentage: 25,
-        threshold: `> ${formatCurrency(q1)}`,
-        color: '#10B981',
-        action: 'Reward & retain with VIP treatment',
-      },
-      {
-        name: 'Loyal Customers',
-        icon: '💎',
-        description: 'Above median CLV, reliable spenders',
-        count: Math.floor(total * 0.25),
-        percentage: 25,
-        threshold: `${formatCurrency(median)} - ${formatCurrency(q1)}`,
-        color: '#3B82F6',
-        action: 'Cross-sell & upsell opportunities',
-      },
-      {
-        name: 'Potential Loyalists',
-        icon: '📈',
-        description: 'Below median, room for growth',
-        count: Math.floor(total * 0.25),
-        percentage: 25,
-        threshold: `${formatCurrency(q3)} - ${formatCurrency(median)}`,
-        color: '#F59E0B',
-        action: 'Targeted engagement campaigns',
-      },
-      {
-        name: 'At Risk',
-        icon: '⚠️',
-        description: 'Bottom 25%, needs attention',
-        count: total - Math.floor(total * 0.75),
-        percentage: 25,
-        threshold: `< ${formatCurrency(q3)}`,
-        color: '#EF4444',
-        action: 'Win-back campaigns & support',
-      },
-    ]
-
-    const totalValue = values.reduce((sum, val) => sum + val, 0)
-    const avgCLV = totalValue / total
-
-    return { segments, totalValue, avgCLV, total }
-  }, [data])
+  const analysis = generateSegmentationAnalysis(data);
 
   if (!analysis) {
     return (
@@ -190,7 +130,7 @@ const CustomerSegmentation = ({ data }: { data: any[] }) => {
           <CardDescription>No customer data available</CardDescription>
         </CardHeader>
       </Card>
-    )
+    );
   }
 
   return (
@@ -290,8 +230,8 @@ const CustomerSegmentation = ({ data }: { data: any[] }) => {
         </div>
       </CardContent>
     </Card>
-  )
-}
+  );
+};
 
 // ————————————————————————
 // SegmentsTab

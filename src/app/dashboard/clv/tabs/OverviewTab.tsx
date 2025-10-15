@@ -10,6 +10,9 @@ import {
   YAxis,
   Bar,
   BarChart,
+  LineChart,
+  Line,
+  Cell,
 } from 'recharts'
 
 import {
@@ -21,35 +24,24 @@ import {
 } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { DollarSign, Calculator, BarChart3, Calendar, Sigma } from 'lucide-react'
-
 import { formatCurrency, calculateMean, calculateStandardDeviation, calculateTrend } from '@/lib/utils'
+
+import { 
+  generateOverviewKPIs,
+  generateStatisticalStats, 
+  generateCLVDrivers,
+  generateCLVDecomposition,
+  generateCustomerEquity,
+  generateTrendData,
+  generateHistogramData
+} from '@/lib/fakeData'
+
 
 // ————————————————————————
 // KPIOverview
 // ————————————————————————
 const KPIOverview = ({ data, modelData }: { data: any[]; modelData: any }) => {
-  const kpis = useMemo(() => {
-    const clvValues = data.map(d => d.clv).filter(v => v !== null)
-    const currentClv = clvValues[clvValues.length - 1] || 0
-    const previousClv = clvValues[clvValues.length - 2] || 0
-    const change = ((currentClv - previousClv) / previousClv) * 100
-
-    const cacValues = data.map(d => d.cac).filter(v => v !== null)
-    const currentCac = cacValues[cacValues.length - 1] || 0
-
-    const ltvCacRatio = currentCac > 0 ? currentClv / currentCac : 0
-    const paybackPeriod = currentCac > 0 ? currentCac / (currentClv * 0.1) : 0
-
-    return {
-      clv: currentClv,
-      clvChange: isFinite(change) ? change : 0,
-      cac: currentCac,
-      ltvCacRatio,
-      paybackPeriod,
-      heterogeneity: modelData.heterogeneityIndex,
-      predictedClv: modelData.predictedClv,
-    }
-  }, [data, modelData])
+  const kpis = generateOverviewKPIs(data, modelData);
 
   const isPositive = kpis.clvChange >= 0
 
@@ -116,6 +108,68 @@ const KPIOverview = ({ data, modelData }: { data: any[]; modelData: any }) => {
 }
 
 // ————————————————————————
+// TrendCharts - NEW COMPONENT
+// ————————————————————————
+const TrendCharts = ({ data }: { data: any[] }) => {
+  const trendData = generateTrendData(data);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Key Metrics Trends</CardTitle>
+        <CardDescription>Historical performance of critical CLV metrics</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div>
+            <h3 className="text-sm font-semibold mb-3 text-center">Average CLV Over Time</h3>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={trendData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="period" fontSize={12} />
+                  <YAxis fontSize={12} />
+                  <Tooltip formatter={(value: number) => formatCurrency(value)} />
+                  <Line type="monotone" dataKey="avgClv" stroke="#4f46e5" strokeWidth={2} dot={{ r: 4 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold mb-3 text-center">Average CAC Over Time</h3>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={trendData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="period" fontSize={12} />
+                  <YAxis fontSize={12} />
+                  <Tooltip formatter={(value: number) => formatCurrency(value)} />
+                  <Line type="monotone" dataKey="avgCac" stroke="#ef4444" strokeWidth={2} dot={{ r: 4 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold mb-3 text-center">LTV:CAC Ratio Over Time</h3>
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={trendData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="period" fontSize={12} />
+                  <YAxis fontSize={12} />
+                  <Tooltip formatter={(value: number) => value.toFixed(2)} />
+                  <Line type="monotone" dataKey="ltvCacRatio" stroke="#10b981" strokeWidth={2} dot={{ r: 4 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ————————————————————————
 // StatisticalInsights
 // ————————————————————————
 const metricLabels: Record<string, string> = {
@@ -137,20 +191,8 @@ const StatisticalInsights = ({
   metric: string
   setMetric: (value: string) => void
 }) => {
-  const stats = useMemo(() => {
-    const values = data.map(d => d[metric]).filter(v => typeof v === 'number')
-    if (!values.length) return { mean: 0, median: 0, stdDev: 0, min: 0, max: 0, trend: 0 }
-
-    const sorted = [...values].sort((a, b) => a - b)
-    return {
-      mean: calculateMean(values),
-      median: sorted[Math.floor(sorted.length / 2)],
-      stdDev: calculateStandardDeviation(values),
-      min: sorted[0],
-      max: sorted[sorted.length - 1],
-      trend: calculateTrend(values),
-    }
-  }, [data, metric])
+  const stats = generateStatisticalStats(data, metric);
+  const histogramData = generateHistogramData(data, metric);
 
   const formatValue = (v: number) => {
     if (metric === 'retention' || metric === 'churn') return `${v.toFixed(1)}%`
@@ -163,7 +205,7 @@ const StatisticalInsights = ({
       <CardHeader className="flex justify-between items-center">
         <div>
           <CardTitle>{metricLabels[metric]}</CardTitle>
-          <CardDescription>Performance summary</CardDescription>
+          <CardDescription>Performance summary and distribution</CardDescription>
         </div>
         <Select value={metric} onValueChange={setMetric}>
           <SelectTrigger className="w-36">
@@ -176,12 +218,36 @@ const StatisticalInsights = ({
           </SelectContent>
         </Select>
       </CardHeader>
-      <CardContent className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-        <div><p className="text-sm">Mean</p><p className="text-2xl font-bold">{formatValue(stats.mean)}</p></div>
-        <div><p className="text-sm">Median</p><p className="text-2xl font-bold">{formatValue(stats.median)}</p></div>
-        <div><p className="text-sm">Std Dev</p><p className="text-2xl font-bold">{formatValue(stats.stdDev)}</p></div>
-        <div><p className="text-sm">Range</p><p className="text-lg font-bold">{formatValue(stats.min)} - {formatValue(stats.max)}</p></div>
-        <div><p className="text-sm">Trend</p><p className="text-2xl font-bold">{stats.trend.toFixed(1)}%</p></div>
+      <CardContent>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
+          <div><p className="text-sm">Mean</p><p className="text-2xl font-bold">{formatValue(stats.mean)}</p></div>
+          <div><p className="text-sm">Median</p><p className="text-2xl font-bold">{formatValue(stats.median)}</p></div>
+          <div><p className="text-sm">Std Dev</p><p className="text-2xl font-bold">{formatValue(stats.stdDev)}</p></div>
+          <div><p className="text-sm">Range</p><p className="text-lg font-bold">{formatValue(stats.min)} - {formatValue(stats.max)}</p></div>
+          <div>
+            <p className="text-sm">Growth Rate</p>
+            <p className="text-2xl font-bold">{stats.trend.toFixed(1)}%</p>
+            <p className="text-xs text-muted-foreground">Period-over-period</p>
+          </div>
+        </div>
+        <div>
+          <h3 className="text-sm font-semibold mb-3">Distribution Histogram</h3>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={histogramData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="range" fontSize={11} />
+                <YAxis label={{ value: 'Frequency', angle: -90, position: 'insideLeft' }} fontSize={12} />
+                <Tooltip />
+                <Bar dataKey="count" name="Count">
+                  {histogramData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill="#4f46e5" />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
       </CardContent>
     </Card>
   )
@@ -191,21 +257,7 @@ const StatisticalInsights = ({
 // CLVDriversAnalysis
 // ————————————————————————
 const CLVDriversAnalysis = ({ data }: { data: any[] }) => {
-  const drivers = useMemo(() => {
-    const planData = [
-      { plan: 'Basic', avgClv: 1200, customers: data.filter(d => d.plan === 'Basic').length },
-      { plan: 'Pro', avgClv: 2800, customers: data.filter(d => d.plan === 'Pro').length },
-      { plan: 'Enterprise', avgClv: 7500, customers: data.filter(d => d.plan === 'Enterprise').length },
-    ]
-
-    const usageData = [
-      { usage: 'Low', avgClv: 900, customers: data.filter(d => d.usageScore < 33).length },
-      { usage: 'Medium', avgClv: 2200, customers: data.filter(d => d.usageScore >= 33 && d.usageScore < 66).length },
-      { usage: 'High', avgClv: 4500, customers: data.filter(d => d.usageScore >= 66).length },
-    ]
-
-    return { planData, usageData }
-  }, [data])
+    const drivers = generateCLVDrivers(data);
 
   return (
     <Card>
@@ -257,18 +309,7 @@ const CLVDriversAnalysis = ({ data }: { data: any[] }) => {
 // CLVDecomposition + CustomerEquityCalculator
 // ————————————————————————
 const CLVDecomposition = ({ data }: { data: any[] }) => {
-  const decomposition = useMemo(() => {
-    const frequencyMean = calculateMean(data.map(d => d.frequency || 2.5))
-    const monetaryMean = calculateMean(data.map(d => d.monetary || d.clv / 12))
-    const retentionMean = calculateMean(data.map(d => d.retention || 85))
-
-    return {
-      frequency: frequencyMean,
-      monetary: monetaryMean,
-      retention: retentionMean,
-      calculatedClv: frequencyMean * monetaryMean * (retentionMean / (1 - retentionMean/100))
-    }
-  }, [data])
+  const decomposition = generateCLVDecomposition(data);
 
   return (
     <Card>
@@ -299,13 +340,7 @@ const CLVDecomposition = ({ data }: { data: any[] }) => {
 }
 
 const CustomerEquityCalculator = ({ data }: { data: any[] }) => {
-  const equity = useMemo(() => {
-    const totalClv = data.reduce((sum, customer) => sum + customer.clv, 0)
-    const avgRetention = calculateMean(data.map(d => d.retention || 85))
-    const discountRate = 0.1
-    const equity = totalClv * (avgRetention / 100) / (1 + discountRate - (avgRetention / 100))
-    return { totalClv, avgRetention, discountRate, equity }
-  }, [data])
+  const equity = generateCustomerEquity(data);
 
   return (
     <Card>
@@ -342,6 +377,7 @@ function OverviewTab({ clvData, modelData, metric, setMetric }) {
   return (
     <div className="space-y-8">
       <KPIOverview data={clvData} modelData={modelData} />
+      <TrendCharts data={clvData} />
       <StatisticalInsights data={clvData} metric={metric} setMetric={setMetric} />
       <CLVDriversAnalysis data={clvData} />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

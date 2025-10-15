@@ -1,74 +1,11 @@
 // src/lib/fakeData.ts
 import { faker } from '@faker-js/faker'
+import { formatTimeLabel, seededRandom, calculateTrend, calculateMean, calculateStandardDeviation, formatCurrency } from '@/lib/utils';
 
-// Helper functions
-const seededRandom = (seed: number) => {
-  let x = Math.sin(seed++) * 10000;
-  return x - Math.floor(x);
-}
 
-export const generateCLVData = () => {
-  let seedCounter = 54321;
-  const random = () => seededRandom(seedCounter++);
-  
-  return {
-    clv: 1000 + random() * 3000,
-    clvChange: -20 + random() * 40,
-    // ... all your CLV data
-  }
-}
-
-function calculateMean(values: number[]) {
-  return values.reduce((acc, val) => acc + val, 0) / values.length;
-}
-
-function calculateStandardDeviation(values: number[]) {
-  const mean = calculateMean(values);
-  const squareDiffs = values.map(value => Math.pow(value - mean, 2));
-  return Math.sqrt(calculateMean(squareDiffs));
-}
-
-function gamma(z: number) {
-  // Lanczos approximation for positive real numbers
-  const g = 7;
-  const p = [
-    0.99999999999980993, 676.5203681218851, -1259.1392167224028,
-    771.32342877765313, -176.61502916214059, 12.507343278686905,
-    -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7
-  ];
-  
-  if (z < 0.5) {
-    return Math.PI / (Math.sin(Math.PI * z) * gamma(1 - z));
-  } else {
-    z -= 1;
-    let x = p[0];
-    for (let i = 1; i < g + 2; i++) {
-      x += p[i] / (z + i);
-    }
-    const t = z + g + 0.5;
-    return Math.sqrt(2 * Math.PI) * Math.pow(t, z + 0.5) * Math.exp(-t) * x;
-  }
-}
-
-// Core customer data generation
-export function generateFakeCustomers(count: number) {
-  return Array.from({ length: count }).map(() => ({
-    name: faker.person.fullName(),
-    email: faker.internet.email(),
-    totalSpend: faker.number.int({ min: 100, max: 10000 }),
-    subscriptionAge: faker.number.int({ min: 1, max: 36 }), // months
-    clv: faker.number.float({ min: 200, max: 5000, precision: 0.01 }),
-    usageTier: faker.helpers.arrayElement(['Power', 'Medium', 'Low']),
-    plan: faker.helpers.arrayElement(['Basic', 'Pro', 'Enterprise']),
-    churned: faker.datatype.boolean(),
-    status: faker.helpers.arrayElement(['active', 'trialing', 'churned']),
-    mrr: faker.number.float({ min: 20, max: 200 }),
-    joinedAt: faker.date.past({ years: 2 }),
-    subscriptionType: faker.helpers.arrayElement(['monthly', 'annual']),
-    usageScore: faker.number.float({ min: 0, max: 100 }),
-    crmScore: faker.number.int({ min: 0, max: 5 }),
-  }));
-}
+// =============================================================================
+// INTERFACES
+// =============================================================================
 
 // Executive Dashboard Interfaces
 export interface ExecutiveKpi {
@@ -113,7 +50,81 @@ export interface MetricTrend {
   customers: number;
 }
 
-// Executive Dashboard Data Generators
+// CLV Interfaces
+export interface CLVDataPoint {
+  fiscalWeek: string;
+  clv: number;
+  cac: number;
+  revenue: number;
+  baseline: number;
+  plan: string;
+  usageScore: number;
+  customers: number;
+  retention: number;
+  churn: number;
+  frequency: number;
+  monetary: number;
+}
+
+export interface ProjectedDataPoint {
+  fiscalWeek: string;
+  predicted: number;
+  lowerBound: number;
+  upperBound: number;
+}
+
+export interface PredictionDataPoint {
+  month: number;
+  predicted: number;
+  actual: number | null;
+  confidence_upper: number;
+  confidence_lower: number;
+}
+
+// Subscription Interfaces
+export interface SubscriptionKPIs {
+  activeSubscriptions: { current: number; change: number };
+  mrr: { current: number; change: number };
+  arpu: { current: number; change: number };
+  churnRate: { current: number; change: number };
+}
+
+export interface SubscriptionTrendData {
+  month: string;
+  totalSubscriptions: number;
+  newSubscriptions: number;
+  churnedSubscriptions: number;
+  mrr: number;
+  churnRate: number;
+}
+
+// =============================================================================
+// CORE DATA GENERATORS
+// =============================================================================
+
+export function generateFakeCustomers(count: number) {
+  return Array.from({ length: count }).map(() => ({
+    name: faker.person.fullName(),
+    email: faker.internet.email(),
+    totalSpend: faker.number.int({ min: 100, max: 10000 }),
+    subscriptionAge: faker.number.int({ min: 1, max: 36 }),
+    clv: faker.number.float({ min: 200, max: 5000, precision: 0.01 }),
+    usageTier: faker.helpers.arrayElement(['Power', 'Medium', 'Low']),
+    plan: faker.helpers.arrayElement(['Basic', 'Pro', 'Enterprise']),
+    churned: faker.datatype.boolean(),
+    status: faker.helpers.arrayElement(['active', 'trialing', 'churned']),
+    mrr: faker.number.float({ min: 20, max: 200 }),
+    joinedAt: faker.date.past({ years: 2 }),
+    subscriptionType: faker.helpers.arrayElement(['monthly', 'annual']),
+    usageScore: faker.number.float({ min: 0, max: 100 }),
+    crmScore: faker.number.int({ min: 0, max: 5 }),
+  }));
+}
+
+// =============================================================================
+// EXECUTIVE DASHBOARD GENERATORS
+// =============================================================================
+
 export const generateExecutiveKpis = (timeRange: 'week' | 'month' | 'quarter' | 'ytd'): ExecutiveKpi => {
   const baseMrr = 450000;
   const growthFactor = timeRange === 'week' ? 0.02 : timeRange === 'month' ? 0.05 : timeRange === 'quarter' ? 0.15 : 0.35;
@@ -261,7 +272,137 @@ export const generateGrowthScorecard = (timeRange: 'week' | 'month' | 'quarter' 
   ];
 };
 
-// Other data generators (unchanged from your original)
+// =============================================================================
+// CLV DATA GENERATORS
+// =============================================================================
+
+export const generateCLVTimeSeriesData = (timeframe: string, customerCount: number = 365): CLVDataPoint[] => {
+  const customers = generateFakeCustomers(customerCount);
+  let length = 52;
+  if (timeframe === 'daily') length = 90;
+  else if (timeframe === 'monthly') length = 12;
+
+  return Array.from({ length }).map((_, i) => {
+    const customer = customers[i % customers.length];
+    const random = seededRandom(12345 + i);
+    
+    return {
+      fiscalWeek: formatTimeLabel(i, timeframe),
+      clv: customer.clv,
+      cac: customer.clv * (0.2 + random * 0.3),
+      revenue: customer.clv * 0.75 + random * 50,
+      baseline: customer.clv * 0.95 + random * 50,
+      plan: customer.plan,
+      usageScore: customer.usageScore,
+      customers: Math.floor(50 + random * 50),
+      retention: 85 + random * 15,
+      churn: 5 + random * 10,
+      frequency: 2 + random * 2,
+      monetary: customer.clv / 12,
+    };
+  });
+};
+
+// Add this function to fakeData.ts (deterministic version)
+export const generateProjectedData = (
+  historicalData: any[], 
+  timeframe: string, 
+  metric: string
+): ProjectedDataPoint[] => {
+  // Use the last value or a fallback - completely deterministic
+  const base = historicalData[historicalData.length - 1]?.[metric] || 1000;
+  
+  return Array.from({ length: 12 }).map((_, i) => {
+    const index = historicalData.length + i;
+    // Simple linear growth - no randomness, no trend calculation
+    const predictedValue = base * (1 + (i * 0.05));
+    
+    return {
+      fiscalWeek: formatTimeLabel(index, timeframe),
+      predicted: Math.round(predictedValue),
+      lowerBound: Math.round(predictedValue * 0.9),
+      upperBound: Math.round(predictedValue * 1.1),
+    };
+  });
+};
+
+export const generateAdvancedPredictionData = (): PredictionDataPoint[] => {
+  let seed = 67890;
+  return Array.from({ length: 12 }, (_, i) => ({
+    month: i + 1,
+    predicted: 2240 + i * 45 + seededRandom(seed + i) * 100,
+    actual: i < 6 ? 2180 + i * 52 + seededRandom(seed + i + 100) * 120 : null,
+    confidence_upper: 2340 + i * 48 + seededRandom(seed + i + 200) * 80,
+    confidence_lower: 2140 + i * 42 + seededRandom(seed + i + 300) * 80,
+  }));
+};
+
+// =============================================================================
+// SUBSCRIPTION DATA GENERATORS
+// =============================================================================
+
+export const generateSubscriptionKPIs = (data: any[]): SubscriptionKPIs => {
+  const activeCount = data.filter(d => 
+    d.subscriptionStatus === 'active' || 
+    d.subscriptionStatus === 'Active' || 
+    !d.subscriptionStatus
+  ).length;
+  
+  const totalMRR = data.reduce((sum, d) => {
+    const isActive = d.subscriptionStatus === 'active' || d.subscriptionStatus === 'Active' || !d.subscriptionStatus;
+    return sum + (isActive ? (d.monthlyRecurringRevenue || 0) : 0);
+  }, 0);
+  
+  const arpu = activeCount > 0 ? totalMRR / activeCount : 0;
+  
+  const churnedCount = data.filter(d => 
+    d.subscriptionStatus === 'churned' || 
+    d.subscriptionStatus === 'Churned'
+  ).length;
+  
+  const churnRate = data.length > 0 ? (churnedCount / data.length) * 100 : 0;
+  
+  return {
+    activeSubscriptions: { current: activeCount || 847, change: 12.5 },
+    mrr: { current: totalMRR || 89450, change: 8.2 },
+    arpu: { current: arpu || 105.62, change: 5.7 },
+    churnRate: { current: churnRate || 15.3, change: -3.2 }
+  };
+};
+
+export const generateSubscriptionTrendData = (): SubscriptionTrendData[] => {
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const trendData: SubscriptionTrendData[] = [];
+  
+  let totalSubs = 800;
+  let mrr = 45000;
+  
+  months.forEach(month => {
+    const baseIndex = months.indexOf(month);
+    const newSubs = 80 + (baseIndex * 3);
+    const churnedSubs = 20 + (baseIndex * 1);
+    
+    const netGrowth = newSubs - churnedSubs;
+    totalSubs += netGrowth;
+    mrr += netGrowth * 65;
+    
+    trendData.push({
+      month,
+      totalSubscriptions: totalSubs,
+      newSubscriptions: newSubs,
+      churnedSubscriptions: churnedSubs,
+      mrr: mrr,
+      churnRate: (churnedSubs / totalSubs) * 100,
+    });
+  });
+  
+  return trendData;
+};
+
+// =============================================================================
+// LEGACY FUNCTIONS (KEEPING FOR BACKWARD COMPATIBILITY)
+// =============================================================================
+
 export const generateCohortData = (baseData: any[]) => {
   const cohorts = ['Jan 2023', 'Feb 2023', 'Mar 2023', 'Apr 2023', 'May 2023', 'Jun 2023'];
   const periods = 6;
@@ -405,128 +546,407 @@ export const generateCLVModelData = (customers: any[]) => {
   };
 };
 
-export const generateSubscriptionData = (periods: number) => {
-  return Array.from({ length: periods }).map((_, i) => {
-    const baseSubscribers = 10000 + i * 150;
-    const newSubscriptions = Math.floor(500 + Math.random() * 200);
-    const churn = Math.floor(300 + Math.random() * 150);
-    const reactivations = Math.floor(50 + Math.random() * 40);
-    
-    const totalSubscribers = baseSubscribers + newSubscriptions - churn + reactivations;
-    
-    const basicSubs = Math.floor(totalSubscribers * 0.6);
-    const proSubs = Math.floor(totalSubscribers * 0.3);
-    const enterpriseSubs = totalSubscribers - basicSubs - proSubs;
-    
-    const mrr = (basicSubs * 29) + (proSubs * 79) + (enterpriseSubs * 199);
-    const arpu = mrr / totalSubscribers;
+// Helper function for Gamma distribution (used in CLV models)
+function gamma(z: number) {
+  const g = 7;
+  const p = [
+    0.99999999999980993, 676.5203681218851, -1259.1392167224028,
+    771.32342877765313, -176.61502916214059, 12.507343278686905,
+    -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7
+  ];
+  
+  if (z < 0.5) {
+    return Math.PI / (Math.sin(Math.PI * z) * gamma(1 - z));
+  } else {
+    z -= 1;
+    let x = p[0];
+    for (let i = 1; i < g + 2; i++) {
+      x += p[i] / (z + i);
+    }
+    const t = z + g + 0.5;
+    return Math.sqrt(2 * Math.PI) * Math.pow(t, z + 0.5) * Math.exp(-t) * x;
+  }
+}
+
+
+// Add these interfaces
+export interface OverviewKPIs {
+  clv: number;
+  clvChange: number;
+  cac: number;
+  ltvCacRatio: number;
+  paybackPeriod: number;
+  heterogeneity: number;
+  predictedClv: number;
+}
+
+export interface StatisticalStats {
+  mean: number;
+  median: number;
+  stdDev: number;
+  min: number;
+  max: number;
+  trend: number;
+}
+
+export interface CLVDrivers {
+  planData: Array<{ plan: string; avgClv: number; customers: number }>;
+  usageData: Array<{ usage: string; avgClv: number; customers: number }>;
+}
+
+export interface CLVDecomposition {
+  frequency: number;
+  monetary: number;
+  retention: number;
+  calculatedClv: number;
+}
+
+export interface CustomerEquity {
+  totalClv: number;
+  avgRetention: number;
+  discountRate: number;
+  equity: number;
+}
+
+// Add these functions
+export const generateOverviewKPIs = (data: any[], modelData: any): OverviewKPIs => {
+  const clvValues = data.map(d => d.clv).filter(v => v !== null);
+  const currentClv = clvValues[clvValues.length - 1] || 0;
+  const previousClv = clvValues[clvValues.length - 2] || 0;
+  const change = previousClv ? ((currentClv - previousClv) / previousClv) * 100 : 0;
+
+  const cacValues = data.map(d => d.cac).filter(v => v !== null);
+  const currentCac = cacValues[cacValues.length - 1] || 0;
+
+  const ltvCacRatio = currentCac > 0 ? currentClv / currentCac : 0;
+  const paybackPeriod = currentCac > 0 ? currentCac / (currentClv * 0.1) : 0;
+
+  return {
+    clv: currentClv,
+    clvChange: isFinite(change) ? change : 0,
+    cac: currentCac,
+    ltvCacRatio,
+    paybackPeriod,
+    heterogeneity: modelData.heterogeneityIndex,
+    predictedClv: modelData.predictedClv,
+  };
+};
+
+export const generateStatisticalStats = (data: any[], metric: string): StatisticalStats => {
+  const values = data.map(d => d[metric]).filter(v => typeof v === 'number');
+  if (!values.length) return { mean: 0, median: 0, stdDev: 0, min: 0, max: 0, trend: 0 };
+
+  const sorted = [...values].sort((a, b) => a - b);
+  return {
+    mean: calculateMean(values),
+    median: sorted[Math.floor(sorted.length / 2)],
+    stdDev: calculateStandardDeviation(values),
+    min: sorted[0],
+    max: sorted[sorted.length - 1],
+    trend: calculateTrend(values),
+  };
+};
+
+export const generateCLVDrivers = (data: any[]): CLVDrivers => {
+  const planData = [
+    { plan: 'Basic', avgClv: 1200, customers: data.filter(d => d.plan === 'Basic').length },
+    { plan: 'Pro', avgClv: 2800, customers: data.filter(d => d.plan === 'Pro').length },
+    { plan: 'Enterprise', avgClv: 7500, customers: data.filter(d => d.plan === 'Enterprise').length },
+  ];
+
+  const usageData = [
+    { usage: 'Low', avgClv: 900, customers: data.filter(d => d.usageScore < 33).length },
+    { usage: 'Medium', avgClv: 2200, customers: data.filter(d => d.usageScore >= 33 && d.usageScore < 66).length },
+    { usage: 'High', avgClv: 4500, customers: data.filter(d => d.usageScore >= 66).length },
+  ];
+
+  return { planData, usageData };
+};
+
+export const generateCLVDecomposition = (data: any[]): CLVDecomposition => {
+  const frequencyMean = calculateMean(data.map(d => d.frequency || 2.5));
+  const monetaryMean = calculateMean(data.map(d => d.monetary || (d.clv / 12)));
+  const retentionMean = calculateMean(data.map(d => d.retention || 85));
+
+  return {
+    frequency: frequencyMean,
+    monetary: monetaryMean,
+    retention: retentionMean,
+    calculatedClv: frequencyMean * monetaryMean * (retentionMean / (1 - retentionMean / 100))
+  };
+};
+
+export const generateCustomerEquity = (data: any[]): CustomerEquity => {
+  const totalClv = data.reduce((sum, customer) => sum + customer.clv, 0);
+  const avgRetention = calculateMean(data.map(d => d.retention || 85));
+  const discountRate = 0.1;
+  const equity = totalClv * (avgRetention / 100) / (1 + discountRate - (avgRetention / 100));
+  
+  return { totalClv, avgRetention, discountRate, equity };
+};
+
+
+// Add these interfaces
+export interface HeterogeneityKPIs {
+  clv: number;
+  clvChange: number;
+  cac: number;
+  ltvCacRatio: number;
+  paybackPeriod: number;
+  heterogeneity: number;
+  predictedClv: number;
+}
+
+export interface ExecutiveSummaryInsights {
+  heterogeneityScore: number;
+  top20Share: number;
+  recommendation: string;
+  priority: 'high' | 'medium' | 'low';
+  avgCLV: number;
+}
+
+export interface CohortAnalysisData {
+  name: string;
+  avgClv: number;
+  retention: number;
+}
+
+export interface ParetoAnalysisData {
+  rank: number;
+  clv: number;
+  percentage: number;
+}
+
+// Add these functions - ensuring consistency with other tabs
+export const generateHeterogeneityKPIs = (data: any[], modelData: any): HeterogeneityKPIs => {
+  // Use the same logic as OverviewTab for consistency
+  const clvValues = data.map(d => d.clv).filter(v => v !== null);
+  const currentClv = clvValues[clvValues.length - 1] || 0;
+  const previousClv = clvValues[clvValues.length - 2] || 0;
+  const change = previousClv ? ((currentClv - previousClv) / previousClv) * 100 : 0;
+
+  const cacValues = data.map(d => d.cac).filter(v => v !== null);
+  const currentCac = cacValues[cacValues.length - 1] || 0;
+
+  const ltvCacRatio = currentCac > 0 ? currentClv / currentCac : 0;
+  const paybackPeriod = currentCac > 0 ? currentCac / (currentClv * 0.1) : 0;
+
+  return {
+    clv: currentClv,
+    clvChange: isFinite(change) ? change : 0,
+    cac: currentCac,
+    ltvCacRatio,
+    paybackPeriod,
+    heterogeneity: modelData.heterogeneityIndex,
+    predictedClv: modelData.predictedClv,
+  };
+};
+
+export const generateExecutiveSummary = (clvData: any[], modelData: any): ExecutiveSummaryInsights => {
+  const clvValues = clvData.map(d => d.clv).filter(v => v !== null);
+  const sorted = [...clvValues].sort((a, b) => b - a);
+  const totalValue = sorted.reduce((sum, val) => sum + val, 0);
+
+  const top20Count = Math.floor(sorted.length * 0.2);
+  const top20Value = sorted.slice(0, top20Count).reduce((sum, val) => sum + val, 0);
+  const top20Share = (top20Value / totalValue) * 100;
+
+  const heterogeneity = modelData.heterogeneityIndex || 0;
+
+  let recommendation = '';
+  let priority: 'high' | 'medium' | 'low' = 'medium';
+  
+  if (heterogeneity > 0.7) {
+    recommendation = 'High value concentration – protect top customers';
+    priority = 'high';
+  } else if (heterogeneity > 0.4) {
+    recommendation = 'Balanced distribution – optimize mid-tier growth';
+    priority = 'medium';
+  } else {
+    recommendation = 'Uniform base – explore segmentation opportunities';
+    priority = 'low';
+  }
+
+  return {
+    heterogeneityScore: Math.round(heterogeneity * 100),
+    top20Share: Math.round(top20Share),
+    recommendation,
+    priority,
+    avgCLV: totalValue / sorted.length,
+  };
+};
+
+export const generateCohortAnalysisData = (data: any[]): CohortAnalysisData[] => {
+  // Create cohorts that align with the CLV data story
+  return data.map((d, i) => {
+    // Use consistent values from the actual data rather than random
+    const cohortIndex = Math.floor(i / 10);
+    const baseRetention = 80 + (i % 20); // Deterministic based on position
     
     return {
-      fiscalWeek: `Week ${i + 1}`,
-      totalSubscribers,
-      newSubscriptions,
-      churn,
-      reactivations,
-      mrr,
-      arpu,
-      acquisitionCost: 50 + Math.random() * 30,
-      conversionRate: 5 + Math.random() * 3,
-      churnRate: (churn / totalSubscribers) * 100,
-      retentionRate: 100 - (churn / totalSubscribers) * 100,
-      reactivationRate: (reactivations / (churn + 1)) * 100,
-      winbackCost: 75 + Math.random() * 50,
-      plan: i % 3 === 0 ? 'Basic' : i % 3 === 1 ? 'Pro' : 'Enterprise',
+      name: `Cohort ${cohortIndex + 1}`,
+      avgClv: d.clv, // Use actual CLV from data
+      retention: baseRetention,
     };
   });
 };
 
-export const generateUsageData = (periods: number) => {
-  return Array.from({ length: periods }).map((_, i) => {
-    const growthFactor = 1 + (i * 0.01);
-    
+
+
+export const generateParetoAnalysisData = (data: any[]): ParetoAnalysisData[] => {
+  const sorted = [...data].sort((a, b) => b.clv - a.clv);
+  const total = sorted.reduce((sum, d) => sum + d.clv, 0);
+  let cumulative = 0;
+
+  return sorted.map((d, i) => {
+    cumulative += d.clv;
     return {
-      fiscalWeek: `Week ${i + 1}`,
-      activeUsers: Math.floor(5000 * growthFactor + Math.random() * 500),
-      avgSessionDuration: Math.floor(15 + Math.random() * 10),
-      featureAdoption: 30 + Math.random() * 40,
-      activationRate: 60 + Math.random() * 20,
-      retentionRate: 85 + Math.random() * 10,
-      sessionsPerUser: 3 + Math.random() * 4,
+      rank: ((i + 1) / sorted.length) * 100,      // customer percentile (0–100)
+      clv: d.clv,                                 // individual CLV
+      cumulative: (cumulative / total) * 100      // cumulative % of total CLV
     };
   });
 };
 
-export const generateUserSegments = () => {
-  return [
+
+// Add these interfaces
+export interface CustomerSegment {
+  name: string;
+  icon: string;
+  description: string;
+  count: number;
+  percentage: number;
+  threshold: string;
+  color: string;
+  action: string;
+}
+
+export interface SegmentationAnalysis {
+  segments: CustomerSegment[];
+  totalValue: number;
+  avgCLV: number;
+  total: number;
+}
+
+// Add this function
+export const generateSegmentationAnalysis = (data: any[]): SegmentationAnalysis | null => {
+  if (!data || data.length === 0) return null;
+
+  // Safe copy before sorting
+  const values = [...data.map((d) => d.clv)].sort((a, b) => a - b);
+  const total = values.length;
+  if (total === 0) return null;
+
+  const median = values[Math.floor(total / 2)];
+  const q3 = values[Math.floor(total * 0.75)]; // 75th percentile (top 25%)
+  const q1 = values[Math.floor(total * 0.25)]; // 25th percentile (bottom 25%)
+
+  const segments: CustomerSegment[] = [
     {
-      segment: 'Loyalists',
-      users: 1250,
-      revenue: 125000,
-      revenueShare: 0.45,
-      arpu: 100,
-      engagement: Array.from({ length: 50 }).map(() => ({
-        frequency: 12 + Math.random() * 8,
-        depth: 8 + Math.random() * 2,
-        value: 300 + Math.random() * 200,
-      })),
+      name: 'Champions',
+      icon: '👑',
+      description: 'Top 25% highest value customers',
+      count: Math.floor(total * 0.25),
+      percentage: 25,
+      threshold: `> ${formatCurrency(q3)}`,
+      color: '#10B981',
+      action: 'Reward & retain with VIP treatment',
     },
     {
-      segment: 'Power Users',
-      users: 2500,
-      revenue: 100000,
-      revenueShare: 0.36,
-      arpu: 40,
-      engagement: Array.from({ length: 50 }).map(() => ({
-        frequency: 6 + Math.random() * 4,
-        depth: 6 + Math.random() * 3,
-        value: 150 + Math.random() * 100,
-      })),
+      name: 'Loyal Customers',
+      icon: '💎',
+      description: 'Above median CLV, reliable spenders',
+      count: Math.floor(total * 0.25),
+      percentage: 25,
+      threshold: `${formatCurrency(median)} - ${formatCurrency(q3)}`,
+      color: '#3B82F6',
+      action: 'Cross-sell & upsell opportunities',
     },
     {
-      segment: 'Casual Users',
-      users: 5000,
-      revenue: 40000,
-      revenueShare: 0.14,
-      arpu: 8,
-      engagement: Array.from({ length: 50 }).map(() => ({
-        frequency: 3 + Math.random() * 3,
-        depth: 3 + Math.random() * 2,
-        value: 50 + Math.random() * 30,
-      })),
+      name: 'Potential Loyalists',
+      icon: '📈',
+      description: 'Below median, room for growth',
+      count: Math.floor(total * 0.25),
+      percentage: 25,
+      threshold: `${formatCurrency(q1)} - ${formatCurrency(median)}`,
+      color: '#F59E0B',
+      action: 'Targeted engagement campaigns',
     },
     {
-      segment: 'At Risk',
-      users: 2000,
-      revenue: 10000,
-      revenueShare: 0.04,
-      arpu: 5,
-      engagement: Array.from({ length: 50 }).map(() => ({
-        frequency: 1 + Math.random() * 2,
-        depth: 1 + Math.random() * 1,
-        value: 20 + Math.random() * 15,
-      })),
-    },
-    {
-      segment: 'Dormant',
-      users: 1000,
-      revenue: 2000,
-      revenueShare: 0.01,
-      arpu: 2,
-      engagement: Array.from({ length: 20 }).map(() => ({
-        frequency: 0.5 + Math.random() * 0.5,
-        depth: 0.5 + Math.random() * 0.5,
-        value: 5 + Math.random() * 5,
-      })),
+      name: 'At Risk',
+      icon: '⚠️',
+      description: 'Bottom 25%, needs attention',
+      count: total - Math.floor(total * 0.75),
+      percentage: 25,
+      threshold: `< ${formatCurrency(q1)}`,
+      color: '#EF4444',
+      action: 'Win-back campaigns & support',
     },
   ];
+
+  const totalValue = values.reduce((sum, val) => sum + val, 0);
+  const avgCLV = totalValue / total;
+
+  return { segments, totalValue, avgCLV, total };
 };
 
-export const generateFakeData = () => {
-  let seedCounter = 12345;
-  const random = () => seededRandom(seedCounter++);
+
+// Add to fakeData.ts
+
+export function generateTrendData(data: any[]) {
+  // Generate 12 months of historical trend data
+  const periods = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   
-  const customers = generateFakeCustomers(1000);
-  // Add other data generation as needed
+  return periods.map((period, index) => {
+    const baseClv = 2800;
+    const baseCac = 850;
+    const growth = index * 0.03; // 3% growth per month
+    const variance = Math.random() * 0.1 - 0.05; // ±5% random variance
+    
+    const avgClv = baseClv * (1 + growth + variance);
+    const avgCac = baseCac * (1 + (growth * 0.5) + variance); // CAC grows slower
+    
+    return {
+      period,
+      avgClv: Math.round(avgClv),
+      avgCac: Math.round(avgCac),
+      ltvCacRatio: avgClv / avgCac
+    };
+  });
+}
+
+export function generateHistogramData(data: any[], metric: string) {
+  // Generate histogram bins based on the metric
+  const numBins = 10;
+  const values = data.map(d => {
+    switch(metric) {
+      case 'clv': return d.clv || 2500 + Math.random() * 3000;
+      case 'cac': return d.cac || 500 + Math.random() * 1000;
+      case 'revenue': return d.revenue || 1000 + Math.random() * 5000;
+      case 'mrr': return d.mrr || 100 + Math.random() * 500;
+      case 'customers': return Math.floor(50 + Math.random() * 200);
+      case 'retention': return 60 + Math.random() * 35;
+      case 'churn': return 5 + Math.random() * 15;
+      default: return 1000 + Math.random() * 2000;
+    }
+  });
   
-  return { customers };
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const binSize = (max - min) / numBins;
+  
+  const bins = Array.from({ length: numBins }, (_, i) => ({
+    range: `${Math.round(min + i * binSize)}-${Math.round(min + (i + 1) * binSize)}`,
+    count: 0,
+    rangeStart: min + i * binSize,
+    rangeEnd: min + (i + 1) * binSize
+  }));
+  
+  // Count values in each bin
+  values.forEach(value => {
+    const binIndex = Math.min(Math.floor((value - min) / binSize), numBins - 1);
+    bins[binIndex].count++;
+  });
+  
+  return bins;
 }

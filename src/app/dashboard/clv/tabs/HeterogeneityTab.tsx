@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useMemo } from 'react'
+import React from 'react'
 import {
   Card,
   CardContent,
@@ -22,177 +22,187 @@ import {
   ComposedChart,
   BarChart,
 } from 'recharts'
+import { AlertTriangle, TrendingUp, Target, Zap, Users, DollarSign, Info } from 'lucide-react'
 import { formatCurrency } from '@/lib/utils'
+import { 
+  generateHeterogeneityKPIs,
+  generateExecutiveSummary,
+  generateCohortAnalysisData,
+  generateParetoAnalysisData
+} from '@/lib/fakeData'
 
 // ————————————————————————
-// KPIOverview
+//  Stats Header - 
 // ————————————————————————
+const QuickStats = ({ clvData, modelData }: { clvData: any[]; modelData: any }) => {
+  const insights = generateExecutiveSummary(clvData, modelData);
+  
+  const getHeterogeneityLevel = (score: number) => {
+    if (score > 70) return { label: 'High', color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200' };
+    if (score > 40) return { label: 'Medium', color: 'text-yellow-600', bg: 'bg-yellow-50', border: 'border-yellow-200' };
+    return { label: 'Low', color: 'text-green-600', bg: 'bg-green-50', border: 'border-green-200' };
+  };
 
-const KPIOverview = ({ data, modelData }: { data: any[]; modelData: any }) => {
-  const kpis = useMemo(() => {
-    const clvValues = data.map(d => d.clv).filter(v => v !== null)
-    const currentClv = clvValues.at(-1) || 0
-    const previousClv = clvValues.at(-2) || 0
-    const change = previousClv ? ((currentClv - previousClv) / previousClv) * 100 : 0
-
-    const currentCac = data.map(d => d.cac).filter(v => v !== null).at(-1) || 0
-    const ltvCacRatio = currentCac > 0 ? currentClv / currentCac : 0
-    const paybackPeriod = currentCac > 0 ? currentCac / (currentClv * 0.1) : 0
-
-    return {
-      clv: currentClv,
-      clvChange: isFinite(change) ? change : 0,
-      cac: currentCac,
-      ltvCacRatio,
-      paybackPeriod,
-      heterogeneity: modelData.heterogeneityIndex,
-      predictedClv: modelData.predictedClv,
-    }
-  }, [data, modelData])
+  const level = getHeterogeneityLevel(insights.heterogeneityScore);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>KPI Overview</CardTitle>
-        <CardDescription>Key CLV performance metrics</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="text-center">
-            <p className="text-sm text-gray-500">Current CLV</p>
-            <p className="text-2xl font-bold">{formatCurrency(kpis.clv)}</p>
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <Card className={`border-l-4 border-l-blue-500`}>
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Heterogeneity</p>
+              <p className={`text-2xl font-bold ${level.color}`}>
+                {insights.heterogeneityScore}
+              </p>
+              <p className="text-xs text-gray-500">{level.label} Variance</p>
+            </div>
+            <TrendingUp className={`h-8 w-8 ${level.color} opacity-60`} />
           </div>
-          <div className="text-center">
-            <p className="text-sm text-gray-500">Change</p>
-            <p
-              className={`text-2xl font-bold ${
-                kpis.clvChange >= 0 ? 'text-green-600' : 'text-red-600'
-              }`}
-            >
-              {kpis.clvChange.toFixed(1)}%
-            </p>
+        </CardContent>
+      </Card>
+
+      <Card className={`border-l-4 border-l-purple-500`}>
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Top 20% Share</p>
+              <p className="text-2xl font-bold text-purple-600">
+                {insights.top20Share}%
+              </p>
+              <p className="text-xs text-gray-500">of total value</p>
+            </div>
+            <Users className="h-8 w-8 text-purple-600 opacity-60" />
           </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+
+      <Card className={`border-l-4 border-l-green-500`}>
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Avg CLV</p>
+              <p className="text-2xl font-bold text-green-600">
+                {formatCurrency(insights.avgCLV)}
+              </p>
+              <p className="text-xs text-gray-500">per customer</p>
+            </div>
+            <DollarSign className="h-8 w-8 text-green-600 opacity-60" />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className={`border-l-4 ${level.border}`}>
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-600">Priority</p>
+              <p className={`text-lg font-bold ${level.color} uppercase`}>
+                {insights.priority}
+              </p>
+              <p className="text-xs text-gray-500">Action needed</p>
+            </div>
+            <AlertTriangle className={`h-8 w-8 ${level.color} opacity-60`} />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   )
 }
 
 // ————————————————————————
-// Executive Summary & Key Insights
+// Executive Summary - VISUAL & SCANNABLE
 // ————————————————————————
 const ExecutiveSummary = ({ clvData, modelData }: { clvData: any[]; modelData: any }) => {
-  const insights = useMemo(() => {
-    const clvValues = clvData.map(d => d.clv).filter(v => v !== null)
-    const sorted = [...clvValues].sort((a, b) => b - a)
-    const totalValue = sorted.reduce((sum, val) => sum + val, 0)
-
-    const top20Count = Math.floor(sorted.length * 0.2)
-    const top20Value = sorted.slice(0, top20Count).reduce((sum, val) => sum + val, 0)
-    const top20Share = (top20Value / totalValue) * 100
-
-    const heterogeneity = modelData.heterogeneityIndex || 0
-
-    let recommendation = ''
-    let priority = ''
-    if (heterogeneity > 0.7) {
-      recommendation = 'High value concentration – protect top customers'
-      priority = 'high'
-    } else if (heterogeneity > 0.4) {
-      recommendation = 'Balanced distribution – optimize mid-tier growth'
-      priority = 'medium'
-    } else {
-      recommendation = 'Uniform base – explore segmentation opportunities'
-      priority = 'low'
-    }
-
-    return {
-      heterogeneityScore: Math.round(heterogeneity * 100),
-      top20Share: Math.round(top20Share),
-      recommendation,
-      priority,
-      avgCLV: totalValue / sorted.length,
-    }
-  }, [clvData, modelData])
-
-  const priorityColor = {
-    high: 'bg-red-100 text-red-800 border-red-200',
-    medium: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-    low: 'bg-green-100 text-green-800 border-green-200',
-  }
+  const insights = generateExecutiveSummary(clvData, modelData);
 
   return (
-    <>
-      <Card>
-        <CardHeader>
-          <CardTitle>Customer Value Distribution</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-3 gap-4 mb-4">
-            <div className="text-center p-4 bg-gray-50 rounded">
-              <div className="text-2xl font-bold">{insights.heterogeneityScore}</div>
-              <div className="text-sm text-gray-600">Heterogeneity Score</div>
-            </div>
-            <div className="text-center p-4 bg-gray-50 rounded">
-              <div className="text-2xl font-bold">{insights.top20Share}%</div>
-              <div className="text-sm text-gray-600">Top 20% Value Share</div>
-            </div>
-            <div className="text-center p-4 bg-gray-50 rounded">
-              <div className="text-2xl font-bold">{formatCurrency(insights.avgCLV)}</div>
-              <div className="text-sm text-gray-600">Average CLV</div>
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center gap-2 text-lg">
+          <Zap className="h-5 w-5 text-blue-600" />
+          Insights & Actions
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          
+          {/* LEFT: Quick Insights */}
+          <div className="space-y-4">
+            <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+              <Target className="h-4 w-4 text-green-600" />
+              Key Insights
+            </h3>
+            
+            <div className="space-y-3">
+              <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg">
+                <Badge variant="secondary" className="mt-0.5">1</Badge>
+                <div>
+                  <div className="font-medium text-sm">Value Concentration</div>
+                  <div className="text-xs text-gray-600 mt-1">
+                    <strong>{insights.top20Share}%</strong> of revenue from top 20% of customers
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3 p-3 bg-purple-50 rounded-lg">
+                <Badge variant="secondary" className="mt-0.5">2</Badge>
+                <div>
+                  <div className="font-medium text-sm">Customer Diversity</div>
+                  <div className="text-xs text-gray-600 mt-1">
+                    {insights.heterogeneityScore > 70 ? 'High' : 
+                     insights.heterogeneityScore > 40 ? 'Medium' : 'Low'} variance in customer values
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3 p-3 bg-orange-50 rounded-lg">
+                <Badge variant="secondary" className="mt-0.5">3</Badge>
+                <div>
+                  <div className="font-medium text-sm">Risk Level</div>
+                  <div className="text-xs text-gray-600 mt-1">
+                    {insights.top20Share > 80 ? 'High concentration risk' : 'Balanced distribution'}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div
-            className={`p-3 rounded border ${priorityColor[insights.priority as keyof typeof priorityColor]}`}
-          >
-            <div className="font-medium mb-1">Recommendation</div>
-            <div className="text-sm">{insights.recommendation}</div>
-          </div>
-        </CardContent>
-      </Card>
+          {/* RIGHT: Recommended Actions */}
+          <div className="space-y-4">
+            <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+              <TrendingUp className="h-4 w-4 text-green-600" />
+              Recommended Actions
+            </h3>
+            
+            <div className="space-y-3">
+              <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="font-semibold text-sm text-gray-1000">1. Tiered Service Levels</div>
+                <div className="text-xs text-gray-700 mt-1">
+                  Create premium vs standard service tiers based on customer value
+                </div>
+              </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Key Insights</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <div className="flex items-start space-x-3">
-              <Badge variant="secondary" className="mt-1">1</Badge>
-              <div>
-                <div className="font-medium">Value Concentration</div>
-                <div className="text-sm text-gray-600">
-                  {insights.top20Share}% of value comes from the top 20% of customers
+              <div className="p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                <div className="font-semibold text-sm text-gray-1000">2. Strategic Retention Focus</div>
+                <div className="text-xs text-gray-700 mt-1">
+                  {insights.top20Share > 80 
+                    ? 'Protect top 20% with dedicated account management'
+                    : 'Balance retention across value segments'}
                 </div>
               </div>
-            </div>
-            <div className="flex items-start space-x-3">
-              <Badge variant="secondary" className="mt-1">2</Badge>
-              <div>
-                <div className="font-medium">Segmentation Opportunity</div>
-                <div className="text-sm text-gray-600">
-                  {insights.heterogeneityScore > 70
-                    ? 'High variance suggests strong potential for tiered strategies'
-                    : 'Test personalized approaches for different segments'}
-                </div>
-              </div>
-            </div>
-            <div className="flex items-start space-x-3">
-              <Badge variant="secondary" className="mt-1">3</Badge>
-              <div>
-                <div className="font-medium">Risk Assessment</div>
-                <div className="text-sm text-gray-600">
-                  {insights.top20Share > 80
-                    ? 'High dependency on top customers – retention focus needed'
-                    : 'Balanced distribution reduces concentration risk'}
+
+              <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                <div className="font-semibold text-sm text-gray-1000">3. Segmented Marketing</div>
+                <div className="text-xs text-gray-700 mt-1">
+                  Tailor messaging and offers to different value segments
                 </div>
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
-    </>
+        </div>
+      </CardContent>
+    </Card>
   )
 }
 
@@ -201,12 +211,12 @@ const ExecutiveSummary = ({ clvData, modelData }: { clvData: any[]; modelData: a
 // ————————————————————————
 const CLVHeterogeneityChart = ({ modelData }: { modelData: any }) => (
   <Card>
-    <CardHeader>
-      <CardTitle>Customer Value Heterogeneity</CardTitle>
-      <CardDescription>Distribution of customer lifetime values</CardDescription>
+    <CardHeader className="pb-3">
+      <CardTitle className="text-lg">Customer Value Distribution</CardTitle>
+      <CardDescription>How customer lifetime values are spread across your base</CardDescription>
     </CardHeader>
     <CardContent>
-      <div className="h-96">
+      <div className="h-80">
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={modelData.valueDistribution}>
             <CartesianGrid strokeDasharray="3 3" />
@@ -214,8 +224,8 @@ const CLVHeterogeneityChart = ({ modelData }: { modelData: any }) => (
             <YAxis />
             <Tooltip />
             <Legend />
-            <Bar dataKey="density" fill="#8884d8" name="Distribution" />
-            <Line type="monotone" dataKey="gamma" stroke="#ff7300" dot={false} name="Gamma Fit" />
+            <Bar dataKey="density" fill="#8884d8" name="Customer Count" />
+            <Line type="monotone" dataKey="gamma" stroke="#ff7300" dot={false} name="Model Fit" />
           </ComposedChart>
         </ResponsiveContainer>
       </div>
@@ -223,147 +233,144 @@ const CLVHeterogeneityChart = ({ modelData }: { modelData: any }) => (
   </Card>
 )
 
+
+
+
 // ————————————————————————
-// ProbabilisticModels, CohortAnalysis, ParetoAnalysis
-// (keep the versions we had)
+// ProbabilisticModels - revised 10/15/25 to include definitions
 // ————————————————————————
 const ProbabilisticModels = ({ modelData }: { modelData: any }) => (
   <Card>
-    <CardHeader>
-      <CardTitle>Probabilistic CLV Models</CardTitle>
-      <CardDescription>
-        BG/NBD and Gamma-Gamma model parameters with visual interpretation
-      </CardDescription>
+    <CardHeader className="pb-3">
+      <CardTitle className="text-lg">CLV Model Components</CardTitle>
+      <CardDescription>  Parameters that describe how often customers buy, how long they stay active, and how much they spend. </CardDescription>
     </CardHeader>
     <CardContent className="space-y-6">
       {/* Parameter Tiles */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-        <div className="p-3 bg-indigo-50 rounded text-center">
-          <p className="text-xs text-gray-600">BG/NBD r</p>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="p-3 bg-indigo-50 rounded-lg border border-indigo-200 text-center">
+          <p className="text-s text-gray-600 mb-1">BG/NBD r</p>
           <p className="text-lg font-bold text-indigo-700">
             {modelData?.bgnbdParams?.r?.toFixed(3) ?? '—'}
           </p>
         </div>
-        <div className="p-3 bg-indigo-50 rounded text-center">
-          <p className="text-xs text-gray-600">BG/NBD α</p>
+        <div className="p-3 bg-indigo-50 rounded-lg border border-indigo-200 text-center">
+          <p className="text-s text-gray-600 mb-1">BG/NBD α</p>
           <p className="text-lg font-bold text-indigo-700">
             {modelData?.bgnbdParams?.alpha?.toFixed(3) ?? '—'}
           </p>
         </div>
-        <div className="p-3 bg-indigo-50 rounded text-center">
-          <p className="text-xs text-gray-600">BG/NBD a</p>
+        <div className="p-3 bg-indigo-50 rounded-lg border border-indigo-200 text-center">
+          <p className="text-s text-gray-600 mb-1">BG/NBD a</p>
           <p className="text-lg font-bold text-indigo-700">
             {modelData?.bgnbdParams?.a?.toFixed(3) ?? '—'}
           </p>
         </div>
-        <div className="p-3 bg-indigo-50 rounded text-center">
-          <p className="text-xs text-gray-600">BG/NBD b</p>
+        <div className="p-3 bg-indigo-50 rounded-lg border border-indigo-200 text-center">
+          <p className="text-s text-gray-600 mb-1">BG/NBD b</p>
           <p className="text-lg font-bold text-indigo-700">
             {modelData?.bgnbdParams?.b?.toFixed(3) ?? '—'}
           </p>
         </div>
-        <div className="p-3 bg-purple-50 rounded text-center">
-          <p className="text-xs text-gray-600">Gamma p</p>
+        <div className="p-3 bg-purple-50 rounded-lg border border-purple-200 text-center">
+          <p className="text-s text-gray-600 mb-1">Gamma p</p>
           <p className="text-lg font-bold text-purple-700">
             {modelData?.ggParams?.p?.toFixed(3) ?? '—'}
           </p>
         </div>
-        <div className="p-3 bg-purple-50 rounded text-center">
-          <p className="text-xs text-gray-600">Gamma q</p>
+        <div className="p-3 bg-purple-50 rounded-lg border border-purple-200 text-center">
+          <p className="text-s text-gray-600 mb-1">Gamma q</p>
           <p className="text-lg font-bold text-purple-700">
             {modelData?.ggParams?.q?.toFixed(3) ?? '—'}
           </p>
         </div>
-        <div className="p-3 bg-purple-50 rounded text-center">
-          <p className="text-xs text-gray-600">Gamma γ</p>
+        <div className="p-3 bg-purple-50 rounded-lg border border-purple-200 text-center">
+          <p className="text-s text-gray-600 mb-1">Gamma γ</p>
           <p className="text-lg font-bold text-purple-700">
             {modelData?.ggParams?.gamma?.toFixed(3) ?? '—'}
           </p>
         </div>
       </div>
 
-
-
-      {/* Key Interpretation */}
-      <div className="p-4 bg-blue-50 rounded-lg">
-        <h4 className="font-semibold text-blue-800 mb-2"> Interpretation</h4>
-        <p className="text-sm text-blue-700">
-          The <strong>BG/NBD</strong> parameters model purchase frequency and churn. 
-          The <strong>Gamma-Gamma</strong> parameters capture spend variability. 
-          Together they provide a forward-looking CLV estimate that accounts for customer heterogeneity.
-        </p>
+      {/* Quick Interpretation */}
+      <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+        <div className="flex items-start gap-2">
+          <Info className="h-4 w-4 text-blue-600 mt-0.5" />
+          <div className="text-xs text-gray-800 leading-relaxed">
+            <strong>BG/NBD</strong> parameters (<em>r, α, a, b</em>) capture purchase frequency and customer retention. 
+            <strong> Gamma–Gamma</strong> parameters (<em>p, q, γ</em>) reflect spending patterns. 
+            Together, they form the <strong>CLV model</strong>, estimating both customer activity and value over time.
+         
+         
+          </div>
+        </div>
+         <p className="text-xs text-gray-600 italic mt-2 ml-6">
+    BG/NBD patterns: r near 1 with moderate α (3–6) suggests stable repeat purchase behavior; 
+    lower a and higher b indicate gradual churn rather than sudden drop-off. 
+   <p> For Gamma–Gamma, higher p and q (&gt;4) reflect consistent spending across customers, while 
+    γ sets the overall spend level.
+    </p>
+  </p>
       </div>
+
+
+
+
     </CardContent>
   </Card>
 )
 
 
-const CohortAnalysis = ({ data }: { data: any[] }) => {
-  const cohorts = useMemo(() => {
-    return data.map((d, i) => ({
-      name: `Cohort ${Math.floor(i / 10) + 1}`,
-      avgClv: d.clv,
-      retention: 80 + (i % 20),
-    }))
-  }, [data])
-
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Cohort Analysis</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="h-80">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={cohorts}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="avgClv" fill="#4f46e5" />
-              <Bar dataKey="retention" fill="#10b981" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
-
+// ————————————————————————
+// ParetoAnalysis -  
+// ————————————————————————
 const ParetoAnalysis = ({ data }: { data: any[] }) => {
-  const paretoData = useMemo(() => {
-    const sorted = [...data].sort((a, b) => b.clv - a.clv)
-    let cum = 0
-    const total = sorted.reduce((s, d) => s + d.clv, 0)
-    return sorted.map((d, i) => {
-      cum += d.clv
-      return { rank: i + 1, clv: d.clv, percentage: (cum / total) * 100 }
-    })
-  }, [data])
+  const paretoData = generateParetoAnalysisData(data);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Pareto Analysis</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="h-80">
-          <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart data={paretoData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="rank" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Line type="monotone" dataKey="percentage" stroke="#4f46e5" />
-              <Bar dataKey="clv" fill="#cbd5e1" />
-              <ReferenceLine y={80} stroke="red" strokeDasharray="3 3" />
-            </ComposedChart>
-          </ResponsiveContainer>
-        </div>
-      </CardContent>
-    </Card>
+<Card>
+  <CardHeader className="pb-3">
+    <CardTitle className="text-lg">Pareto Analysis</CardTitle>
+    <CardDescription>Value concentration across customer segments</CardDescription>
+  </CardHeader>
+  <CardContent>
+    <div className="h-96">
+      <ResponsiveContainer width="100%" height="100%">
+        <ComposedChart data={paretoData}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis
+            dataKey="rank"
+            type="number"
+            domain={[0, 100]}
+            ticks={[0, 20, 40, 60, 80, 100]}
+            tickFormatter={(v) => `${v}%`}
+            label={{ value: "Customer Percentile", position: "insideBottom", offset: -4 }}
+          />
+          <YAxis 
+            yAxisId="left" 
+            orientation="left" 
+            domain={[0, 100]} 
+            label={{ value: "Cumulative % of CLV", angle: -90, position: "insideLeft" }} 
+          />
+          <YAxis 
+            yAxisId="right" 
+            orientation="right" 
+            label={{ value: "Individual CLV", angle: -90, position: "insideRight" }} 
+          />
+          <Tooltip />
+          <Legend />
+          <Bar yAxisId="right" dataKey="clv" fill="#cbd5e1" name="Individual CLV" />
+          <Line yAxisId="left" type="monotone" dataKey="cumulative" stroke="#4f46e5" strokeWidth={2} name="Cumulative %" dot={false} />
+          <ReferenceLine y={80} stroke="red" strokeDasharray="3 3" yAxisId="left" label="80%" />
+        </ComposedChart>
+      </ResponsiveContainer>
+    </div>
+    <p className="text-xs text-gray-600 italic mt-2">
+      The Pareto curve shows the share of total CLV contributed by top customer segments.
+      <p> For example, if 20% of customers account for ~75% of CLV, your base is highly value-concentrated.</p>
+    </p>
+  </CardContent>
+</Card>
   )
 }
 
@@ -372,13 +379,24 @@ const ParetoAnalysis = ({ data }: { data: any[] }) => {
 // ————————————————————————
 function HeterogeneityTab({ clvData, modelData }: { clvData: any[]; modelData: any }) {
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
+      {/* TOP: Quick Stats -  SCANNABLE */}
+      <QuickStats clvData={clvData} modelData={modelData} />
+      
+      {/* MIDDLE: Charts -  VISUALS */}
+      <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
+        <CLVHeterogeneityChart modelData={modelData} />
+        <ParetoAnalysis data={clvData} />
+      </div>
+
+      {/* BOTTOM: Insights & Actions -  */}
       <ExecutiveSummary clvData={clvData} modelData={modelData} />
-      <KPIOverview data={clvData} modelData={modelData} />
-      <CLVHeterogeneityChart modelData={modelData} />
-      <ProbabilisticModels modelData={modelData} />
-      <CohortAnalysis data={clvData} />
-      <ParetoAnalysis data={clvData} />
+
+      {/* Additional charts below */}
+      <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
+        <ProbabilisticModels modelData={modelData} />
+ 
+      </div>
     </div>
   )
 }

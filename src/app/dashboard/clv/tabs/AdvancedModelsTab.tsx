@@ -23,6 +23,7 @@ import {
 } from 'recharts'
 
 import { formatCurrency } from '@/lib/utils'
+import { generateAdvancedPredictionData } from '@/lib/fakeData' 
 
 // ————————————————————————
 // Pattern Recognition
@@ -145,16 +146,11 @@ function AdvancedModelsTab({
   modelData: any
   metric: string
 }) {
-  const predictionData = Array.from({ length: 12 }, (_, i) => ({
-    month: i + 1,
-    predicted: 2240 + i * 45 + Math.random() * 100,
-    actual: i < 6 ? 2180 + i * 52 + Math.random() * 120 : null,
-    confidence_upper: 2340 + i * 48 + Math.random() * 80,
-    confidence_lower: 2140 + i * 42 + Math.random() * 80,
-  }))
+const predictionData = generateAdvancedPredictionData()
 
   return (
     <div className="space-y-8">
+    
       {/* existing cards … (recommendations, heterogeneity, etc.) */}
 
       {/* CLV Prediction */}

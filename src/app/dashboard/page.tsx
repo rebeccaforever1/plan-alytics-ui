@@ -27,7 +27,13 @@ import {
   ReferenceLine,
 } from 'recharts'
 
-import { generateFakeCustomers, generateCohortData } from '@/lib/fakeData'
+import { 
+  generateFakeCustomers, 
+  generateCohortData,
+  generateSubscriptionKPIs,        // ← ADD THESE
+  generateSubscriptionTrendData    // ← NEW IMPORTS
+} from '@/lib/fakeData'
+
 import {
   Card,
   CardContent,

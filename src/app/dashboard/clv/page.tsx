@@ -9,44 +9,25 @@ import SegmentsTab from './tabs/SegmentsTab'
 import AdvancedModelsTab from './tabs/AdvancedModelsTab'
 import DefinitionsTab from './tabs/DefinitionsTab'
 
-import { generateFakeCustomers, generateCLVModelData } from '@/lib/fakeData'
-import { seededRandom, formatTimeLabel } from '@/lib/utils' // move helpers into utils
+import { 
+  generateFakeCustomers, 
+  generateCLVModelData, 
+  generateCLVTimeSeriesData 
+} from '@/lib/fakeData'
 
 export default function CLVPage() {
   const customers = useMemo(() => generateFakeCustomers(365), [])
   const [timeframe, setTimeframe] = useState('6m')
   const [metric, setMetric] = useState('clv')
 
-  const clvData = useMemo(() => {
-    let length = 52
-    if (timeframe === 'daily') length = 90
-    else if (timeframe === 'monthly') length = 12
-
-    return customers.slice(0, length).map((c, i) => {
-      const customerSeed = 12345 + i
-      let seedCounter = customerSeed
-      const random = () => seededRandom(seedCounter++)
-      return {
-        fiscalWeek: formatTimeLabel(i, timeframe),
-        clv: c.clv,
-        cac: c.clv * (0.2 + random() * 0.3),
-        revenue: c.clv * 0.75 + random() * 50,
-        baseline: c.clv * 0.95 + random() * 50,
-        plan: c.plan,
-        usageScore: c.usageScore,
-        customers: Math.floor(50 + random() * 50),
-        retention: 85 + random() * 15,
-        churn: 5 + random() * 10,
-        frequency: 2 + random() * 2,
-        monetary: c.clv / 12,
-      }
-    })
-  }, [timeframe, customers])
+  const clvData = useMemo(() => 
+    generateCLVTimeSeriesData(timeframe, 365), 
+    [timeframe]
+  )
 
   const modelData = useMemo(() => generateCLVModelData(customers), [customers])
 
-
-   return (
+  return (
     <div className="container mx-auto py-8 space-y-8">
       <div className="flex justify-between items-start mb-8">
         <div>
@@ -56,7 +37,7 @@ export default function CLVPage() {
           </p>
         </div>
         <div className="flex flex-wrap gap-4"></div>
-</div>
+      </div>
 
       <Tabs defaultValue="overview">
         <TabsList className="flex overflow-x-auto md:grid md:grid-cols-6 w-full">
