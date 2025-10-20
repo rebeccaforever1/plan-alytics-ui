@@ -76,97 +76,24 @@ import {
 } from 'lucide-react'
 
 // ————————————————————————
-// Mock Data Generation
+// Import Data Generators
 // ————————————————————————
 
-const generateUsageData = (weeks: number) => {
-  return Array.from({ length: weeks }, (_, i) => ({
-    fiscalWeek: `W${i + 1}`,
-    activeUsers: Math.floor(8000 + Math.sin(i * 0.1) * 1000 + Math.random() * 500),
-    avgSessionDuration: Math.floor(18 + Math.sin(i * 0.15) * 5 + Math.random() * 3),
-    featureAdoption: Math.floor(65 + Math.sin(i * 0.08) * 10 + Math.random() * 5),
-    activationRate: Math.floor(75 + Math.sin(i * 0.12) * 8 + Math.random() * 4),
-    retentionRate: Math.floor(82 + Math.sin(i * 0.1) * 6 + Math.random() * 3),
-    timeToValue: Math.floor(12 + Math.sin(i * 0.2) * 3 + Math.random() * 2),
-  }))
-}
+import {
+  generateUsageData,
+  generateFeatureData,
+  generateUserSegments,
+  generateProductInsights,
+  UsageDataPoint,
+  FeatureData,
+  UserSegment,
+  ProductInsight,
+} from '@/lib/fakeData'
 
-const generateFeatureData = () => [
-  { name: 'Dashboard', adoption: 89, satisfaction: 4.2, timeToFirstUse: 2, criticality: 'Core', impact: 'High', trend: 'up' },
-  { name: 'Reports', adoption: 67, satisfaction: 3.8, timeToFirstUse: 7, criticality: 'Core', impact: 'High', trend: 'up' },
-  { name: 'Analytics', adoption: 45, satisfaction: 4.5, timeToFirstUse: 14, criticality: 'Growth', impact: 'Medium', trend: 'up' },
-  { name: 'Integrations', adoption: 34, satisfaction: 3.9, timeToFirstUse: 21, criticality: 'Retention', impact: 'High', trend: 'stable' },
-  { name: 'Automation', adoption: 28, satisfaction: 4.1, timeToFirstUse: 28, criticality: 'Growth', impact: 'Medium', trend: 'down' },
-  { name: 'API Access', adoption: 15, satisfaction: 4.3, timeToFirstUse: 35, criticality: 'Power User', impact: 'Low', trend: 'up' },
-]
+// ————————————————————————
+// Utility Functions
+// ————————————————————————
 
-const generateUserSegments = () => [
-  { 
-    segment: 'Champions', 
-    users: 850, 
-    percentage: 8.5,
-    revenue: 425000,
-    arpu: 500,
-    revenueShare: 42.5,
-    characteristics: ['High usage', 'Feature advocates', 'Willing to pay premium'],
-    retentionRate: 95,
-    engagementScore: 9.2,
-    timeToValue: 3,
-    supportTickets: 0.2,
-  },
-  { 
-    segment: 'Power Users', 
-    users: 1200, 
-    percentage: 12,
-    revenue: 300000,
-    arpu: 250,
-    revenueShare: 30,
-    characteristics: ['Deep feature usage', 'Custom workflows', 'Integration heavy'],
-    retentionRate: 88,
-    engagementScore: 8.1,
-    timeToValue: 5,
-    supportTickets: 0.8,
-  },
-  { 
-    segment: 'Regular Users', 
-    users: 4500, 
-    percentage: 45,
-    revenue: 225000,
-    arpu: 50,
-    revenueShare: 22.5,
-    characteristics: ['Core feature usage', 'Steady engagement', 'Price sensitive'],
-    retentionRate: 72,
-    engagementScore: 6.5,
-    timeToValue: 8,
-    supportTickets: 1.2,
-  },
-  { 
-    segment: 'Casual Users', 
-    users: 2450, 
-    percentage: 24.5,
-    revenue: 49000,
-    arpu: 20,
-    revenueShare: 4.9,
-    characteristics: ['Basic usage', 'Infrequent sessions', 'Free tier mostly'],
-    retentionRate: 45,
-    engagementScore: 3.8,
-    timeToValue: 15,
-    supportTickets: 2.1,
-  },
-  { 
-    segment: 'At Risk', 
-    users: 1000, 
-    percentage: 10,
-    revenue: 10000,
-    arpu: 10,
-    revenueShare: 1,
-    characteristics: ['Declining usage', 'Support issues', 'Churn candidates'],
-    retentionRate: 20,
-    engagementScore: 2.1,
-    timeToValue: 25,
-    supportTickets: 4.5,
-  },
-]
 
 // ————————————————————————
 // Utility Functions
@@ -197,7 +124,7 @@ const formatPercentage = (value: number) => {
 // Product-Focused Components
 // ————————————————————————
 
-const ProductHealthKPIs = ({ data, segments }: { data: any[]; segments: any[] }) => {
+const ProductHealthKPIs = ({ data, segments }: { data: UsageDataPoint[]; segments: UserSegment[] }) => {
   const kpis = useMemo(() => {
     const current = data[data.length - 1] || {}
     const previous = data[data.length - 2] || {}
@@ -328,7 +255,7 @@ const ProductHealthKPIs = ({ data, segments }: { data: any[]; segments: any[] })
   )
 }
 
-const ProductTrendAnalysis = ({ data }: { data: any[] }) => {
+const ProductTrendAnalysis = ({ data }: { data: UsageDataPoint[] }) => {
   const [selectedMetric, setSelectedMetric] = useState('retention')
   
   const metricConfig = {
@@ -475,7 +402,7 @@ const ProductTrendAnalysis = ({ data }: { data: any[] }) => {
   )
 }
 
-const FeaturePerformanceMatrix = ({ features }: { features: any[] }) => {
+const FeaturePerformanceMatrix = ({ features }: { features: FeatureData[] }) => {
   return (
     <Card>
       <CardHeader>
@@ -554,7 +481,7 @@ const FeaturePerformanceMatrix = ({ features }: { features: any[] }) => {
   )
 }
 
-const UserSegmentTable = ({ segments }: { segments: any[] }) => {
+const UserSegmentTable = ({ segments }: { segments: UserSegment[] }) => {
   return (
     <Card>
       <CardHeader>
@@ -618,7 +545,7 @@ const UserSegmentTable = ({ segments }: { segments: any[] }) => {
   )
 }
 
-const EngagementDepthAnalysis = ({ segments }: { segments: any[] }) => {
+const EngagementDepthAnalysis = ({ segments }: { segments: UserSegment[] }) => {
   const scatterData = segments.flatMap(segment => 
     Array.from({ length: 20 }, (_, i) => ({
       frequency: Math.random() * 20 + (segment.engagementScore * 2),
@@ -679,41 +606,9 @@ const EngagementDepthAnalysis = ({ segments }: { segments: any[] }) => {
   )
 }
 
-const ProductInsights = ({ data, segments, features }: { data: any[], segments: any[], features: any[] }) => {
-  const insights = [
-    {
-      title: "Champion Segment Opportunity",
-      type: "growth",
-      description: "Champions represent 8.5% of users but drive 42.5% of revenue. Focus on expanding this segment through referral programs and advanced features.",
-      action: "Launch champion advocacy program",
-      impact: "High",
-      effort: "Medium"
-    },
-    {
-      title: "Feature Adoption Gap",
-      type: "product",
-      description: "Analytics feature has 45% adoption but 4.5/5 satisfaction. This suggests a discoverability problem, not a quality issue.",
-      action: "Improve onboarding flow for Analytics",
-      impact: "Medium",
-      effort: "Low"
-    },
-    {
-      title: "At-Risk Segment Alert",
-      type: "retention",
-      description: "10% of users are at churn risk with 4.5 support tickets per user. Proactive intervention needed.",
-      action: "Deploy retention campaign",
-      impact: "High",
-      effort: "High"
-    },
-    {
-      title: "Time to Value Optimization",
-      type: "onboarding",
-      description: "Current TTV is 12 days. Champions achieve value in 3 days. Optimize onboarding for faster activation.",
-      action: "Redesign first-time user experience",
-      impact: "High",
-      effort: "Medium"
-    }
-  ]
+const ProductInsights = ({ data, segments, features }: { data: UsageDataPoint[], segments: UserSegment[], features: FeatureData[] }) => {
+  const insights = generateProductInsights()
+  
 
   return (
     <Card>

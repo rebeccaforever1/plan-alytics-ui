@@ -26,6 +26,21 @@ export const formatCurrency = (value: number) =>
     maximumFractionDigits: 0,
   }).format(value || 0)
 
+// Format numbers as percentages
+export const formatPercentage = (value: number) =>
+  new Intl.NumberFormat('en-US', {
+    style: 'percent',
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  }).format((value || 0) / 100)
+
+// Format numbers with commas
+export const formatNumber = (value: number) =>
+  new Intl.NumberFormat('en-US').format(value || 0)
+
+
+
+
 // Calculate mean (average)
 export const calculateMean = (arr: number[]) => {
   if (!arr.length) return 0

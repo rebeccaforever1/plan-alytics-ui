@@ -65,7 +65,15 @@ import {
 } from 'lucide-react'
 
 import { Progress } from '@/components/ui/progress'
-import { generateFakeCustomers, generateCohortData } from '@/lib/fakeData'
+import { 
+  generateFakeCustomers, 
+  generateQuarterlyCohortData,
+  generateSegments,
+  generateDetailedForecastData,
+  generateInterventionStrategies,
+  generateEffortLevels,
+  generateRiskLevels
+} from '@/lib/fakeData'
 import {
   Card,
   CardContent,
@@ -120,776 +128,9 @@ const formatPercentage = (value: number) => {
   }).format(value / 100)
 }
 
-const metricLabels: Record<string, string> = {
-  value: 'Customer Lifetime Value (CLV)',
-  revenue: 'Revenue',
-  mrr: 'Monthly Recurring Revenue',
-  customers: 'Customer Count',
-  retention: 'Retention Rate',
-  churn: 'Churn Rate',
-}
-
-const calculateMean = (values: number[]) =>
-  values.reduce((acc, val) => acc + val, 0) / values.length
-
-const calculateStandardDeviation = (values: number[]) => {
-  const mean = calculateMean(values)
-  const squareDiffs = values.map(value => Math.pow(value - mean, 2))
-  return Math.sqrt(calculateMean(squareDiffs))
-}
-
-const calculateTrend = (values: number[]) => {
-  if (values.length < 2) return 0
-  const firstValue = values[0]
-  const lastValue = values[values.length - 1]
-  return ((lastValue - firstValue) / firstValue) * 100
-}
-
-const formatTimeLabel = (index: number, timeframe: string) => {
-  if (timeframe === 'daily') return `Day ${index + 1}`
-  if (timeframe === 'monthly') return `Month ${index + 1}`
-  return `Week ${index + 1}`
-}
-
-// Generate forecast data for segment projections
-const generateForecastData = () => {
-  return {
-    segmentProjections: [
-      {
-        segment: 'Platinum',
-        current: 180,
-        projected: 195,
-        growth: 8.3,
-        risk: 'Low'
-      },
-      {
-        segment: 'Gold',
-        current: 420,
-        projected: 445,
-        growth: 5.9,
-        risk: 'Medium'
-      },
-      {
-        segment: 'Silver',
-        current: 550,
-        projected: 485,
-        growth: -11.8,
-        risk: 'High'
-      },
-      {
-        segment: 'Power Users',
-        current: 320,
-        projected: 340,
-        growth: 6.3,
-        risk: 'Low'
-      },
-      {
-        segment: 'Loyalists',
-        current: 420,
-        projected: 435,
-        growth: 3.6,
-        risk: 'Low'
-      },
-      {
-        segment: 'Established',
-        current: 580,
-        projected: 520,
-        growth: -10.3,
-        risk: 'Critical'
-      }
-    ]
-  }
-}
-
-// Enhanced segment structure with sub-segments and stratified retention
-const generateSegments = () => {
-  return {
-    'value-based': {
-      name: 'Value-based Segments',
-      description: 'Segmented by customer lifetime value and revenue contribution',
-      segments: [
-        {
-          id: 'platinum',
-          name: 'Platinum Tier',
-          totalCustomers: 180,
-          avgMrr: 587,
-          avgClv: 9250,
-          retentionRate: 96,
-          subSegments: [
-            {
-              id: 'platinum-high-risk',
-              name: 'High Risk Platinum',
-              riskLevel: 'high' as const,
-              customers: 15,
-              churnRisk: 68,
-              predictedChurn: 10,
-              avgMrr: 625,
-              recommendedEffort: 'intensive' as const,
-              intervention: 'executive_outreach',
-              effortCost: 'high' as const,
-              expectedImpact: '85% retention boost'
-            },
-            {
-              id: 'platinum-medium-risk',
-              name: 'Medium Risk Platinum',
-              riskLevel: 'medium' as const,
-              customers: 45,
-              churnRisk: 32,
-              predictedChurn: 14,
-              avgMrr: 595,
-              recommendedEffort: 'moderate' as const,
-              intervention: 'priority_support',
-              effortCost: 'medium' as const,
-              expectedImpact: '70% retention boost'
-            },
-            {
-              id: 'platinum-low-risk',
-              name: 'Low Risk Platinum',
-              riskLevel: 'low' as const,
-              customers: 120,
-              churnRisk: 8,
-              predictedChurn: 10,
-              avgMrr: 575,
-              recommendedEffort: 'light' as const,
-              intervention: 'proactive_checkin',
-              effortCost: 'low' as const,
-              expectedImpact: '95% retention rate'
-            }
-          ]
-        },
-        {
-          id: 'gold',
-          name: 'Gold Tier',
-          totalCustomers: 420,
-          avgMrr: 287,
-          avgClv: 4850,
-          retentionRate: 88,
-          subSegments: [
-            {
-              id: 'gold-high-risk',
-              name: 'High Risk Gold',
-              riskLevel: 'high' as const,
-              customers: 63,
-              churnRisk: 72,
-              predictedChurn: 45,
-              avgMrr: 265,
-              recommendedEffort: 'moderate' as const,
-              intervention: 'personalized_offer',
-              effortCost: 'medium' as const,
-              expectedImpact: '65% retention boost'
-            },
-            {
-              id: 'gold-medium-risk',
-              name: 'Medium Risk Gold',
-              riskLevel: 'medium' as const,
-              customers: 168,
-              churnRisk: 38,
-              predictedChurn: 64,
-              avgMrr: 290,
-              recommendedEffort: 'light' as const,
-              intervention: 'targeted_email',
-              effortCost: 'low' as const,
-              expectedImpact: '55% retention boost'
-            },
-            {
-              id: 'gold-low-risk',
-              name: 'Low Risk Gold',
-              riskLevel: 'low' as const,
-              customers: 189,
-              churnRisk: 12,
-              predictedChurn: 23,
-              avgMrr: 295,
-              recommendedEffort: 'minimal' as const,
-              intervention: 'newsletter',
-              effortCost: 'very-low' as const,
-              expectedImpact: '90% retention rate'
-            }
-          ]
-        },
-        {
-          id: 'silver',
-          name: 'Silver Tier',
-          totalCustomers: 550,
-          avgMrr: 98,
-          avgClv: 1850,
-          retentionRate: 72,
-          subSegments: [
-            {
-              id: 'silver-high-risk',
-              name: 'High Risk Silver',
-              riskLevel: 'high' as const,
-              customers: 165,
-              churnRisk: 85,
-              predictedChurn: 140,
-              avgMrr: 85,
-              recommendedEffort: 'light' as const,
-              intervention: 'winback_offer',
-              effortCost: 'low' as const,
-              expectedImpact: '40% retention boost'
-            },
-            {
-              id: 'silver-medium-risk',
-              name: 'Medium Risk Silver',
-              riskLevel: 'medium' as const,
-              customers: 220,
-              churnRisk: 45,
-              predictedChurn: 99,
-              avgMrr: 100,
-              recommendedEffort: 'minimal' as const,
-              intervention: 'educational_content',
-              effortCost: 'very-low' as const,
-              expectedImpact: '30% retention boost'
-            },
-            {
-              id: 'silver-low-risk',
-              name: 'Low Risk Silver',
-              riskLevel: 'low' as const,
-              customers: 165,
-              churnRisk: 18,
-              predictedChurn: 30,
-              avgMrr: 105,
-              recommendedEffort: 'minimal' as const,
-              intervention: 'automated_checkin',
-              effortCost: 'very-low' as const,
-              expectedImpact: '80% retention rate'
-            }
-          ]
-        }
-      ]
-    },
-    'tenure-based': {
-      name: 'Tenure-based Segments',
-      description: 'Segmented by customer longevity',
-      segments: [
-        {
-          id: 'loyalists',
-          name: 'Loyalists (2+ years)',
-          totalCustomers: 420,
-          avgMrr: 325,
-          avgClv: 6800,
-          retentionRate: 92,
-          subSegments: [
-            {
-              id: 'loyalists-high-risk',
-              name: 'High Risk Loyalists',
-              riskLevel: 'high' as const,
-              customers: 42,
-              churnRisk: 65,
-              predictedChurn: 27,
-              avgMrr: 340,
-              recommendedEffort: 'moderate' as const,
-              intervention: 'loyalty_reward',
-              effortCost: 'medium' as const,
-              expectedImpact: '75% retention boost'
-            },
-            {
-              id: 'loyalists-medium-risk',
-              name: 'Medium Risk Loyalists',
-              riskLevel: 'medium' as const,
-              customers: 168,
-              churnRisk: 35,
-              predictedChurn: 59,
-              avgMrr: 320,
-              recommendedEffort: 'light' as const,
-              intervention: 'proactive_checkin',
-              effortCost: 'low' as const,
-              expectedImpact: '60% retention boost'
-            },
-            {
-              id: 'loyalists-low-risk',
-              name: 'Low Risk Loyalists',
-              riskLevel: 'low' as const,
-              customers: 210,
-              churnRisk: 12,
-              predictedChurn: 25,
-              avgMrr: 315,
-              recommendedEffort: 'minimal' as const,
-              intervention: 'newsletter',
-              effortCost: 'very-low' as const,
-              expectedImpact: '95% retention rate'
-            }
-          ]
-        },
-        {
-          id: 'established',
-          name: 'Established (1-2 years)',
-          totalCustomers: 580,
-          avgMrr: 185,
-          avgClv: 3200,
-          retentionRate: 82,
-          subSegments: [
-            {
-              id: 'established-high-risk',
-              name: 'High Risk Established',
-              riskLevel: 'high' as const,
-              customers: 116,
-              churnRisk: 55,
-              predictedChurn: 64,
-              avgMrr: 170,
-              recommendedEffort: 'moderate' as const,
-              intervention: 'personalized_offer',
-              effortCost: 'medium' as const,
-              expectedImpact: '60% retention boost'
-            },
-            {
-              id: 'established-medium-risk',
-              name: 'Medium Risk Established',
-              riskLevel: 'medium' as const,
-              customers: 232,
-              churnRisk: 30,
-              predictedChurn: 70,
-              avgMrr: 190,
-              recommendedEffort: 'light' as const,
-              intervention: 'targeted_email',
-              effortCost: 'low' as const,
-              expectedImpact: '45% retention boost'
-            },
-            {
-              id: 'established-low-risk',
-              name: 'Low Risk Established',
-              riskLevel: 'low' as const,
-              customers: 232,
-              churnRisk: 15,
-              predictedChurn: 35,
-              avgMrr: 195,
-              recommendedEffort: 'minimal' as const,
-              intervention: 'newsletter',
-              effortCost: 'very-low' as const,
-              expectedImpact: '85% retention rate'
-            }
-          ]
-        }
-      ]
-    },
-    'geography-based': {
-      name: 'Geography-based Segments',
-      description: 'Segmented by geographic location',
-      segments: [
-        {
-          id: 'north-america',
-          name: 'North America',
-          totalCustomers: 650,
-          avgMrr: 285,
-          avgClv: 5200,
-          retentionRate: 88,
-          subSegments: [
-            {
-              id: 'na-high-risk',
-              name: 'High Risk NA',
-              riskLevel: 'high' as const,
-              customers: 98,
-              churnRisk: 60,
-              predictedChurn: 59,
-              avgMrr: 270,
-              recommendedEffort: 'moderate' as const,
-              intervention: 'localized_support',
-              effortCost: 'medium' as const,
-              expectedImpact: '65% retention boost'
-            },
-            {
-              id: 'na-medium-risk',
-              name: 'Medium Risk NA',
-              riskLevel: 'medium' as const,
-              customers: 260,
-              churnRisk: 35,
-              predictedChurn: 91,
-              avgMrr: 290,
-              recommendedEffort: 'light' as const,
-              intervention: 'regional_offer',
-              effortCost: 'low' as const,
-              expectedImpact: '50% retention boost'
-            },
-            {
-              id: 'na-low-risk',
-              name: 'Low Risk NA',
-              riskLevel: 'low' as const,
-              customers: 292,
-              churnRisk: 12,
-              predictedChurn: 35,
-              avgMrr: 295,
-              recommendedEffort: 'minimal' as const,
-              intervention: 'newsletter',
-              effortCost: 'very-low' as const,
-              expectedImpact: '90% retention rate'
-            }
-          ]
-        },
-        {
-          id: 'europe',
-          name: 'Europe',
-          totalCustomers: 420,
-          avgMrr: 195,
-          avgClv: 3800,
-          retentionRate: 82,
-          subSegments: [
-            {
-              id: 'eu-high-risk',
-              name: 'High Risk Europe',
-              riskLevel: 'high' as const,
-              customers: 63,
-              churnRisk: 58,
-              predictedChurn: 37,
-              avgMrr: 180,
-              recommendedEffort: 'moderate' as const,
-              intervention: 'multi_lingual',
-              effortCost: 'medium' as const,
-              expectedImpact: '60% retention boost'
-            },
-            {
-              id: 'eu-medium-risk',
-              name: 'Medium Risk Europe',
-              riskLevel: 'medium' as const,
-              customers: 168,
-              churnRisk: 32,
-              predictedChurn: 54,
-              avgMrr: 200,
-              recommendedEffort: 'light' as const,
-              intervention: 'localized_content',
-              effortCost: 'low' as const,
-              expectedImpact: '48% retention boost'
-            },
-            {
-              id: 'eu-low-risk',
-              name: 'Low Risk Europe',
-              riskLevel: 'low' as const,
-              customers: 189,
-              churnRisk: 10,
-              predictedChurn: 19,
-              avgMrr: 205,
-              recommendedEffort: 'minimal' as const,
-              intervention: 'newsletter',
-              effortCost: 'very-low' as const,
-              expectedImpact: '88% retention rate'
-            }
-          ]
-        },
-        {
-          id: 'asia-pacific',
-          name: 'Asia Pacific',
-          totalCustomers: 280,
-          avgMrr: 85,
-          avgClv: 1800,
-          retentionRate: 65,
-          subSegments: [
-            {
-              id: 'ap-high-risk',
-              name: 'High Risk APAC',
-              riskLevel: 'high' as const,
-              customers: 70,
-              churnRisk: 75,
-              predictedChurn: 53,
-              avgMrr: 75,
-              recommendedEffort: 'moderate' as const,
-              intervention: 'price_adjustment',
-              effortCost: 'medium' as const,
-              expectedImpact: '55% retention boost'
-            },
-            {
-              id: 'ap-medium-risk',
-              name: 'Medium Risk APAC',
-              riskLevel: 'medium' as const,
-              customers: 112,
-              churnRisk: 40,
-              predictedChurn: 45,
-              avgMrr: 90,
-              recommendedEffort: 'light' as const,
-              intervention: 'localized_support',
-              effortCost: 'low' as const,
-              expectedImpact: '42% retention boost'
-            },
-            {
-              id: 'ap-low-risk',
-              name: 'Low Risk APAC',
-              riskLevel: 'low' as const,
-              customers: 98,
-              churnRisk: 18,
-              predictedChurn: 18,
-              avgMrr: 95,
-              recommendedEffort: 'minimal' as const,
-              intervention: 'educational_content',
-              effortCost: 'very-low' as const,
-              expectedImpact: '78% retention rate'
-            }
-          ]
-        }
-      ]
-    },
-    'usage-based': {
-      name: 'Usage-based Segments',
-      description: 'Segmented by product usage patterns and engagement levels',
-      segments: [
-        {
-          id: 'power-users',
-          name: 'Power Users',
-          totalCustomers: 320,
-          avgMrr: 412,
-          avgClv: 7200,
-          retentionRate: 94,
-          subSegments: [
-            {
-              id: 'power-declining',
-              name: 'Declining Power Users',
-              riskLevel: 'high' as const,
-              customers: 32,
-              churnRisk: 78,
-              predictedChurn: 25,
-              avgMrr: 395,
-              recommendedEffort: 'intensive' as const,
-              intervention: 'feature_training',
-              effortCost: 'high' as const,
-              expectedImpact: '75% retention boost'
-            },
-            {
-              id: 'power-stable',
-              name: 'Stable Power Users',
-              riskLevel: 'low' as const,
-              customers: 256,
-              churnRisk: 8,
-              predictedChurn: 20,
-              avgMrr: 420,
-              recommendedEffort: 'light' as const,
-              intervention: 'beta_access',
-              effortCost: 'low' as const,
-              expectedImpact: '96% retention rate'
-            },
-            {
-              id: 'power-growing',
-              name: 'Growing Power Users',
-              riskLevel: 'medium' as const,
-              customers: 32,
-              churnRisk: 25,
-              predictedChurn: 8,
-              avgMrr: 430,
-              recommendedEffort: 'moderate' as const,
-              intervention: 'upsell_opportunity',
-              effortCost: 'medium' as const,
-              expectedImpact: '85% retention boost'
-            }
-          ]
-        }
-      ]
-    }
-  }
-}
-
-// Detailed intervention strategies with effort levels
-const interventionStrategies = {
-  executive_outreach: {
-    name: 'Executive Outreach',
-    effort: 'intensive' as const,
-    cost: 'high' as const,
-    action: 'C-level executive personal contact',
-    channel: 'Phone + Personal Meeting',
-    frequency: 'Weekly',
-    team: 'Executive Team',
-    costPerCustomer: 250,
-    expectedSuccess: 85
-  },
-  priority_support: {
-    name: 'Priority Support',
-    effort: 'moderate' as const,
-    cost: 'medium' as const,
-    action: 'Dedicated account manager',
-    channel: 'Email + Scheduled Calls',
-    frequency: 'Bi-weekly',
-    team: 'Customer Success',
-    costPerCustomer: 120,
-    expectedSuccess: 78
-  },
-  proactive_checkin: {
-    name: 'Proactive Check-in',
-    effort: 'light' as const,
-    cost: 'low' as const,
-    action: 'Regular success check-ins',
-    channel: 'Email + In-app',
-    frequency: 'Monthly',
-    team: 'Automated + CS',
-    costPerCustomer: 35,
-    expectedSuccess: 92
-  },
-  personalized_offer: {
-    name: 'Personalized Offer',
-    effort: 'moderate' as const,
-    cost: 'medium' as const,
-    action: 'Custom discount or feature bundle',
-    channel: 'Email + Personal Call',
-    frequency: 'One-time',
-    team: 'Sales + Marketing',
-    costPerCustomer: 85,
-    expectedSuccess: 72
-  },
-  targeted_email: {
-    name: 'Targeted Email',
-    effort: 'light' as const,
-    cost: 'low' as const,
-    action: 'Personalized email campaign',
-    channel: 'Email',
-    frequency: 'Weekly for 4 weeks',
-    team: 'Marketing Automation',
-    costPerCustomer: 15,
-    expectedSuccess: 65
-  },
-  newsletter: {
-    name: 'Newsletter',
-    effort: 'minimal' as const,
-    cost: 'very-low' as const,
-    action: 'Regular educational content',
-    channel: 'Email',
-    frequency: 'Monthly',
-    team: 'Marketing',
-    costPerCustomer: 5,
-    expectedSuccess: 55
-  },
-  winback_offer: {
-    name: 'Win-back Offer',
-    effort: 'light' as const,
-    cost: 'low' as const,
-    action: 'Special reactivation offer',
-    channel: 'Email + SMS',
-    frequency: 'One-time campaign',
-    team: 'Marketing',
-    costPerCustomer: 25,
-    expectedSuccess: 45
-  },
-  educational_content: {
-    name: 'Educational Content',
-    effort: 'minimal' as const,
-    cost: 'very-low' as const,
-    action: 'Targeted learning materials',
-    channel: 'Email + In-app',
-    frequency: 'Monthly',
-    team: 'Content Team',
-    costPerCustomer: 8,
-    expectedSuccess: 40
-  },
-  automated_checkin: {
-    name: 'Automated Check-in',
-    effort: 'minimal' as const,
-    cost: 'very-low' as const,
-    action: 'Automated engagement prompts',
-    channel: 'In-app + Email',
-    frequency: 'Quarterly',
-    team: 'Automation',
-    costPerCustomer: 3,
-    expectedSuccess: 35
-  },
-  feature_training: {
-    name: 'Feature Training',
-    effort: 'intensive' as const,
-    cost: 'high' as const,
-    action: 'Personalized feature onboarding',
-    channel: 'Video Call + Training',
-    frequency: 'Multi-session',
-    team: 'Customer Education',
-    costPerCustomer: 180,
-    expectedSuccess: 80
-  },
-  loyalty_reward: {
-    name: 'Loyalty Reward Program',
-    effort: 'moderate' as const,
-    cost: 'medium' as const,
-    action: 'Exclusive benefits for loyal customers',
-    channel: 'Email + Personal Communication',
-    frequency: 'Quarterly',
-    team: 'Customer Success',
-    costPerCustomer: 75,
-    expectedSuccess: 80
-  },
-  beta_access: {
-    name: 'Beta Access',
-    effort: 'light' as const,
-    cost: 'low' as const,
-    action: 'Exclusive feature preview',
-    channel: 'Email + In-app',
-    frequency: 'Quarterly',
-    team: 'Product',
-    costPerCustomer: 20,
-    expectedSuccess: 88
-  },
-  upsell_opportunity: {
-    name: 'Upsell Opportunity',
-    effort: 'moderate' as const,
-    cost: 'medium' as const,
-    action: 'Strategic upgrade conversation',
-    channel: 'Personal Call',
-    frequency: 'One-time',
-    team: 'Sales',
-    costPerCustomer: 95,
-    expectedSuccess: 75
-  },
-  localized_support: {
-    name: 'Localized Support',
-    effort: 'moderate' as const,
-    cost: 'medium' as const,
-    action: 'Regional support team',
-    channel: 'Phone + Email',
-    frequency: 'As needed',
-    team: 'Regional CS',
-    costPerCustomer: 90,
-    expectedSuccess: 70
-  },
-  regional_offer: {
-    name: 'Regional Offer',
-    effort: 'light' as const,
-    cost: 'low' as const,
-    action: 'Geography-specific promotion',
-    channel: 'Email + Local Channels',
-    frequency: 'One-time',
-    team: 'Marketing',
-    costPerCustomer: 25,
-    expectedSuccess: 60
-  },
-  multi_lingual: {
-    name: 'Multi-lingual Support',
-    effort: 'moderate' as const,
-    cost: 'medium' as const,
-    action: 'Local language content and support',
-    channel: 'All Channels',
-    frequency: 'Ongoing',
-    team: 'Localization Team',
-    costPerCustomer: 85,
-    expectedSuccess: 75
-  },
-  localized_content: {
-    name: 'Localized Content',
-    effort: 'light' as const,
-    cost: 'low' as const,
-    action: 'Region-specific educational materials',
-    channel: 'Email + Website',
-    frequency: 'Monthly',
-    team: 'Content Team',
-    costPerCustomer: 20,
-    expectedSuccess: 65
-  },
-  price_adjustment: {
-    name: 'Price Optimization',
-    effort: 'moderate' as const,
-    cost: 'medium' as const,
-    action: 'Regional pricing adjustment',
-    channel: 'Email + In-app',
-    frequency: 'One-time',
-    team: 'Pricing Team',
-    costPerCustomer: 50,
-    expectedSuccess: 68
-  }
-}
-
-const effortLevels = {
-  intensive: { label: 'Intensive Effort', color: 'bg-red-100 text-red-800', icon: Shield },
-  moderate: { label: 'Moderate Effort', color: 'bg-orange-100 text-orange-800', icon: Target },
-  light: { label: 'Light Effort', color: 'bg-yellow-100 text-yellow-800', icon: Star },
-  minimal: { label: 'Minimal Effort', color: 'bg-green-100 text-green-800', icon: Clock }
-}
-
-const riskLevels = {
-  high: { label: 'High Risk', color: 'bg-red-100 text-red-800', icon: AlertTriangle },
-  medium: { label: 'Medium Risk', color: 'bg-yellow-100 text-yellow-800', icon: Shield },
-  low: { label: 'Low Risk', color: 'bg-green-100 text-green-800', icon: Check }
-}
-
 // Cohort Analysis Component
 const CohortAnalysis = ({ data }: { data: any[] }) => {
-  const cohortData = useMemo(() => generateCohortData(data), [data])
+  const cohortData = useMemo(() => generateQuarterlyCohortData(data), [data])
   const [selectedCohort, setSelectedCohort] = useState(cohortData[0]?.cohort)
   const currentCohort = cohortData.find(c => c.cohort === selectedCohort) || cohortData[0]
   
@@ -934,33 +175,41 @@ const CohortAnalysis = ({ data }: { data: any[] }) => {
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-4">Revenue by Cohort</h3>
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart 
-                  data={cohortData.map(cohort => ({
-                    cohort: cohort.cohort,
-                    revenue: cohort.totalRevenue,
-                    customers: cohort.initialCustomers,
-                    avgRevenue: cohort.totalRevenue / cohort.initialCustomers
-                  }))}
-                  layout="horizontal"
-                  margin={{ top: 5, right: 30, left: 80, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis type="number" tickFormatter={(value) => formatCurrency(value)} />
-                  <YAxis type="category" dataKey="cohort" />
-                  <Tooltip 
-                    formatter={(value, name) => {
-                      if (name === 'revenue') return [formatCurrency(Number(value)), 'Total Revenue']
-                      if (name === 'avgRevenue') return [formatCurrency(Number(value)), 'Avg Revenue per Customer']
-                      return [value, name]
-                    }}
-                  />
-                  <Legend />
-                  <Bar dataKey="revenue" fill="#3b82f6" name="Total Revenue" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+           <div className="h-80">
+  <ResponsiveContainer width="100%" height="100%">
+    <BarChart 
+      data={cohortData.map(cohort => ({
+        cohort: cohort.cohort,
+        revenue: cohort.totalRevenue,
+        customers: cohort.initialCustomers,
+        avgRevenue: cohort.totalRevenue / cohort.initialCustomers
+      }))}
+      layout="horizontal"
+      margin={{ top: 5, right: 30, left: 80, bottom: 5 }}
+    >
+      <CartesianGrid strokeDasharray="3 3" />
+      <XAxis 
+        type="category" 
+        dataKey="cohort" 
+        tick={{ fontSize: 12 }}
+      />
+      <YAxis 
+        type="number" 
+        tickFormatter={(value) => formatCurrency(value)}
+        tick={{ fontSize: 12 }}
+      />
+      <Tooltip 
+        formatter={(value, name) => {
+          if (name === 'revenue') return [formatCurrency(Number(value)), 'Total Revenue']
+          if (name === 'avgRevenue') return [formatCurrency(Number(value)), 'Avg Revenue per Customer']
+          return [value, name]
+        }}
+      />
+      <Legend />
+      <Bar dataKey="revenue" fill="#3b82f6" name="Total Revenue" />
+    </BarChart>
+  </ResponsiveContainer>
+</div>
           </div>
         </div>
         
@@ -1005,8 +254,13 @@ export default function SegmentsPage() {
   const [selectedSegment, setSelectedSegment] = useState('platinum')
   const [selectedSubSegment, setSelectedSubSegment] = useState('platinum-high-risk')
 
+  // All data now comes from fakeData.ts
   const segmentsData = generateSegments()
-  const forecastData = generateForecastData()
+  const forecastData = generateDetailedForecastData().segmentProjections
+  const interventionStrategies = generateInterventionStrategies()
+  const effortLevels = generateEffortLevels()
+  const riskLevels = generateRiskLevels()
+
   const categoryData = segmentsData[selectedCategory as keyof typeof segmentsData]
   const segmentData = categoryData.segments.find(s => s.id === selectedSegment)
   const subSegmentData = segmentData?.subSegments.find(s => s.id === selectedSubSegment)
@@ -1027,14 +281,14 @@ export default function SegmentsPage() {
               (sub.customers * interventionStrategies[sub.intervention as keyof typeof interventionStrategies].costPerCustomer)
       }))
     )
-  }, [categoryData])
+  }, [categoryData, interventionStrategies])
 
   const totalInvestment = investmentData.reduce((sum, item) => sum + item.cost, 0)
   const totalExpectedSavings = investmentData.reduce((sum, item) => sum + item.expectedSavings, 0)
   const overallROI = (totalExpectedSavings - totalInvestment) / totalInvestment
 
   return (
-       <div className="container mx-auto py-8 space-y-8">
+    <div className="container mx-auto py-8 space-y-8">
       <div className="flex justify-between items-start mb-8">
         <div>
           <h1 className="text-3xl font-bold">Strategic Retention</h1>
@@ -1079,7 +333,7 @@ export default function SegmentsPage() {
             <CardContent>
               <div className="h-96 mb-6">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={forecastData.segmentProjections}>
+                  <BarChart data={forecastData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
                     <XAxis dataKey="segment" stroke="#6b7280" fontSize={12} />
                     <YAxis yAxisId="left" stroke="#6b7280" fontSize={12} />
@@ -1104,7 +358,7 @@ export default function SegmentsPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {forecastData.segmentProjections.map((segment) => (
+                  {forecastData.map((segment) => (
                     <TableRow key={segment.segment}>
                       <TableCell className="font-medium">{segment.segment}</TableCell>
                       <TableCell>{segment.current}</TableCell>
@@ -1289,7 +543,7 @@ export default function SegmentsPage() {
         </TabsContent>
 
         <TabsContent value="cohort" className="space-y-6">
-          <CohortAnalysis data={generateFakeCustomers()} />
+          <CohortAnalysis data={generateFakeCustomers(1000)} />
         </TabsContent>
 
         <TabsContent value="investment" className="space-y-6">

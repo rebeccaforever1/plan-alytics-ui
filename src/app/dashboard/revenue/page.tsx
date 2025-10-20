@@ -79,11 +79,25 @@ import {
   RefreshCw,
 } from 'lucide-react'
 
-// [All the existing constants, interfaces, and utility functions remain the same]
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-const SEGMENTS = ['Basic', 'Pro', 'Enterprise']
-const REGIONS = ['North America', 'Europe', 'Asia', 'Other']
-const CHANNELS = ['Direct', 'Partner', 'Online', 'Reseller']
+import {
+  generateRevenueQualityData,
+  generateZipfAnalysis, 
+  generateBassDiffusionData,
+  generateRevenueEntropyData,
+  generateKanoAnalysis,
+  generateForecastData,
+  generateMonteCarloForecast,  // ← ADD THIS
+  useRevenueKPIs,
+  useZipfRSquared,
+  MONTHS,
+  SEGMENTS, 
+  REGIONS,
+  CHANNELS,
+  generateRevenueConcentrationData,
+  generateRevenueMetrics 
+} from '@/lib/fakeData'
+
+
 
 interface RevenueDataPoint {
   month: string
@@ -194,228 +208,10 @@ const getPredictabilityInterpretation = (predictability: number): string => {
   return 'Volatile'
 }
 
-// Data Generation Functions
-const generateRevenueQualityData = (): RevenueDataPoint[] => {
-  return MONTHS.map((month, index) => {
-    const recurringRevenue = 45000 + (index * 3200) + (Math.random() * 5000)
-    const oneTimeRevenue = 8000 + (Math.random() * 12000)
-    const totalRevenue = recurringRevenue + oneTimeRevenue
-    const predictability = (recurringRevenue / totalRevenue) * 100
-    const volatility = 15 + (Math.random() * 20)
-    const rqi = (predictability * 0.6) + ((100 - volatility) * 0.4)
-    
-    return {
-      month,
-      recurringRevenue,
-      oneTimeRevenue,
-      totalRevenue,
-      predictability,
-      volatility,
-      rqi,
-      growthRate: 8 + (Math.random() * 10),
-      marginExpansion: 2 + (Math.random() * 8),
-    }
-  })
-}
+const revenueMetrics = generateRevenueMetrics()
 
-const generateZipfAnalysis = (customers: Customer[]): ZipfDataPoint[] => {
-  const sortedCustomers = [...customers].sort((a, b) => b.clv - a.clv)
-  
-  return sortedCustomers.slice(0, 100).map((customer, index) => ({
-    rank: index + 1,
-    revenue: customer.clv,
-    expectedZipf: sortedCustomers[0].clv / (index + 1),
-    logRank: Math.log(index + 1),
-    logRevenue: Math.log(customer.clv),
-    plan: customer.plan,
-  }))
-}
+// Data Generation Functions Moved to fakeData.ts for better organization
 
-const generateBassDiffusionData = (): BassDataPoint[] => {
-  const p = 0.03
-  const q = 0.38
-  const m = 10000
-  
-  return Array.from({ length: 24 }, (_, t) => {
-    const time = t + 1
-    const adoption = m * (1 - Math.exp(-(p + q) * time)) / (1 + (q/p) * Math.exp(-(p + q) * time))
-    const revenue = adoption * 150
-    const prevAdoption = t > 0 ? 
-      m * (1 - Math.exp(-(p + q) * t)) / (1 + (q/p) * Math.exp(-(p + q) * t)) : 0
-    const growthRate = t > 0 ? ((adoption - prevAdoption) / adoption) * 100 : 0
-    
-    return {
-      month: time,
-      cumulativeRevenue: revenue,
-      monthlyRevenue: t > 0 ? revenue - (prevAdoption * 150) : revenue,
-      adoptionRate: (adoption / m) * 100,
-      growthRate,
-      innovators: adoption * 0.025,
-      imitators: adoption * 0.975,
-    }
-  })
-}
-
-const generateRevenueEntropyData = (customers: Customer[]): EntropyData => {
-  const segmentRevenue = SEGMENTS.map(segment => {
-    const segmentCustomers = customers.filter(c => c.plan === segment)
-    const revenue = segmentCustomers.reduce((sum, c) => sum + c.clv, 0)
-    return { segment, revenue, count: segmentCustomers.length }
-  })
-  
-  const totalRevenue = segmentRevenue.reduce((sum, s) => sum + s.revenue, 0)
-  
-  const entropy = -segmentRevenue.reduce((sum, s) => {
-    const p = s.revenue / totalRevenue
-    return sum + (p > 0 ? p * Math.log2(p) : 0)
-  }, 0)
-  
-  const geoDistribution = REGIONS.map(region => ({
-    region,
-    revenue: totalRevenue * (0.1 + Math.random() * 0.4),
-    customers: Math.floor(customers.length * (0.1 + Math.random() * 0.4)),
-  }))
-  
-  const channelDistribution = CHANNELS.map(channel => ({
-    channel,
-    revenue: totalRevenue * (0.15 + Math.random() * 0.3),
-    margin: 15 + Math.random() * 25,
-    efficiency: 60 + Math.random() * 35,
-  }))
-  
-  return {
-    segmentRevenue,
-    entropy,
-    maxEntropy: Math.log2(SEGMENTS.length),
-    diversificationIndex: entropy / Math.log2(SEGMENTS.length),
-    geoDistribution,
-    channelDistribution,
-  }
-}
-
-const generateKanoAnalysis = (): KanoFeature[] => {
-  const features = [
-    { name: 'Core Dashboard', category: 'Basic', satisfaction: 85, revenue_impact: 45, implementation_cost: 15 },
-    { name: 'Advanced Analytics', category: 'Performance', satisfaction: 92, revenue_impact: 78, implementation_cost: 65 },
-    { name: 'API Access', category: 'Performance', satisfaction: 88, revenue_impact: 85, implementation_cost: 45 },
-    { name: 'White Labeling', category: 'Excitement', satisfaction: 94, revenue_impact: 95, implementation_cost: 85 },
-    { name: 'Mobile App', category: 'Performance', satisfaction: 89, revenue_impact: 72, implementation_cost: 55 },
-    { name: 'AI Insights', category: 'Excitement', satisfaction: 96, revenue_impact: 88, implementation_cost: 90 },
-    { name: 'Data Export', category: 'Basic', satisfaction: 78, revenue_impact: 35, implementation_cost: 20 },
-    { name: 'Custom Integrations', category: 'Performance', satisfaction: 91, revenue_impact: 82, implementation_cost: 70 },
-  ]
-  
-  return features.map(feature => ({
-    ...feature,
-    efficiency_ratio: feature.revenue_impact / feature.implementation_cost,
-    priority_score: (feature.satisfaction * 0.3) + (feature.revenue_impact * 0.5) + ((100 - feature.implementation_cost) * 0.2),
-  }))
-}
-
-// Monte Carlo simulation for revenue forecasting
-const generateMonteCarloForecast = (baseMrr: number, growthRate: number, volatility: number, periods: number, simulations: number = 1000) => {
-  const results = [];
-  
-  for (let i = 0; i < simulations; i++) {
-    const path = [];
-    let current = baseMrr;
-    
-    for (let j = 0; j < periods; j++) {
-      const randomFactor = 1 + (Math.random() - 0.5) * volatility;
-      current = current * (1 + growthRate * randomFactor);
-      path.push(current);
-    }
-    
-    results.push(path);
-  }
-  
-  const percentiles = [];
-  for (let i = 0; i < periods; i++) {
-    const values = results.map(path => path[i]).sort((a, b) => a - b);
-    percentiles.push({
-      period: i + 1,
-      p10: values[Math.floor(simulations * 0.10)],
-      p50: values[Math.floor(simulations * 0.50)],
-      p90: values[Math.floor(simulations * 0.90)],
-      min: values[0],
-      max: values[simulations - 1]
-    });
-  }
-  
-  return percentiles;
-};
-
-// Generate forecast data
-const generateForecastData = () => {
-  const baseMrr = 450000;
-  const baseGrowth = 0.08;
-  const volatility = 0.15;
-  
-  const monteCarlo = generateMonteCarloForecast(baseMrr, baseGrowth, volatility, 12);
-  
-  return {
-    revenueForecast: monteCarlo.map((point, index) => ({
-      month: `Month ${index + 1}`,
-      conservative: point.p10,
-      expected: point.p50,
-      optimistic: point.p90,
-      worstCase: point.min,
-      bestCase: point.max
-    })),
-    churnForecast: Array.from({ length: 12 }, (_, i) => ({
-      month: `Month ${i + 1}`,
-      current: 12 - (i * 0.8),
-      withInterventions: 12 - (i * 1.2),
-      goal: 8 - (i * 0.5)
-    })),
-    scenarioAnalysis: [
-      { scenario: 'Base Case', revenue: 6850000, customers: 1650, retention: 88, probability: 60 },
-      { scenario: 'Optimistic', revenue: 7820000, customers: 1850, retention: 92, probability: 25 },
-      { scenario: 'Pessimistic', revenue: 5420000, customers: 1450, retention: 82, probability: 15 }
-    ]
-  };
-};
-
-// Custom Hooks
-const useRevenueKPIs = (data: RevenueDataPoint[]) => {
-  return useMemo(() => {
-    if (data.length < 2) return null
-    
-    const currentMonth = data[data.length - 1]
-    const previousMonth = data[data.length - 2]
-    
-    const totalRevenue = currentMonth.totalRevenue
-    const revenueGrowth = ((currentMonth.totalRevenue - previousMonth.totalRevenue) / previousMonth.totalRevenue) * 100
-    const rqi = currentMonth.rqi
-    const predictability = currentMonth.predictability
-
-    const arr = currentMonth.recurringRevenue * 12
-    const nrr = 108 + Math.random() * 15
-
-    return {
-      totalRevenue,
-      revenueGrowth,
-      arr,
-      nrr,
-      rqi,
-      predictability,
-    }
-  }, [data])
-}
-
-const useZipfRSquared = (zipfData: ZipfDataPoint[]) => {
-  return useMemo(() => {
-    const n = zipfData.length
-    const sumX = zipfData.reduce((sum, d) => sum + d.logRank, 0)
-    const sumY = zipfData.reduce((sum, d) => sum + d.logRevenue, 0)
-    const sumXY = zipfData.reduce((sum, d) => sum + (d.logRank * d.logRevenue), 0)
-    const sumXX = zipfData.reduce((sum, d) => sum + (d.logRank * d.logRank), 0)
-    const sumYY = zipfData.reduce((sum, d) => sum + (d.logRevenue * d.logRevenue), 0)
-    
-    const correlation = (n * sumXY - sumX * sumY) / Math.sqrt((n * sumXX - sumX * sumX) * (n * sumYY - sumY * sumY))
-    return correlation * correlation
-  }, [zipfData])
-}
 
 // Optimized Components
 const RevenueKPIOverview = React.memo(({ data }: { data: RevenueDataPoint[] }) => {
@@ -525,6 +321,10 @@ export default function RevenuePage() {
 
     URL.revokeObjectURL(url)
   }, [])
+
+
+  const concentrationData = useMemo(() => generateRevenueConcentrationData(customers), [customers])
+
 
   // Weibull data generation
   const weibullData = useMemo(() => {
@@ -863,12 +663,7 @@ export default function RevenuePage() {
                   
                   <div>
                     <h4 className="font-semibold mb-3">Revenue Concentration</h4>
-                    {[
-                      { percentile: 'Top 1%', share: 23.4 },
-                      { percentile: 'Top 5%', share: 45.7 },
-                      { percentile: 'Top 10%', share: 61.2 },
-                      { percentile: 'Top 20%', share: 78.9 },
-                    ].map((item) => (
+                   {concentrationData.map((item) => (
                       <div key={item.percentile} className="flex justify-between text-sm mb-2">
                         <span>{item.percentile} of customers</span>
                         <span className="font-medium">{item.share}% of revenue</span>
@@ -1027,7 +822,7 @@ export default function RevenuePage() {
                   <CardContent className="pt-4">
                     <div className="text-center">
                       <h4 className="font-semibold text-gray-800">Volatility</h4>
-                      <p className="text-lg font-bold">±18.5%</p>
+                      <p className="text-lg font-bold">±{revenueMetrics.volatility}%</p>
                       <p className="text-xs text-muted-foreground">Monthly variation</p>
                     </div>
                   </CardContent>
@@ -1037,7 +832,7 @@ export default function RevenuePage() {
                   <CardContent className="pt-4">
                     <div className="text-center">
                       <h4 className="font-semibold text-gray-800">Success Probability</h4>
-                      <p className="text-lg font-bold">72%</p>
+                      <p className="text-lg font-bold">{revenueMetrics.successProbability}%</p>
                       <p className="text-xs text-muted-foreground">Meeting targets</p>
                     </div>
                   </CardContent>
@@ -1135,7 +930,7 @@ export default function RevenuePage() {
                   <CardContent className="pt-4">
                     <div className="text-center">
                       <h4 className="font-semibold text-blue-800">Innovation Coefficient (p)</h4>
-                      <p className="text-2xl font-bold text-blue-600">0.030</p>
+                      <p className="text-2xl font-bold text-blue-600">{revenueMetrics.innovationCoefficient}</p>
                       <p className="text-xs text-muted-foreground">External influence strength</p>
                     </div>
                   </CardContent>
@@ -1145,7 +940,7 @@ export default function RevenuePage() {
                   <CardContent className="pt-4">
                     <div className="text-center">
                       <h4 className="font-semibold text-green-800">Imitation Coefficient (q)</h4>
-                      <p className="text-2xl font-bold text-green-600">0.380</p>
+                      <p className="text-2xl font-bold text-green-600">{revenueMetrics.imitationCoefficient}</p>
                       <p className="text-xs text-muted-foreground">Word-of-mouth effect</p>
                     </div>
                   </CardContent>
@@ -1155,7 +950,7 @@ export default function RevenuePage() {
                   <CardContent className="pt-4">
                     <div className="text-center">
                       <h4 className="font-semibold text-orange-800">Peak Growth Month</h4>
-                      <p className="text-2xl font-bold text-orange-600">8</p>
+                      <p className="text-2xl font-bold text-orange-600">{revenueMetrics.peakGrowthMonth}</p>
                       <p className="text-xs text-muted-foreground">Maximum adoption rate</p>
                     </div>
                   </CardContent>
@@ -1220,7 +1015,7 @@ export default function RevenuePage() {
               <div className="mt-4 p-4 bg-blue-50 rounded-lg">
                 <h4 className="font-semibold mb-2">Model Interpretation</h4>
                 <p className="text-sm text-muted-foreground">
-                  High q/p ratio (12.7) indicates strong word-of-mouth effects. Revenue growth will peak around month 8, 
+                  High q/p ratio ({revenueMetrics.qpRatio}) indicates strong word-of-mouth effects. Revenue growth will peak around month {revenueMetrics.peakGrowthMonth}, 
                   after which growth rate naturally declines as market saturation approaches. Focus on referral programs during early phases.
                 </p>
               </div>
@@ -1280,26 +1075,26 @@ export default function RevenuePage() {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="text-center p-3 bg-blue-50 rounded-lg">
-                  <p className="text-sm text-muted-foreground">Shape Parameter (k)</p>
-                  <p className="text-xl font-bold text-blue-600">1.80</p>
-                  <p className="text-xs text-muted-foreground">Increasing hazard rate</p>
-                </div>
-                <div className="text-center p-3 bg-green-50 rounded-lg">
-                  <p className="text-sm text-muted-foreground">Scale Parameter (λ)</p>
-                  <p className="text-xl font-bold text-green-600">24 mos</p>
-                  <p className="text-xs text-muted-foreground">Characteristic lifetime</p>
-                </div>
-                <div className="text-center p-3 bg-orange-50 rounded-lg">
-                  <p className="text-sm text-muted-foreground">Mean Lifetime</p>
-                  <p className="text-xl font-bold text-orange-600">21.4 mos</p>
-                  <p className="text-xs text-muted-foreground">Expected duration</p>
-                </div>
-                <div className="text-center p-3 bg-purple-50 rounded-lg">
-                  <p className="text-sm text-muted-foreground">Median Lifetime</p>
-                  <p className="text-xl font-bold text-purple-600">19.7 mos</p>
-                  <p className="text-xs text-muted-foreground">50% survival point</p>
-                </div>
+              <div className="text-center p-3 bg-blue-50 rounded-lg">
+                <p className="text-sm text-muted-foreground">Shape Parameter (k)</p>
+                <p className="text-xl font-bold text-blue-600">{revenueMetrics.shapeParameter}</p>
+                <p className="text-xs text-muted-foreground">Increasing hazard rate</p>
+              </div>
+              <div className="text-center p-3 bg-green-50 rounded-lg">
+                <p className="text-sm text-muted-foreground">Scale Parameter (λ)</p>
+                <p className="text-xl font-bold text-green-600">{revenueMetrics.scaleParameter} mos</p>
+                <p className="text-xs text-muted-foreground">Characteristic lifetime</p>
+              </div>
+              <div className="text-center p-3 bg-orange-50 rounded-lg">
+                <p className="text-sm text-muted-foreground">Mean Lifetime</p>
+                <p className="text-xl font-bold text-orange-600">{revenueMetrics.meanLifetime} mos</p>
+                <p className="text-xs text-muted-foreground">Expected duration</p>
+              </div>
+              <div className="text-center p-3 bg-purple-50 rounded-lg">
+                <p className="text-sm text-muted-foreground">Median Lifetime</p>
+                <p className="text-xl font-bold text-purple-600">{revenueMetrics.medianLifetime} mos</p>
+                <p className="text-xs text-muted-foreground">50% survival point</p>
+              </div>
               </div>
             </CardContent>
           </Card>

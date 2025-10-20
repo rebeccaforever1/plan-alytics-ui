@@ -44,149 +44,29 @@ import {
   HelpCircle,
   Lightbulb,
   ChevronRight,
+  Minus,
 } from 'lucide-react'
 
-// Seeded random number generator for consistent data across server/client
-const seededRandom = (seed) => {
-  let x = Math.sin(seed++) * 10000;
-  return x - Math.floor(x);
-}
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion'
 
-// This would be imported from your fakeData.ts file
-const generateFakeData = () => {
-  // Use seeded random for consistent results
-  let seedCounter = 12345; // Fixed seed for reproducible data
-  const random = () => seededRandom(seedCounter++);
-  
-  const customers = Array.from({ length: 1000 }, (_, i) => ({
-    id: i + 1,
-    name: `Customer ${i + 1}`,
-    email: `customer${i + 1}@example.com`,
-    company: ['TechCorp', 'DataFlow', 'CloudSync', 'DevTools', 'AILabs'][Math.floor(random() * 5)],
-    plan: ['Starter', 'Professional', 'Enterprise', 'Trial'][Math.floor(random() * 4)],
-    industry: ['Technology', 'Finance', 'Healthcare', 'Retail'][Math.floor(random() * 4)],
-    clv: 1000 + random() * 4000,
-    joinDate: new Date(2024, Math.floor(random() * 12), Math.floor(random() * 28)),
-  }))
 
-  const crmData = customers.map((customer, i) => {
-    const channels = ['Organic Search', 'Paid Search', 'Social Media', 'Email', 'Direct', 'Referral']
-    const campaigns = ['Q4 Growth', 'Holiday Special', 'Feature Launch', 'Retargeting']
-    
-    // Reset seed counter to ensure consistent data for each customer
-    const customerSeed = 54321 + i;
-    const customerRandom = () => seededRandom(customerSeed + (seedCounter++));
-    
-    return {
-      ...customer,
-      acquisitionChannel: channels[Math.floor(customerRandom() * channels.length)],
-      campaign: campaigns[Math.floor(customerRandom() * campaigns.length)],
-      touchpoints: Math.floor(1 + customerRandom() * 12),
-      cac: 50 + customerRandom() * 400,
-      ltv: customer.clv,
-      engagementScore: customerRandom() * 100,
-      totalLeadScore: customerRandom() * 100,
-    }
-  })
+import {
+  generateCRMCustomers,
+  generateCRMData,
+  generateMixData,
+  generateShapleyData,
+  generateAIData,
+  generateMarkovData,
+  generateCRMInsights,
+  generateCRMRecommendations,
+} from '@/lib/fakeData'
 
-  const mixData = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-    .map((month, index) => {
-      const baseSeasonality = 1 + 0.3 * Math.sin(2 * Math.PI * index / 12)
-      const monthRandom = () => seededRandom(67890 + index);
-      const totalSpend = (15000 + monthRandom() * 10000) * baseSeasonality
-      const totalLeads = (totalSpend / 75) + monthRandom() * 50
-      const totalRevenue = totalLeads * (200 + monthRandom() * 100) * baseSeasonality
-      
-      return {
-        month,
-        totalSpend,
-        totalLeads,
-        totalRevenue,
-        cac: totalSpend / totalLeads,
-        roas: totalRevenue / totalSpend,
-        efficiency: (totalLeads / totalSpend) * 1000,
-      }
-    })
 
-  const shapleyData = ['Organic Search', 'Paid Search', 'Social Media', 'Email', 'Direct', 'Referral']
-    .map(channel => {
-      const channelCustomers = crmData.filter(c => c.acquisitionChannel === channel)
-      const totalRevenue = channelCustomers.reduce((sum, c) => sum + c.ltv, 0)
-      return {
-        channel,
-        shapleyValue: totalRevenue,
-        conversions: channelCustomers.length,
-        revenue: totalRevenue,
-        avgOrderValue: totalRevenue / channelCustomers.length || 0,
-      }
-    }).map((channel, _, array) => {
-      const totalShapley = array.reduce((sum, c) => sum + c.shapleyValue, 0)
-      return {
-        ...channel,
-        contributionPercentage: totalShapley > 0 ? (channel.shapleyValue / totalShapley) * 100 : 0
-      }
-    })
+import { formatTimeLabel, seededRandom, calculateTrend, calculateMean,
+         calculateStandardDeviation, formatNumber, formatCurrency, formatPercentage  } from '@/lib/utils';
 
-  const aiData = [
-    { name: 'Email Engagement', category: 'Behavioral' },
-    { name: 'Website Behavior', category: 'Behavioral' },
-    { name: 'Company Size', category: 'Firmographic' },
-    { name: 'Industry Match', category: 'Firmographic' },
-    { name: 'Geographic Fit', category: 'Demographic' },
-    { name: 'Job Title Relevance', category: 'Demographic' },
-  ].map((feature, i) => {
-    const featureRandom = () => seededRandom(98765 + i);
-    return {
-      feature: feature.name,
-      importance: featureRandom() * 100,
-      correlation: -0.5 + featureRandom(),
-      dataQuality: 60 + featureRandom() * 40,
-      predictivePower: featureRandom() * 100,
-      category: feature.category
-    }
-  }).sort((a, b) => b.predictivePower - a.predictivePower)
 
-  const markovData = ['Awareness', 'Interest', 'Consideration', 'Intent', 'Purchase', 'Retention']
-    .map((touchpoint, index) => {
-      const stageRandom = () => seededRandom(13579 + index);
-      const conversionProbability = Math.max(0, 0.1 + (index * 0.15) + stageRandom() * 0.1)
-      const dropoffProbability = Math.max(0, 0.3 - (index * 0.05) + stageRandom() * 0.1)
-      
-      return {
-        touchpoint,
-        conversionProbability: conversionProbability * 100,
-        dropoffProbability: dropoffProbability * 100,
-        progressProbability: Math.max(0, (1 - conversionProbability - dropoffProbability)) * 100,
-        expectedValue: conversionProbability * 2000,
-        visitors: Math.floor(1000 * Math.pow(0.7, index)),
-      }
-    })
-
-  return { customers, crmData, mixData, shapleyData, aiData, markovData }
-}
-
-// Utility Functions
-const formatCurrency = (value) => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(value)
-}
-
-const formatPercentage = (value) => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'percent',
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1,
-  }).format(value / 100)
-}
-
-const formatNumber = (value) => {
-  return new Intl.NumberFormat('en-US').format(value)
-}
-
+         
 // FIXED: Enhanced CSV Export Function
 const exportCSV = (data, filename) => {
   if (!data || data.length === 0) {
@@ -434,6 +314,8 @@ const TabsContent = ({ children, value, activeTab }) => (
   activeTab === value ? <div>{children}</div> : null
 )
 
+
+
 // Insight Card Component
 const InsightCard = ({ title, description, impact, confidence, actions, priority = "medium" }) => {
   const priorityColors = {
@@ -479,6 +361,7 @@ const InsightCard = ({ title, description, impact, confidence, actions, priority
 }
 
 // Dashboard Components
+
 const CRMKPIOverview = ({ crmData, mixData }) => {
   const kpis = useMemo(() => {
     const currentMonth = mixData[mixData.length - 1] || {}
@@ -510,16 +393,19 @@ const CRMKPIOverview = ({ crmData, mixData }) => {
   }, [crmData, mixData])
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      <Card className="border-l-4 border-l-green-500">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2 mb-8">
+      <Card className={`border-l-4 ${kpis.ltvCacRatio >= 4 ? 'border-l-green-500' : kpis.ltvCacRatio >= 3 ? 'border-l-orange-500' : 'border-l-red-500'}`}>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <Target className={`h-4 w-4 ${kpis.ltvCacRatio >= 4 ? 'text-green-600' : kpis.ltvCacRatio >= 3 ? 'text-orange-600' : 'text-red-600'}`} />
           <CardTitle className="text-sm font-medium">Customer Acquisition Cost</CardTitle>
-          <Target className="h-4 w-4 text-green-600" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-green-600">{formatCurrency(kpis.totalCAC)}</div>
+          <div className={`text-2xl font-bold ${kpis.ltvCacRatio >= 4 ? 'text-green-600' : kpis.ltvCacRatio >= 3 ? 'text-orange-600' : 'text-red-600'}`}>
+            {formatCurrency(kpis.totalCAC)}
+          </div>
           <p className="text-xs text-gray-500">
-            <span className="text-green-500">
+            <span className={`flex items-center ${kpis.ltvCacRatio >= 4 ? 'text-green-500' : kpis.ltvCacRatio >= 3 ? 'text-orange-500' : 'text-red-500'}`}>
+              {kpis.ltvCacRatio >= 4 ? <ArrowUpRight className="h-3 w-3 mr-1" /> : kpis.ltvCacRatio >= 3 ? <Minus className="h-3 w-3 mr-1" /> : <ArrowDownRight className="h-3 w-3 mr-1" />}
               LTV:CAC ratio {kpis.ltvCacRatio.toFixed(1)}:1
             </span>
           </p>
@@ -528,8 +414,9 @@ const CRMKPIOverview = ({ crmData, mixData }) => {
 
       <Card className="border-l-4 border-l-blue-500">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Return on Ad Spend</CardTitle>
           <BarChart3 className="h-4 w-4 text-blue-600" />
+          <CardTitle className="text-sm font-medium">Return on Ad Spend</CardTitle>
+          
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-blue-600">{kpis.currentROAS.toFixed(2)}x</div>
@@ -544,8 +431,9 @@ const CRMKPIOverview = ({ crmData, mixData }) => {
 
       <Card className="border-l-4 border-l-purple-500">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <Star className="h-4 w-4 text-purple-600" />
           <CardTitle className="text-sm font-medium">Lead Quality Score</CardTitle>
-          <Brain className="h-4 w-4 text-purple-600" />
+          
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-purple-600">{kpis.leadQualityRate.toFixed(1)}%</div>
@@ -559,8 +447,9 @@ const CRMKPIOverview = ({ crmData, mixData }) => {
 
       <Card className="border-l-4 border-l-orange-500">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Conversion Rate</CardTitle>
           <Zap className="h-4 w-4 text-orange-600" />
+          <CardTitle className="text-sm font-medium">Conversion Rate</CardTitle>
+          
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold text-orange-600">{kpis.conversionRate.toFixed(1)}%</div>
@@ -574,87 +463,147 @@ const CRMKPIOverview = ({ crmData, mixData }) => {
     </div>
   )
 }
-
-const MarketingMixAnalysis = ({ mixData, onGenerateRecommendations }) => {
+const MarketingMixAnalysis = ({ mixData, onGenerateRecommendations, insights = [] }) => {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-start">
-            <div>
-              <CardTitle>Marketing Mix Performance</CardTitle>
-              <CardDescription>Channel spend efficiency and ROI trends</CardDescription>
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <Card>
+          <CardHeader>
+            <div className="flex justify-between items-start">
+              <div>
+                <CardTitle>Marketing Mix Performance</CardTitle>
+                <CardDescription>Channel spend efficiency and ROI trends</CardDescription>
+              </div>
+              <Button variant="outline" onClick={onGenerateRecommendations}>
+                <Sparkles className="h-4 w-4 mr-1" />
+                Generate Insights
+              </Button>
             </div>
-            <Button variant="ghost" onClick={onGenerateRecommendations}>
-              <Sparkles className="h-4 w-4 mr-1" />
-              Generate Insights
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={mixData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis yAxisId="left" />
-                <YAxis yAxisId="right" orientation="right" />
-                <Tooltip formatter={(value, name) => 
-                  name === 'totalSpend' ? formatCurrency(value) : name === 'roas' ? `${Number(value).toFixed(2)}x` : value
-                } />
-                <Legend />
-                <Bar yAxisId="left" dataKey="totalSpend" fill="#3b82f6" name="Total Spend" />
-                <Line yAxisId="right" type="monotone" dataKey="roas" stroke="#f59e0b" strokeWidth={3} name="ROAS" />
-              </ComposedChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
+          </CardHeader>
+          <CardContent>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <ComposedChart data={mixData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis 
+                    yAxisId="left"
+                    tickFormatter={(value) => formatCurrency(value)}
+                    label={{ value: '', angle: -90, position: 'insideLeft' }}
+                  />
+                  <YAxis 
+                    yAxisId="right" 
+                    orientation="right"
+                    label={{ value: 'ROAS', angle: 90, position: 'insideRight',offset: 25 }}
+                  />
+                  <Tooltip 
+                    formatter={(value, name) => {
+                      if (name === 'Total Spend') return formatCurrency(Number(value));
+                      if (name === 'ROAS') return `${Number(value).toFixed(2)}x`;
+                      return value;
+                    }} 
+                  />
+                  <Legend />
+                  <Bar yAxisId="left" dataKey="totalSpend" fill="#3b82f6" name="Total Spend" />
+                  <Line yAxisId="right" type="monotone" dataKey="roas" stroke="#f59e0b" strokeWidth={3} name="ROAS" />
+                </ComposedChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Channel Efficiency Analysis</CardTitle>
-          <CardDescription>Cost vs. return performance scatter plot</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <ScatterChart data={mixData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis 
-                  dataKey="cac" 
-                  label={{ value: 'Customer Acquisition Cost', position: 'insideBottom', offset: -5 }} 
-                />
-                <YAxis 
-                  dataKey="roas" 
-                  label={{ value: 'Return on Ad Spend', angle: -90, position: 'insideLeft' }} 
-                />
-                <Tooltip formatter={(value, name) => 
-                  name === 'cac' ? formatCurrency(value) : `${Number(value).toFixed(2)}x`
-                } />
-                <ZAxis dataKey="totalRevenue" />
-                <Scatter name="Monthly Performance" data={mixData} fill="#8b5cf6" />
-                <ReferenceLine y={3} stroke="green" strokeDasharray="3 3" />
-                <ReferenceLine x={200} stroke="red" strokeDasharray="3 3" />
-              </ScatterChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="mt-4 grid grid-cols-2 gap-4 text-xs">
-            <div className="flex items-center">
-              <div className="w-3 h-3 bg-purple-500 rounded-full mr-2"></div>
-              <span>Optimal: High ROAS, Low CAC</span>
+        <Card>
+          <CardHeader>
+            <CardTitle>Channel Efficiency Analysis</CardTitle>
+            <CardDescription>Cost vs. return performance scatter plot</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <ScatterChart data={mixData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis
+                    dataKey="cac"
+                    tickFormatter={(value) => formatCurrency(value)}
+                    label={{ value: 'Customer Acquisition Cost', position: 'insideBottom', offset: -5 }}
+                  />
+                  <YAxis 
+                    dataKey="roas" 
+                    label={{ value: 'Return on Ad Spend', angle: -90, position: 'insideLeft', offset: 25 }} 
+                  />
+                  <Tooltip 
+                    formatter={(value, name) => {
+                      if (name === 'cac') return [formatCurrency(Number(value)), 'CAC'];
+                      if (name === 'roas') return [`${Number(value).toFixed(2)}x`, 'ROAS'];
+                      if (name === 'totalRevenue') return [formatCurrency(Number(value)), 'Revenue'];
+                      return [value, name];
+                    }}
+                    cursor={{ strokeDasharray: '3 3' }}
+                  />
+                  <ZAxis dataKey="totalRevenue" />
+                  <Scatter name="Monthly Performance" data={mixData} fill="#8b5cf6" />
+                  <ReferenceLine y={3} stroke="green" strokeDasharray="3 3" />
+                  <ReferenceLine x={200} stroke="red" strokeDasharray="3 3" />
+                </ScatterChart>
+              </ResponsiveContainer>
             </div>
-            <div className="flex items-center">
-              <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-              <span>Target ROAS: 3.0x+</span>
+            <div className="mt-4 mr-4 flex flex-col gap-2 text-xs items-end">
+              <div className="flex items-center">
+                <div className="w-3 h-3 bg-purple-500 rounded-full mr-2"></div>
+                <span>Monthly Performance</span>
+              </div>
+              <div className="flex items-center">
+                  <div className="w-8 h-0 border-t-2 border-dashed border-green-500 mr-2"></div>
+                <span>Target ROAS: 3.0x+</span>
+              </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Insights Display */}
+      {insights.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>AI-Generated Insights</CardTitle>
+            <CardDescription>Actionable recommendations based on your performance data</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4">
+              {insights.map((insight) => (
+                <div key={insight.id} className="flex items-start space-x-3 p-3 border rounded-lg">
+                  <div className={`p-2 rounded-full ${
+                    insight.impact === 'high' ? 'bg-red-100 text-red-600' :
+                    insight.impact === 'medium' ? 'bg-yellow-100 text-yellow-600' :
+                    'bg-blue-100 text-blue-600'
+                  }`}>
+                    <Sparkles className="h-4 w-4" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold">{insight.title}</h4>
+                    <p className="text-sm text-gray-600">{insight.description}</p>
+                    <div className="flex gap-2 mt-2">
+                      <span className={`text-xs px-2 py-1 rounded-full ${
+                        insight.impact === 'high' ? 'bg-red-100 text-red-700' :
+                        insight.impact === 'medium' ? 'bg-yellow-100 text-yellow-700' :
+                        'bg-blue-100 text-blue-700'
+                      }`}>
+                        {insight.impact} impact
+                      </span>
+                      <span className="text-xs px-2 py-1 bg-gray-100 rounded-full text-gray-700">
+                        {insight.type}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 }
-
 const ShapleyAttributionAnalysis = ({ shapleyData }) => {
   const performanceMetrics = useMemo(() => {
     const totalRevenue = shapleyData.reduce((sum, channel) => sum + channel.revenue, 0);
@@ -684,7 +633,7 @@ const ShapleyAttributionAnalysis = ({ shapleyData }) => {
       <CardHeader>
         <CardTitle>Shapley Value Attribution Analysis</CardTitle>
         <CardDescription>
-          Game theory approach to fair marketing attribution with optimization insights
+          A game theory approach to fair marketing attribution.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -744,21 +693,22 @@ const ShapleyAttributionAnalysis = ({ shapleyData }) => {
                 })}
               </TableBody>
             </Table>
+            </div>
             <p className="text-xs text-gray-500 mt-2">*ROAS estimated based on average CAC of $150 per conversion</p>
             
             <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-              <h4 className="font-semibold text-sm flex items-center gap-2 mb-2">
+              <h4 className="font-semibold text-sm flex items-center gap-3 mb-2">
                 <Lightbulb className="h-4 w-4 text-blue-600" />
-                Optimization Insight
+                Channel Observation
               </h4>
-              <p className="text-xs text-blue-700">
+              <p className="font-semibold text-sm text-blue-700">
                 {performanceMetrics.bestPerforming.channel} is your highest performing channel with an estimated ROAS of {
                   (performanceMetrics.bestPerforming.revenue / (performanceMetrics.bestPerforming.conversions * 150)).toFixed(2)
                 }x. Consider reallocating 15-20% of budget from lower-performing channels.
               </p>
             </div>
           </div>
-        </div>
+      
       </CardContent>
     </Card>
   )
@@ -834,11 +784,11 @@ const AILeadScoringDashboard = ({ aiData }) => {
               </div>
               
               <div className="p-3 bg-yellow-50 rounded-lg">
-                <h4 className="font-semibold text-sm flex items-center gap-2 mb-2">
-                  <Lightbulb className="h-4 w-4 text-yellow-600" />
+                <h4 className="font-semibold text-sm flex items-center gap-3 mb-3">
+                  <Lightbulb className="h-4 w-4 text-yellow-600 text-l" />
                   Data Collection Recommendation
                 </h4>
-                <p className="text-xs text-yellow-700">
+                <p className="font-semibold text-sm text-yellow-700">
                   {aiData[0]?.feature} is your strongest predictor. Focus on collecting more data in this area to improve model accuracy by 5-8%.
                 </p>
               </div>
@@ -900,9 +850,9 @@ const MarkovJourneyAnalysis = ({ markovData }) => {
           </ResponsiveContainer>
         </div>
         
-        <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-10">
           <div className="p-3 border-2 border-red-200 rounded-lg bg-red-50">
-            <h4 className="font-semibold text-red-800 flex items-center gap-2 mb-2">
+            <h4 className="font-semibold text-sm flex items-center gap-3 mb-3">
               <AlertTriangle className="h-4 w-4" />
               High Drop-off Point
             </h4>
@@ -913,7 +863,7 @@ const MarkovJourneyAnalysis = ({ markovData }) => {
           </div>
           
           <div className="p-3 border-2 border-green-200 rounded-lg bg-green-50">
-            <h4 className="font-semibold text-green-800 flex items-center gap-2 mb-2">
+            <h4 className="font-semibold text-sm flex items-center gap-3 mb-3">
               <TrendingUp className="h-4 w-4" />
               Conversion Opportunity
             </h4>
@@ -932,45 +882,9 @@ const RecommendationsEngine = ({ crmData, mixData, shapleyData, aiData, markovDa
   const [recommendations, setRecommendations] = useState([]);
   
   const generateRecommendations = useCallback(() => {
-    const channelPerformance = shapleyData.map(channel => {
-      const estimatedROAS = channel.revenue / (channel.conversions * 150);
-      return {
-        channel: channel.channel,
-        roas: estimatedROAS,
-      };
-    }).sort((a, b) => b.roas - a.roas);
-    
-    const newRecommendations = [
-      {
-        id: 1,
-        title: "Optimize Channel Allocation",
-        description: `Reallocate budget from ${channelPerformance[channelPerformance.length - 1].channel} to ${channelPerformance[0].channel} based on ROAS performance`,
-        impact: "Potential 15-22% increase in marketing efficiency",
-        confidence: 85,
-        actions: [
-          `Reduce ${channelPerformance[channelPerformance.length - 1].channel} spend by 20%`,
-          `Increase ${channelPerformance[0].channel} budget by 15%`,
-          "Implement A/B testing for creative assets"
-        ],
-        priority: "high"
-      },
-      {
-        id: 2,
-        title: "Improve Lead Scoring Data Quality",
-        description: `Enhance data collection for ${aiData[aiData.length - 1]?.feature} which has low predictive power but high potential`,
-        impact: "5-8% improvement in lead qualification accuracy",
-        confidence: 72,
-        actions: [
-          `Add additional tracking for ${aiData[aiData.length - 1]?.feature} related behaviors`,
-          "Implement progressive profiling forms",
-          "Set up data validation rules"
-        ],
-        priority: "medium"
-      }
-    ];
-    
+    const newRecommendations = generateCRMRecommendations(shapleyData, aiData, mixData);
     setRecommendations(newRecommendations);
-  }, [mixData, shapleyData, aiData, markovData]);
+  }, [mixData, shapleyData, aiData]);
   
   return (
     <Card>
@@ -1007,7 +921,7 @@ const RecommendationsEngine = ({ crmData, mixData, shapleyData, aiData, markovDa
               <Lightbulb className="h-8 w-8 text-blue-600" />
             </div>
             <h3 className="font-semibold text-lg mb-2">No recommendations yet</h3>
-            <p className="text-gray-500 mb-4">Click "Generate Recommendations" to get data-driven optimization insights</p>
+            <p className="text-gray-500 mb-4">Click "Generate Recommendations" to get data-driven recommendations.</p>
             <Button onClick={generateRecommendations}>
               Generate Recommendations
             </Button>
@@ -1017,61 +931,171 @@ const RecommendationsEngine = ({ crmData, mixData, shapleyData, aiData, markovDa
     </Card>
   );
 };
-
 // Definitions Tab Component
-const DefinitionsTab = () => (
-  <div className="space-y-8">
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Target className="h-5 w-5 text-blue-600" />
-            Core Metrics
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <h4 className="font-semibold text-sm">Customer Acquisition Cost (CAC)</h4>
-            <p className="text-xs text-gray-600 mt-1">
-              Total cost of acquiring a new customer, including all marketing and sales expenses.
-            </p>
-          </div>
-          
-          <div>
-            <h4 className="font-semibold text-sm">Customer Lifetime Value (LTV)</h4>
-            <p className="text-xs text-gray-600 mt-1">
-              Predicted net profit from the entire future relationship with a customer.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+const DefinitionsTab = () => {
+  const glossary = [
+    {
+      category: 'Core Metrics',
+      icon: <Target className="h-4 w-4 text-blue-600" />,
+      terms: [
+        {
+          term: 'Customer Acquisition Cost (CAC)',
+          definition: 'Total cost of acquiring a new customer, including all marketing and sales expenses.',
+          example: 'Example: $10,000 spent on ads for 100 customers → CAC = $100',
+        },
+        {
+          term: 'Customer Lifetime Value (LTV)',
+          definition: 'Predicted net profit from the entire future relationship with a customer.',
+          example: 'Example: If a customer generates $50/month for 24 months → LTV = $1,200',
+        },
+        {
+          term: 'Return on Ad Spend (ROAS)',
+          definition: 'Revenue generated per dollar spent on advertising.',
+          example: 'Example: $5,000 revenue from $1,000 ad spend → ROAS = 5x',
+        },
+        {
+          term: 'Lead Quality Score',
+          definition: 'AI-powered scoring of lead potential based on behavioral and firmographic data.',
+          example: 'Example: Leads scoring above 70 points convert 3x higher than average',
+        },
+      ],
+    },
+    {
+      category: 'Attribution Models',
+      icon: <Star className="h-4 w-4 text-purple-600" />,
+      terms: [
+        {
+          term: 'Shapley Value Attribution',
+          definition: 'Game theory approach that fairly distributes credit based on each channel\'s marginal contribution.',
+          example: 'Evaluates all possible touchpoint combinations to ensure accurate credit distribution',
+        },
+        {
+          term: 'Markov Chain Attribution',
+          definition: 'Probabilistic modeling of customer journey paths through the conversion funnel.',
+          example: 'Identifies high drop-off points and optimal touchpoint sequences',
+        },
+      ],
+    },
+    {
+      category: 'AI & Machine Learning',
+      icon: <Sparkles className="h-4 w-4 text-green-600" />,
+      terms: [
+        {
+          term: 'Feature Importance',
+          definition: 'Machine learning metric showing which customer attributes most influence predictions.',
+          example: 'Example: Website engagement may have 85% predictive power for conversion',
+        },
+        {
+          term: 'Predictive Power Score',
+          definition: 'Measure of how well a feature predicts customer behavior in AI models.',
+          example: 'Scores range from 0% (no predictive value) to 100% (perfect prediction)',
+        },
+      ],
+    },
+  ]
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Brain className="h-5 w-5 text-purple-600" />
-            Attribution Models
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <h4 className="font-semibold text-sm">Shapley Value Attribution</h4>
-            <p className="text-xs text-gray-600 mt-1">
-              Game theory approach that fairly distributes credit based on each channel's marginal contribution.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+  return (
+    <div className="space-y-8">
+      {glossary.map((section) => (
+        <Card key={section.category}>
+          <CardHeader className="flex items-center gap-2">
+            {section.icon}
+            <div>
+              <CardTitle>{section.category}</CardTitle>
+              <CardDescription> </CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <Accordion type="single" collapsible className="space-y-2">
+              {section.terms.map((t) => (
+                <AccordionItem key={t.term} value={t.term}>
+                  <AccordionTrigger className="text-sm font-medium hover:no-underline hover:bg-gray-50 px-3 py-2 rounded-md">
+                    {t.term}
+                  </AccordionTrigger>
+                  <AccordionContent className="px-3 pb-3">
+                    <p className="text-sm text-gray-600 mb-2">{t.definition}</p>
+                    {t.example && (
+                      <div className="text-xs bg-blue-50 text-gray-700 p-2 rounded border-l-2 border-blue-400">
+                        {t.example}
+                      </div>
+                    )}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </CardContent>
+        </Card>
+      ))}
     </div>
-  </div>
-)
-
+  )
+}
 // Main CRM Dashboard
+
+const InsightsDisplay = ({ insights = [] }) => {
+  if (insights.length === 0) {
+    return (
+      <div className="text-center py-8">
+        <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+          <Sparkles className="h-8 w-8 text-blue-600" />
+        </div>
+        <h3 className="font-semibold text-lg mb-2">No insights yet</h3>
+        <p className="text-gray-500">Click "Generate Insights" in the Overview tab to get insights</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-4">
+      {insights.map(insight => (
+        <div key={insight.id} className="flex items-start space-x-3 p-3 border rounded-lg">
+          <div className={`p-2 rounded-full ${
+            insight.impact === 'high' ? 'bg-red-100 text-red-600' :
+            insight.impact === 'medium' ? 'bg-yellow-100 text-yellow-600' :
+            'bg-blue-100 text-blue-600'
+          }`}>
+            <Sparkles className="h-4 w-4" />
+          </div>
+          <div className="flex-1">
+            <h4 className="font-semibold">{insight.title}</h4>
+            <p className="text-sm text-gray-600">{insight.description}</p>
+            <div className="flex gap-2 mt-2">
+              <span className={`text-xs px-2 py-1 rounded-full ${
+                insight.impact === 'high' ? 'bg-red-100 text-red-700' :
+                insight.impact === 'medium' ? 'bg-yellow-100 text-yellow-700' :
+                'bg-blue-100 text-blue-700'
+              }`}>
+                {insight.impact} impact
+              </span>
+              <span className="text-xs px-2 py-1 bg-gray-100 rounded-full text-gray-700">
+                {insight.type}
+              </span>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
 export default function CRMDashboard() {
   const [activeTab, setActiveTab] = useState('overview')
-  
-  const data = useMemo(() => generateFakeData(), [])
-  const { crmData, mixData, shapleyData, aiData, markovData } = data
+  const [insights, setInsights] = useState<any[]>([])
+
+const handleGenerateInsights = () => {
+  const fakeInsights = generateCRMInsights(mixData)
+  setInsights(fakeInsights)
+}
+ 
+  const data = useMemo(() => ({
+  customers: generateCRMCustomers(1000),
+  crmData: generateCRMData(1000),
+  mixData: generateMixData(),
+  shapleyData: generateShapleyData(),
+  aiData: generateAIData(),
+  markovData: generateMarkovData()
+}), [])
+const { crmData, mixData, shapleyData, aiData, markovData } = data
+
+
 
   const handleExport = useCallback(() => {
     exportCSV(crmData, 'crm_attribution_data.csv')
@@ -1106,16 +1130,16 @@ export default function CRMDashboard() {
           <TabsTrigger value="ai-scoring">AI Scoring</TabsTrigger>
           <TabsTrigger value="journey">Journey</TabsTrigger>
           <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
-          <TabsTrigger value="integrations">Integrations</TabsTrigger>
           <TabsTrigger value="definitions">Definitions</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
           <CRMKPIOverview crmData={crmData} mixData={mixData} />
           <MarketingMixAnalysis 
-            mixData={mixData} 
-            onGenerateRecommendations={() => setActiveTab('recommendations')} 
-          />
+  mixData={mixData} 
+  onGenerateRecommendations={handleGenerateInsights}
+  insights={insights}
+/>
         </TabsContent>
 
         <TabsContent value="attribution" className="space-y-6">
@@ -1140,40 +1164,7 @@ export default function CRMDashboard() {
           />
         </TabsContent>
 
-        <TabsContent value="integrations" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Platform Integrations</CardTitle>
-              <CardDescription>Connected marketing and CRM platforms</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {[
-                  { name: 'HubSpot', status: 'Connected', type: 'CRM', records: 45234 },
-                  { name: 'Google Ads', status: 'Connected', type: 'Advertising', records: 12890 },
-                ].map((integration) => (
-                  <div key={integration.name} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-3 h-3 rounded-full ${
-                        integration.status === 'Connected' ? 'bg-green-500' : 'bg-yellow-500'
-                      }`} />
-                      <div>
-                        <p className="font-medium">{integration.name}</p>
-                        <p className="text-xs text-gray-500">{integration.type}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-medium">{formatNumber(integration.records)} records</p>
-                      <Badge variant={integration.status === 'Connected' ? 'default' : 'secondary'}>
-                        {integration.status}
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
+       
 
         <TabsContent value="definitions" className="space-y-6">
           <DefinitionsTab />
