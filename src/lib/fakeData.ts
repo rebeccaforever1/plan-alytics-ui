@@ -209,7 +209,8 @@ export function generateFakeCustomers(count: number) {
     email: faker.internet.email(),
     totalSpend: faker.number.int({ min: 100, max: 10000 }),
     subscriptionAge: faker.number.int({ min: 1, max: 36 }),
-    clv: faker.number.float({ min: 200, max: 5000, precision: 0.01 }),
+    clv: faker.number.float({ min: 200, max: 5000, fractionDigits: 2 }),
+
     usageTier: faker.helpers.arrayElement(['Power', 'Medium', 'Low']),
     plan: faker.helpers.arrayElement(['Basic', 'Pro', 'Enterprise']),
     churned: faker.datatype.boolean(),
@@ -1570,172 +1571,781 @@ export const generateRevenueMetrics = () => {
 // PRODUCT USAGE DASHBOARD GENERATORS
 // =============================================================================
 
+
+
 export interface UsageDataPoint {
-  fiscalWeek: string;
-  activeUsers: number;
-  avgSessionDuration: number;
-  featureAdoption: number;
-  activationRate: number;
-  retentionRate: number;
-  timeToValue: number;
+  period: string
+  activeUsers: number
+  sessions: number
+  featureAdoption: number
+  timeToValue: number
+  retentionRate: number
+  activationRate: number
+  avgSessionDuration: number
+  // Additional fields for filtering
+  geography?: string
+  planTier?: string
+  tenureBand?: string
+  clvCategory?: string
 }
 
 export interface FeatureData {
-  name: string;
-  adoption: number;
-  satisfaction: number;
-  timeToFirstUse: number;
-  criticality: string;
-  impact: string;
-  trend: 'up' | 'down' | 'stable';
+  name: string
+  adoption: number
+  frequency: number
+  impact: 'high' | 'medium' | 'low'
+  trend: number
+  userCount: number
+  // Filterable dimensions
+  adoptionByPlan?: Record<string, number>
+  adoptionByGeography?: Record<string, number>
+  adoptionByTenure?: Record<string, number>
+  adoptionByCLV?: Record<string, number>
 }
 
 export interface UserSegment {
-  segment: string;
-  users: number;
-  percentage: number;
-  revenue: number;
-  arpu: number;
-  revenueShare: number;
-  characteristics: string[];
-  retentionRate: number;
-  engagementScore: number;
-  timeToValue: number;
-  supportTickets: number;
+  segment: string
+  users: number
+  percentage: number
+  arpu: number
+  revenueShare: number
+  retentionRate: number
+  engagementScore: number
+  description?: string
 }
+
+export interface AutoDiscoveredSegment {
+  id: string
+  name: string
+  discoveredDate: string // ISO date
+  category: 'behavioral' | 'lifecycle' | 'value-based' | 'risk'
+  userCount: number
+  percentageOfBase: number
+  keyCharacteristics: string[]
+  whyItMatters: string
+  impactScore: number // 1-100
+  avgCLV: number
+  retentionRate: number
+  topFeatures: string[]
+}
+
+export interface AIRecommendation {
+  id: string
+  title: string
+  category: 'feature-adoption' | 'retention' | 'growth' | 'engagement' | 'monetization'
+  priority: 'critical' | 'high' | 'medium' | 'low'
+  createdDate: string // ISO date
+  status: 'new' | 'in-progress' | 'completed' | 'dismissed'
+  pattern: string // What we found
+  impact: string // Why it matters
+  recommendation: string // What to do
+  expectedOutcome: string // Projected result
+  affectedUsers: number
+  expectedLift: string // e.g., "+15-25%"
+  effort: 'low' | 'medium' | 'high'
+  relatedSegments: string[]
+}
+
+export interface ContextualInsight {
+  id: string
+  type: 'feature' | 'segment' | 'engagement'
+  title: string
+  description: string
+  metric?: string
+  action?: string
+  priority: 'critical' | 'high' | 'medium' | 'low'
+}
+
+export interface FilterDimensions {
+  segments: string[]
+  planTiers: string[]
+  geographies: string[]
+  tenureBands: string[]
+  clvCategories: string[]
+}
+
+export interface BenchmarkData {
+  metric: string
+  yourValue: number
+  industryAverage: number
+  topQuartile: number
+  unit: string
+}
+
+// ————————————————————————————————————————————————————————
+// FILTER DIMENSIONS
+// ————————————————————————————————————————————————————————
+
+export const filterDimensions: FilterDimensions = {
+  segments: ['All Segments', 'Champions', 'Power Users', 'Regular Users', 'Casual Users', 'At Risk'],
+  planTiers: ['All Plans', 'Enterprise', 'Professional', 'Starter', 'Trial'],
+  geographies: ['All Regions', 'North America', 'Europe', 'APAC', 'Latin America', 'MEA'],
+  tenureBands: ['All Tenure', '0-3 months', '3-6 months', '6-12 months', '12-24 months', '24+ months'],
+  clvCategories: ['All CLV', 'High Value', 'Growth Potential', 'Standard', 'At Risk']
+}
+
+// ————————————————————————————————————————————————————————
+// USAGE DATA GENERATOR
+// ————————————————————————————————————————————————————————
+
+export function generateUsageData(weeks: number = 52): UsageDataPoint[] {
+  const data: UsageDataPoint[] = []
+  const baseUsers = 8500
+  
+  for (let i = 0; i < weeks; i++) {
+    const trend = 1 + (i * 0.02)
+    const variance = 0.9 + Math.random() * 0.2
+    
+    data.push({
+      period: `Week ${i + 1}`,
+      activeUsers: Math.round(baseUsers * trend * variance),
+      sessions: Math.round(baseUsers * trend * variance * 3.5),
+      featureAdoption: 65 + Math.random() * 15,
+      timeToValue: 14 + Math.random() * 6,
+      retentionRate: 82 + Math.random() * 8,
+      activationRate: 72 + Math.random() * 10,
+      avgSessionDuration: 18 + Math.random() * 7
+    })
+  }
+  
+  return data
+}
+
+// ————————————————————————————————————————————————————————
+// FEATURE DATA GENERATOR (with filterable dimensions)
+// ————————————————————————————————————————————————————————
+
+export function generateFeatureData(): FeatureData[] {
+  const features = [
+    { name: 'Dashboard Views', base: 92, impact: 'high' as const },
+    { name: 'Report Builder', base: 78, impact: 'high' as const },
+    { name: 'Data Export', base: 71, impact: 'medium' as const },
+    { name: 'Team Collaboration', base: 64, impact: 'high' as const },
+    { name: 'Custom Alerts', base: 58, impact: 'medium' as const },
+    { name: 'API Access', base: 45, impact: 'high' as const },
+    { name: 'Mobile App', base: 41, impact: 'medium' as const },
+    { name: 'Advanced Filters', base: 52, impact: 'medium' as const },
+    { name: 'Scheduled Reports', base: 38, impact: 'low' as const },
+    { name: 'White Label', base: 23, impact: 'low' as const },
+  ]
+  
+  return features.map(f => ({
+    name: f.name,
+    adoption: f.base + Math.random() * 8,
+    frequency: 15 + Math.random() * 35,
+    impact: f.impact,
+    trend: -5 + Math.random() * 15,
+    userCount: Math.round((f.base / 100) * 10000),
+    adoptionByPlan: {
+      'Enterprise': f.base + 8 + Math.random() * 12,
+      'Professional': f.base + Math.random() * 8,
+      'Starter': Math.max(f.base - 20 + Math.random() * 15, 10),
+      'Trial': Math.max(f.base - 35 + Math.random() * 20, 5),
+    },
+    adoptionByGeography: {
+      'North America': f.base + Math.random() * 10,
+      'Europe': f.base - 5 + Math.random() * 15,
+      'APAC': f.base - 10 + Math.random() * 18,
+      'Latin America': f.base - 15 + Math.random() * 20,
+      'MEA': f.base - 20 + Math.random() * 25,
+    },
+    adoptionByTenure: {
+      '0-3 months': Math.max(f.base - 25, 10),
+      '3-6 months': f.base - 10,
+      '6-12 months': f.base,
+      '12-24 months': f.base + 5,
+      '24+ months': f.base + 8,
+    },
+    adoptionByCLV: {
+      'High Value': f.base + 15,
+      'Growth Potential': f.base + 5,
+      'Standard': f.base - 5,
+      'At Risk': Math.max(f.base - 20, 5),
+    }
+  }))
+}
+
+// ————————————————————————————————————————————————————————
+// USER SEGMENTS GENERATOR
+// ————————————————————————————————————————————————————————
+
+export function generateUserSegments(): UserSegment[] {
+  return [
+    {
+      segment: 'Champions',
+      users: 847,
+      percentage: 8.5,
+      arpu: 385,
+      revenueShare: 32,
+      retentionRate: 96,
+      engagementScore: 9.2,
+      description: 'Highly engaged power users driving significant value'
+    },
+    {
+      segment: 'Power Users',
+      users: 1694,
+      percentage: 17,
+      arpu: 245,
+      revenueShare: 41,
+      retentionRate: 89,
+      engagementScore: 7.8,
+      description: 'Regular, engaged users with strong product adoption'
+    },
+    {
+      segment: 'Regular Users',
+      users: 4235,
+      percentage: 42.5,
+      arpu: 125,
+      revenueShare: 19,
+      retentionRate: 78,
+      engagementScore: 5.4,
+      description: 'Steady users with moderate engagement'
+    },
+    {
+      segment: 'Casual Users',
+      users: 2541,
+      percentage: 25.5,
+      arpu: 68,
+      revenueShare: 6,
+      retentionRate: 61,
+      engagementScore: 3.1,
+      description: 'Infrequent users with low feature adoption'
+    },
+    {
+      segment: 'At Risk',
+      users: 641,
+      percentage: 6.5,
+      arpu: 92,
+      revenueShare: 2,
+      retentionRate: 42,
+      engagementScore: 2.3,
+      description: 'Users showing signs of disengagement'
+    }
+  ]
+}
+
+// ————————————————————————————————————————————————————————
+// AUTO-DISCOVERED SEGMENTS (6 segments with timestamps)
+// ————————————————————————————————————————————————————————
+
+export function generateAutoDiscoveredSegments(): AutoDiscoveredSegment[] {
+  const now = new Date()
+  
+  return [
+    {
+      id: 'seg-001',
+      name: 'APAC Enterprise Power Adopters',
+      discoveredDate: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days ago
+      category: 'behavioral',
+      userCount: 127,
+      percentageOfBase: 1.3,
+      keyCharacteristics: [
+        'Enterprise plan tier',
+        'Based in APAC region',
+        'Adopted 8+ features within first 2 weeks',
+        'Average session duration 45+ minutes',
+        'Heavy API usage (top 5%)'
+      ],
+      whyItMatters: 'Greater than 3x feature adoption rate compared to other Enterprise users and 89% retention at 6 months. They represent ideal product-market fit and expansion opportunity in APAC.',
+      impactScore: 92,
+      avgCLV: 12800,
+      retentionRate: 89,
+      topFeatures: ['API Access', 'Advanced Filters', 'Custom Alerts', 'Report Builder']
+    },
+    {
+      id: 'seg-002',
+      name: 'Weekend Warriors',
+      discoveredDate: new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString(), // 14 days ago
+      category: 'behavioral',
+      userCount: 284,
+      percentageOfBase: 2.8,
+      keyCharacteristics: [
+        'Primary usage on Saturdays/Sundays',
+        'Professional and Starter tiers',
+        'Longer session durations (30+ min)',
+        'Lower feature adoption (3-4 features)',
+        'Mobile app heavy users'
+      ],
+      whyItMatters: 'Async usage patterns suggest side projects or freelance work. Lower churn risk (68% retention) but represent untapped upgrade opportunity with right messaging.',
+      impactScore: 71,
+      avgCLV: 4200,
+      retentionRate: 68,
+      topFeatures: ['Mobile App', 'Dashboard Views', 'Data Export']
+    },
+    {
+      id: 'seg-003',
+      name: 'Silent Churners',
+      discoveredDate: new Date(now.getTime() - 21 * 24 * 60 * 60 * 1000).toISOString(), // 21 days ago
+      category: 'risk',
+      userCount: 156,
+      percentageOfBase: 1.6,
+      keyCharacteristics: [
+        'Engagement dropped 60%+ in last 30 days',
+        'No feature adoption in last 45 days',
+        'Previously active users (6+ months tenure)',
+        'Mixed plan tiers',
+        'Support ticket volume increased'
+      ],
+      whyItMatters: 'High-risk segment showing early churn signals. Historical LTV of $8,200 per user means preventing 50% churn could save $640K ARR. Immediate intervention required.',
+      impactScore: 95,
+      avgCLV: 8200,
+      retentionRate: 34,
+      topFeatures: ['Dashboard Views', 'Report Builder'] // Historical usage
+    },
+    {
+      id: 'seg-004',
+      name: 'Feature Specialists',
+      discoveredDate: new Date(now.getTime() - 35 * 24 * 60 * 60 * 1000).toISOString(), // 35 days ago
+      category: 'behavioral',
+      userCount: 419,
+      percentageOfBase: 4.2,
+      keyCharacteristics: [
+        'Use 2-3 features exclusively',
+        'Very high depth in chosen features',
+        'Professional tier dominant',
+        'Strong retention (82%)',
+        'Resistant to adopting new features'
+      ],
+      whyItMatters: 'Optimized workflow around 2-3 core features. Resistant to change but high retention (82%). Expand feature usage through targeted demos of capabilities. Stable revenue base.',
+      impactScore: 67,
+      avgCLV: 6400,
+      retentionRate: 82,
+      topFeatures: ['Report Builder', 'Custom Alerts', 'Scheduled Reports']
+    },
+    {
+      id: 'seg-005',
+      name: 'Rapid Activators',
+      discoveredDate: new Date(now.getTime() - 42 * 24 * 60 * 60 * 1000).toISOString(), // 42 days ago
+      category: 'lifecycle',
+      userCount: 203,
+      percentageOfBase: 2.0,
+      keyCharacteristics: [
+        'Achieved activation in < 7 days',
+        'Adopted 5+ features within first month',
+        'High engagement scores (8+)',
+        'Trial to paid conversion rate: 78%',
+        'Primarily referred by existing users'
+      ],
+      whyItMatters: 'Ideal onboarding pattern. Time-to-value of 5.2 days vs average 14.3 days. Understanding their path can inform onboarding optimization for all users.',
+      impactScore: 88,
+      avgCLV: 9100,
+      retentionRate: 91,
+      topFeatures: ['Dashboard Views', 'Report Builder', 'Team Collaboration', 'Custom Alerts']
+    },
+    {
+      id: 'seg-006',
+      name: 'Enterprise Underutilizers',
+      discoveredDate: new Date(now.getTime() - 56 * 24 * 60 * 60 * 1000).toISOString(), // 56 days ago
+      category: 'value-based',
+      userCount: 89,
+      percentageOfBase: 0.9,
+      keyCharacteristics: [
+        'Enterprise plan tier',
+        'Using < 4 features regularly',
+        'Low session frequency (< 2x per week)',
+        'High ARPU but declining engagement',
+        'Multiple licenses, low seat utilization'
+      ],
+      whyItMatters: 'Paying premium prices but not extracting value. High churn risk despite large contract value. Represents $340K in at-risk ARR. Success management intervention critical.',
+      impactScore: 94,
+      avgCLV: 38000,
+      retentionRate: 56,
+      topFeatures: ['Dashboard Views', 'Data Export']
+    }
+  ]
+}
+
+// ————————————————————————————————————————————————————————
+// AI RECOMMENDATIONS (12-15 recommendations)
+// ————————————————————————————————————————————————————————
+
+export function generateAIRecommendations(): AIRecommendation[] {
+  const now = new Date()
+  
+  return [
+    {
+      id: 'rec-001',
+      title: 'Critical: Silent Churners Require Immediate Intervention',
+      category: 'retention',
+      priority: 'critical',
+      createdDate: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+      status: 'new',
+      pattern: '156 previously active users (6+ month tenure) have shown 60%+ engagement drop in the last 30 days with no new feature adoption. Support tickets from this group increased 3x.',
+      impact: 'This segment represents $1.28M in annual recurring revenue at risk. Historical data shows 73% will churn within 60 days without intervention.',
+      recommendation: 'Launch immediate health-check outreach campaign. Assign CSM for 1:1 calls with accounts >$10K ARR. Create automated workflow offering implementation consultation for smaller accounts. Surface unused features that solve their known pain points.',
+      expectedOutcome: 'Based on similar interventions, expect to retain 60-70% of this segment, preserving $768K-$896K ARR. Average campaign cost: $8K.',
+      affectedUsers: 156,
+      expectedLift: '+60-70% retention',
+      effort: 'medium',
+      relatedSegments: ['Silent Churners', 'At Risk']
+    },
+    {
+      id: 'rec-002',
+      title: 'High Impact: Team Collaboration Feature Adoption Gap',
+      category: 'feature-adoption',
+      priority: 'high',
+      createdDate: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+      status: 'new',
+      pattern: 'Team Collaboration has only 64% adoption overall, but Enterprise accounts using it have 2.1x higher retention and 47% higher ARPU ($385 vs $245).',
+      impact: 'If we can increase Team Collaboration adoption from 64% to 85% across Enterprise tier, projected impact is +$1.8M ARR through improved retention and seat expansion.',
+      recommendation: 'Create in-app onboarding flow specifically for Team Collaboration features. Trigger for Enterprise users who have not invited team members within 14 days. Include video walkthroughs and template workspace setups. Offer concierge onboarding for accounts >$25K.',
+      expectedOutcome: 'Expect adoption increase from 64% to 78-82% within 90 days. Historical data suggests 18-22% lift in multi-seat penetration and 12% improvement in 6-month retention.',
+      affectedUsers: 1247,
+      expectedLift: '+18-22% adoption',
+      effort: 'medium',
+      relatedSegments: ['Enterprise Underutilizers', 'Power Users']
+    },
+    {
+      id: 'rec-003',
+      title: 'APAC Expansion: Replicate Enterprise Success Pattern',
+      category: 'growth',
+      priority: 'high',
+      createdDate: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+      status: 'in-progress',
+      pattern: 'APAC Enterprise users show 3x feature adoption rate vs other regions and 89% retention rate. They adopt an average of 8.2 features within first 2 weeks vs global average of 4.1 features.',
+      impact: 'APAC represents only 12% of Enterprise customer base but shows strongest product-market fit indicators. Market opportunity analysis suggests 4x growth potential in this segment.',
+      recommendation: 'Invest in APAC-specific growth initiatives: regional case studies, localized content, APAC timezone support coverage, and API documentation in Mandarin/Japanese. Create referral program specifically for this segment. Consider APAC-specific pricing experiments.',
+      expectedOutcome: 'Target 3x growth in APAC Enterprise segment over 12 months (380 → 1,140 customers). At $38K average CLV, represents $28.9M in incremental LTV.',
+      affectedUsers: 127,
+      expectedLift: '+200% segment growth',
+      effort: 'high',
+      relatedSegments: ['APAC Enterprise Power Adopters', 'Champions']
+    },
+    {
+      id: 'rec-004',
+      title: 'Mobile App Underinvestment Opportunity',
+      category: 'product',
+      priority: 'high',
+      createdDate: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000).toISOString(),
+      status: 'new',
+      pattern: 'Mobile App has only 41% adoption (lowest of core features), but Weekend Warriors segment shows mobile as primary access method with 68% retention rate vs 61% average for Casual Users.',
+      impact: 'Mobile-first users represent undertapped segment with different usage patterns. 284 Weekend Warriors show strong product fit but limited by mobile capabilities.',
+      recommendation: 'Prioritize mobile app feature parity roadmap. Focus on offline mode, faster report loading, and improved data visualization for small screens. Launch mobile-specific marketing campaign targeting freelancers and consultants.',
+      expectedOutcome: 'Increase mobile adoption from 41% to 58-62% within 6 months. Expand Weekend Warriors segment by 40-50% (284 → 400-425 users). Estimated revenue impact: +$580K ARR.',
+      affectedUsers: 4100,
+      expectedLift: '+40-50%',
+      effort: 'high',
+      relatedSegments: ['Weekend Warriors', 'Casual Users']
+    },
+    {
+      id: 'rec-005',
+      title: 'Rapid Activator Onboarding Template',
+      category: 'growth',
+      priority: 'high',
+      createdDate: new Date(now.getTime() - 8 * 24 * 60 * 60 * 1000).toISOString(),
+      status: 'new',
+      pattern: 'Rapid Activators achieve time-to-value in 5.2 days vs average 14.3 days. They follow consistent pattern: Dashboard Views → Report Builder → Custom Alerts → Team Collaboration within first week.',
+      impact: 'This cohort converts trial-to-paid at 78% vs 52% average. If we can replicate this activation path for more users, trial conversion could increase significantly.',
+      recommendation: 'Create guided onboarding track that mirrors Rapid Activator behavior. Use progressive disclosure to introduce features in proven sequence. Add milestone celebrations and "you\'re ahead of schedule" positive reinforcement. A/B test against current onboarding.',
+      expectedOutcome: 'Increase overall time-to-value from 14.3 to 9-11 days. Improve trial-to-paid conversion from 52% to 62-68%. Impact: +$2.1M ARR from improved conversion.',
+      affectedUsers: 1850,
+      expectedLift: '+19-31% conversion',
+      effort: 'medium',
+      relatedSegments: ['Rapid Activators']
+    },
+    {
+      id: 'rec-006',
+      title: 'Feature Specialists Cross-Sell Campaign',
+      category: 'monetization',
+      priority: 'medium',
+      createdDate: new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+      status: 'new',
+      pattern: 'Feature Specialists use 2-3 features with very high depth. They have 82% retention but have not adopted new features in 6+ months. Deep analysis shows complementary feature opportunities based on their current usage.',
+      impact: '419 users with stable $6,400 CLV showing resistance to feature exploration despite strong fit for advanced capabilities. Untapped upsell opportunity.',
+      recommendation: 'Create contextual feature discovery campaign. When users are deep in their preferred features, suggest complementary capabilities with personalized use cases. Example: Report Builder power users → suggest Scheduled Reports with "automate what you do manually". Soft-sell approach.',
+      expectedOutcome: 'Increase average features-per-user from 2.3 to 3.5-4.2 in this segment. Expected lift in ARPU by 12-18% through increased plan tier adoption. Revenue impact: +$340K ARR.',
+      affectedUsers: 419,
+      expectedLift: '+12-18% ARPU',
+      effort: 'low',
+      relatedSegments: ['Feature Specialists', 'Regular Users']
+    },
+    {
+      id: 'rec-007',
+      title: 'Enterprise Seat Utilization Alert',
+      category: 'retention',
+      priority: 'critical',
+      createdDate: new Date(now.getTime() - 12 * 24 * 60 * 60 * 1000).toISOString(),
+      status: 'new',
+      pattern: 'Enterprise Underutilizers paying for average 12.3 seats but only 4.2 are active users. Contract value averages $38K but engagement trending downward. 56% retention rate vs 89% for engaged Enterprise accounts.',
+      impact: '89 accounts representing $3.38M in ARR at high risk. Low seat utilization is leading indicator of non-renewal. Average 8 months to renewal.',
+      recommendation: 'Implement automated seat utilization monitoring with CSM alerts when <40% seats are active. Create activation playbook for unused licenses: department-specific onboarding, power user training, internal champions program. For accounts <3 months to renewal, exec-level business reviews.',
+      expectedOutcome: 'Increase seat utilization from 34% to 55-65%. Improve retention from 56% to 75-82%. Preserve $1.9M-$2.4M in at-risk ARR. Additional benefit: increased word-of-mouth from broader internal usage.',
+      affectedUsers: 89,
+      expectedLift: '+34-46% retention',
+      effort: 'medium',
+      relatedSegments: ['Enterprise Underutilizers']
+    },
+    {
+      id: 'rec-008',
+      title: 'API Access Pricing Experiment',
+      category: 'monetization',
+      priority: 'medium',
+      createdDate: new Date(now.getTime() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+      status: 'new',
+      pattern: 'API Access has only 45% adoption but users with API access have 2.8x higher retention, 3.1x higher ARPU, and become de facto locked-in through integration depth.',
+      impact: 'API users show exceptional LTV ($18,200 vs $6,800 average). Currently bundled in Professional+ plans, but significant standalone demand signals from Starter tier.',
+      recommendation: 'Test API Access as premium add-on for Starter tier ($49-79/mo). Create API-first onboarding for developer personas. Launch integration marketplace showcasing customer-built solutions. Consider usage-based pricing tier for high-volume API users.',
+      expectedOutcome: 'Capture 200-300 Starter tier API add-ons within 6 months (+$118K-$237K ARR). Reduce Enterprise downgrades by making API access available at lower tiers. Improve developer NPS and create platform ecosystem effects.',
+      affectedUsers: 4500,
+      expectedLift: '+$118K-$237K ARR',
+      effort: 'medium',
+      relatedSegments: ['APAC Enterprise Power Adopters', 'Power Users']
+    },
+    {
+      id: 'rec-009',
+      title: 'Casual User Activation Campaign',
+      category: 'engagement',
+      priority: 'medium',
+      createdDate: new Date(now.getTime() - 18 * 24 * 60 * 60 * 1000).toISOString(),
+      status: 'new',
+      pattern: 'Casual Users (25.5% of base) have 3.1 engagement score and 61% retention. They typically use 2-3 features infrequently. Behavioral data shows they "park" rather than fully adopt product.',
+      impact: '2,541 users with $68 ARPU contributing only 6% revenue share despite being quarter of user base. Massive underutilized segment.',
+      recommendation: 'Segment Casual Users by dormancy patterns and launch re-engagement campaigns. Create "5-minute value" content showing quick wins. Offer quarterly business reviews for Professional tier Casual users. Consider creating lightweight "essentials" plan priced between Starter and Professional.',
+      expectedOutcome: 'Convert 15-20% of Casual Users to Regular Users (engagement score 3.1 → 5.4). Revenue impact through improved retention and potential upsells: +$240K-$320K ARR. Reduce churn by 8-12%.',
+      affectedUsers: 2541,
+      expectedLift: '+8-12% retention',
+      effort: 'low',
+      relatedSegments: ['Casual Users']
+    },
+    {
+      id: 'rec-010',
+      title: 'Advanced Filters Discoverability Issue',
+      category: 'product',
+      priority: 'medium',
+      createdDate: new Date(now.getTime() - 22 * 24 * 60 * 60 * 1000).toISOString(),
+      status: 'dismissed',
+      pattern: 'Advanced Filters adoption at 52% despite being highly valued by power users. User research shows feature exists but is not easily discovered. Power users who adopt it use it 23x per week on average.',
+      impact: 'High-value feature with poor discoverability. Users who need it most are not finding it, reducing product stickiness and power user satisfaction.',
+      recommendation: 'Improve feature discoverability through contextual tooltips when users perform multiple basic filters. Add "unlock advanced filters" prompt in Report Builder. Create video tutorial series featuring power user workflows.',
+      expectedOutcome: 'Increase adoption from 52% to 68-75% over 4 months. Improve power user satisfaction scores by 15-20%. Side benefit: reduced support tickets about "how to do complex filtering".',
+      affectedUsers: 4800,
+      expectedLift: '+16-23% adoption',
+      effort: 'low',
+      relatedSegments: ['Power Users', 'Feature Specialists']
+    },
+    {
+      id: 'rec-011',
+      title: 'Data Export Starter Tier Restriction Review',
+      category: 'monetization',
+      priority: 'low',
+      createdDate: new Date(now.getTime() - 25 * 24 * 60 * 60 * 1000).toISOString(),
+      status: 'completed',
+      pattern: 'Data Export currently restricted to Professional+ tiers. Starter tier users show high interest (52% attempt blocked feature) and it is cited as #2 reason for upgrade. However, 23% churn from Starter citing "can\'t get data out".',
+      impact: 'Feature restriction driving both upgrades and churn. Net effect needs analysis. Competitors offer basic export in free tiers.',
+      recommendation: 'Test limited Data Export access for Starter tier (e.g., 10 exports/month, CSV only, no API). Monitor impact on Professional tier upgrades vs Starter retention. Consider export as strategic "give-away" to reduce competitive losses.',
+      expectedOutcome: 'Expected: 5-8% reduction in Starter churn offset by 10-15% decrease in export-motivated upgrades. Net positive if retention gains exceed upgrade losses. Additional benefit: improved competitive positioning.',
+      affectedUsers: 3200,
+      expectedLift: '+5-8% Starter retention',
+      effort: 'low',
+      relatedSegments: ['Casual Users', 'Regular Users']
+    },
+    {
+      id: 'rec-012',
+      title: 'Geographic Expansion: Latin America Opportunity',
+      category: 'growth',
+      priority: 'low',
+      createdDate: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+      status: 'new',
+      pattern: 'Latin America shows 3.2% of user base but 6.8% of inbound trials. Conversion rate (41%) below other regions (52% avg) but feature adoption patterns similar to high-performing segments once converted.',
+      impact: 'Underserved market with strong demand signals but conversion friction. Price sensitivity likely factor given regional GDP differences.',
+      recommendation: 'Create Latin America-specific pricing (purchasing power parity adjustment). Launch Spanish/Portuguese localization. Partner with regional payment processors (Mercado Pago, etc.). Run case study program highlighting LatAm customers.',
+      expectedOutcome: 'Improve trial conversion from 41% to 50-55%. Grow LatAm segment from 3.2% to 7-9% of user base over 12 months. Revenue impact: +$420K-$650K ARR. Strategic benefit: early-mover advantage in growing market.',
+      affectedUsers: 320,
+      expectedLift: '+22-34% conversion',
+      effort: 'high',
+      relatedSegments: []
+    }
+  ]
+}
+
+// ————————————————————————————————————————————————————————
+// CONTEXTUAL INSIGHTS (for Features, Segments, Engagement tabs)
+// ————————————————————————————————————————————————————————
+
+export function generateFeatureInsights(): ContextualInsight[] {
+  return [
+    {
+      id: 'fi-001',
+      type: 'feature',
+      title: 'Team Collaboration drives Enterprise retention',
+      description: 'Enterprise accounts using Team Collaboration have 2.1x higher retention rate (89% vs 42%) and 57% higher ARPU. This feature is a critical expansion lever.',
+      metric: '+89% retention for adopters',
+      action: 'Prioritize Team Collaboration activation in Enterprise onboarding',
+      priority: 'high'
+    },
+    {
+      id: 'fi-002',
+      type: 'feature',
+      title: 'API Access creates sticky integration lock-in',
+      description: 'Users with API integrations show 96% retention rate and highest LTV ($18,200). Once integrated, switching costs become prohibitive.',
+      metric: '96% retention, $18.2K LTV',
+      action: 'Expand API Access availability to Starter tier as paid add-on',
+      priority: 'high'
+    },
+    {
+      id: 'fi-003',
+      type: 'feature',
+      title: 'Mobile App adoption gap in Professional tier',
+      description: 'Only 38% of Professional tier uses Mobile App despite 65% stating mobile access as "important" in surveys. Discoverability issue or quality concerns.',
+      metric: '38% adoption vs 65% stated importance',
+      action: 'Investigate mobile app barriers and launch awareness campaign',
+      priority: 'medium'
+    },
+    {
+      id: 'fi-004',
+      type: 'feature',
+      title: 'White Label shows low adoption but high satisfaction',
+      description: 'White Label has only 23% adoption but 9.2/10 satisfaction score among users. Niche feature for specific use cases.',
+      metric: '23% adoption, 9.2/10 satisfaction',
+      action: 'Consider premium pricing or higher tier bundling',
+      priority: 'low'
+    }
+  ]
+}
+
+export function generateSegmentInsights(): ContextualInsight[] {
+  return [
+    {
+      id: 'si-001',
+      type: 'segment',
+      title: 'Champions segment is small but mighty',
+      description: 'Champions represent only 8.5% of users but drive 32% of revenue. ARPU of $385 vs $125 company average.',
+      metric: '8.5% of users = 32% of revenue',
+      action: 'Analyze Champions characteristics to refine ICP and acquisition targeting',
+      priority: 'high'
+    },
+    {
+      id: 'si-002',
+      type: 'segment',
+      title: 'Power Users segment growing month-over-month',
+      description: 'Power Users segment has grown 12% in last quarter, now 17% of base.',
+      metric: '+12% growth last quarter',
+      action: 'Strong Leading Indicator: Create Power User to Champion conversion playbook',
+      priority: 'medium'
+    },
+    {
+      id: 'si-003',
+      type: 'segment',
+      title: 'At Risk segment needs immediate attention',
+      description: 'At Risk segment showing declining engagement (-23% last 30 days) and increasing support tickets (+41%).',
+      metric: '641 users, $58.9K MRR at risk',
+      action: 'Launch automated health monitoring and CSM intervention workflow',
+      priority: 'critical'
+    },
+    {
+      id: 'si-004',
+      type: 'segment',
+      title: 'Regular Users are stable revenue foundation',
+      description: 'Regular Users (42.5% of base) show predictable behavior and 78% retention.',
+      metric: '42.5% of base, 78% retention',
+      action: 'Protect this segment while pursuing power user expansion',
+      priority: 'medium'
+    }
+  ]
+}
+
+export function generateEngagementInsights(): ContextualInsight[] {
+  return [
+    {
+      id: 'ei-001',
+      type: 'engagement',
+      title: 'Engagement drops sharply at day 14',
+      description: 'New user engagement shows 35% decline between days 14-21 for users who have not adopted at least 3 features. Critical activation window.',
+      metric: '-35% engagement days 14-21',
+      action: 'Enhance days 7-14 onboarding with feature activation milestones',
+      priority: 'high'
+    },
+    {
+      id: 'ei-002',
+      type: 'engagement',
+      title: 'Weekend usage patterns reveal different personas',
+      description: 'Weekend Warriors segment shows 68% retention despite lower feature adoption. Different value proposition than weekday business users.',
+      metric: '284 users, 68% retention',
+      action: 'Create weekend-specific content and feature highlights',
+      priority: 'medium'
+    },
+    {
+      id: 'ei-003',
+      type: 'engagement',
+      title: 'Session duration correlates with expansion',
+      description: 'Users with avg session duration >25 minutes have 3.2x higher likelihood of plan upgrades within 6 months.',
+      metric: '3.2x upgrade correlation',
+      action: 'Track session duration as leading expansion indicator',
+      priority: 'medium'
+    },
+    {
+      id: 'ei-004',
+      type: 'engagement',
+      title: 'Evening usage peak suggests global audience',
+      description: 'Usage peaks at 8-10pm EST suggest significant APAC/European user base. Current support and content calendar may not serve these timezones.',
+      metric: 'Peak usage 8-10pm EST',
+      action: 'Consider timezone-specific support coverage and content delivery',
+      priority: 'low'
+    }
+  ]
+}
+
+// ————————————————————————————————————————————————————————
+// BENCHMARK DATA
+// ————————————————————————————————————————————————————————
+
+export function generateBenchmarkData(): BenchmarkData[] {
+  return [
+    {
+      metric: 'Net Revenue Retention',
+      yourValue: 118,
+      industryAverage: 105,
+      topQuartile: 130,
+      unit: '%'
+    },
+    {
+      metric: 'Time to Value',
+      yourValue: 14.3,
+      industryAverage: 21.5,
+      topQuartile: 9.0,
+      unit: ' days'
+    },
+    {
+      metric: 'Feature Adoption Rate',
+      yourValue: 72,
+      industryAverage: 58,
+      topQuartile: 82,
+      unit: '%'
+    },
+    {
+      metric: 'Customer Health Score',
+      yourValue: 7.8,
+      industryAverage: 6.9,
+      topQuartile: 8.5,
+      unit: '/10'
+    },
+    {
+      metric: 'Trial to Paid Conversion',
+      yourValue: 52,
+      industryAverage: 47,
+      topQuartile: 68,
+      unit: '%'
+    }
+  ]
+}
+
+// ————————————————————————————————————————————————————————
+// LEGACY SUPPORT (for backward compatibility)
+// ————————————————————————————————————————————————————————
 
 export interface ProductInsight {
-  title: string;
-  type: string;
-  description: string;
-  action: string;
-  impact: string;
-  effort: string;
+  title: string
+  type: string
+  description: string
+  action: string
+  impact: string
+  effort: string
 }
 
-export const generateUsageData = (weeks: number): UsageDataPoint[] => {
-  return Array.from({ length: weeks }, (_, i) => ({
-    fiscalWeek: `W${i + 1}`,
-    activeUsers: Math.floor(8000 + Math.sin(i * 0.1) * 1000 + Math.random() * 500),
-    avgSessionDuration: Math.floor(18 + Math.sin(i * 0.15) * 5 + Math.random() * 3),
-    featureAdoption: Math.floor(65 + Math.sin(i * 0.08) * 10 + Math.random() * 5),
-    activationRate: Math.floor(75 + Math.sin(i * 0.12) * 8 + Math.random() * 4),
-    retentionRate: Math.floor(82 + Math.sin(i * 0.1) * 6 + Math.random() * 3),
-    timeToValue: Math.floor(12 + Math.sin(i * 0.2) * 3 + Math.random() * 2),
-  }));
+export function generateProductInsights(): ProductInsight[] {
+  // Legacy function - kept for compatibility
+  return []
 };
-
-export const generateFeatureData = (): FeatureData[] => [
-  { name: 'Dashboard', adoption: 89, satisfaction: 4.2, timeToFirstUse: 2, criticality: 'Core', impact: 'High', trend: 'up' },
-  { name: 'Reports', adoption: 67, satisfaction: 3.8, timeToFirstUse: 7, criticality: 'Core', impact: 'High', trend: 'up' },
-  { name: 'Analytics', adoption: 45, satisfaction: 4.5, timeToFirstUse: 14, criticality: 'Growth', impact: 'Medium', trend: 'up' },
-  { name: 'Integrations', adoption: 34, satisfaction: 3.9, timeToFirstUse: 21, criticality: 'Retention', impact: 'High', trend: 'stable' },
-  { name: 'Automation', adoption: 28, satisfaction: 4.1, timeToFirstUse: 28, criticality: 'Growth', impact: 'Medium', trend: 'down' },
-  { name: 'API Access', adoption: 15, satisfaction: 4.3, timeToFirstUse: 35, criticality: 'Power User', impact: 'Low', trend: 'up' },
-];
-
-export const generateUserSegments = (): UserSegment[] => [
-  { 
-    segment: 'Champions', 
-    users: 850, 
-    percentage: 8.5,
-    revenue: 425000,
-    arpu: 500,
-    revenueShare: 42.5,
-    characteristics: ['High usage', 'Feature advocates', 'Willing to pay premium'],
-    retentionRate: 95,
-    engagementScore: 9.2,
-    timeToValue: 3,
-    supportTickets: 0.2,
-  },
-  { 
-    segment: 'Power Users', 
-    users: 1200, 
-    percentage: 12,
-    revenue: 300000,
-    arpu: 250,
-    revenueShare: 30,
-    characteristics: ['Deep feature usage', 'Custom workflows', 'Integration heavy'],
-    retentionRate: 88,
-    engagementScore: 8.1,
-    timeToValue: 5,
-    supportTickets: 0.8,
-  },
-  { 
-    segment: 'Regular Users', 
-    users: 4500, 
-    percentage: 45,
-    revenue: 225000,
-    arpu: 50,
-    revenueShare: 22.5,
-    characteristics: ['Core feature usage', 'Steady engagement', 'Price sensitive'],
-    retentionRate: 72,
-    engagementScore: 6.5,
-    timeToValue: 8,
-    supportTickets: 1.2,
-  },
-  { 
-    segment: 'Casual Users', 
-    users: 2450, 
-    percentage: 24.5,
-    revenue: 49000,
-    arpu: 20,
-    revenueShare: 4.9,
-    characteristics: ['Basic usage', 'Infrequent sessions', 'Free tier mostly'],
-    retentionRate: 45,
-    engagementScore: 3.8,
-    timeToValue: 15,
-    supportTickets: 2.1,
-  },
-  { 
-    segment: 'At Risk', 
-    users: 1000, 
-    percentage: 10,
-    revenue: 10000,
-    arpu: 10,
-    revenueShare: 1,
-    characteristics: ['Declining usage', 'Support issues', 'Churn candidates'],
-    retentionRate: 20,
-    engagementScore: 2.1,
-    timeToValue: 25,
-    supportTickets: 4.5,
-  },
-];
-
-export const generateProductInsights = (): ProductInsight[] => [
-  {
-    title: "Champion Segment Opportunity",
-    type: "growth",
-    description: "Champions represent 8.5% of users but drive 42.5% of revenue. Focus on expanding this segment through referral programs and advanced features.",
-    action: "Launch champion advocacy program",
-    impact: "High",
-    effort: "Medium"
-  },
-  {
-    title: "Feature Adoption Gap",
-    type: "product",
-    description: "Analytics feature has 45% adoption but 4.5/5 satisfaction. This suggests a discoverability problem, not a quality issue.",
-    action: "Improve onboarding flow for Analytics",
-    impact: "Medium",
-    effort: "Low"
-  },
-  {
-    title: "At-Risk Segment Alert",
-    type: "retention",
-    description: "10% of users are at churn risk with 4.5 support tickets per user. Proactive intervention needed.",
-    action: "Deploy retention campaign",
-    impact: "High",
-    effort: "High"
-  },
-  {
-    title: "Time to Value Optimization",
-    type: "onboarding",
-    description: "Current TTV is 12 days. Champions achieve value in 3 days. Optimize onboarding for faster activation.",
-    action: "Redesign first-time user experience",
-    impact: "High",
-    effort: "Medium"
-  }
-];
 
 // Retention page data and functions
 
