@@ -629,17 +629,10 @@ const FeatureAdoptionRetentionChart = ({
     </Card>
   )
 }
-
 // ————————————————————————————
 // Contextual Insights Grids - 
 // ————————————————————————————
 
-// ————————————————————————————
-// Contextual Insights - Sortable Grid
-// ————————————————————————————
-// ————————————————————————————
-// Contextual Insights - Sortable Grid with Data Proof
-// ————————————————————————————
 
 type InsightSortColumn = 'priority' | 'title'
 type InsightSortDirection = 'asc' | 'desc'
@@ -691,17 +684,74 @@ const FeatureInsightsCards = ({
   }, [insights, sortColumn, sortDirection])
 
   // Generate proof chart data based on insight
-  const getProofChartData = (insight: ContextualInsight) => {
-    // Generate different data based on the insight type
+const getProofChartData = (insight: ContextualInsight) => {
+  // SEGMENT INSIGHTS
+  if (insight.type === 'segment') {
+    if (insight.title.includes('Champions')) {
+      return [
+        { metric: 'Users', champions: 8.5, average: 20 },
+        { metric: 'Revenue Share', champions: 32, average: 20 },
+        { metric: 'ARPU', champions: 308, average: 100 },
+      ]
+    } else if (insight.title.includes('Power Users growing')) {
+      return Array.from({ length: 6 }, (_, i) => ({
+        month: `Month ${i + 1}`,
+        powerUsers: 15 + i * 0.5,
+        conversion: 8 + i * 0.15
+      }))
+    } else if (insight.title.includes('At Risk')) {
+      return Array.from({ length: 30 }, (_, i) => ({
+        day: i + 1,
+        engagement: 85 - (i > 20 ? (i - 20) * 2 : 0),
+        tickets: i > 20 ? 30 + (i - 20) * 2 : 30
+      }))
+    } else if (insight.title.includes('Regular Users')) {
+      return [
+        { segment: 'Champions', retention: 96, percentage: 8.5 },
+        { segment: 'Power Users', retention: 89, percentage: 17 },
+        { segment: 'Regular Users', retention: 78, percentage: 42.5 },
+        { segment: 'Casual', retention: 61, percentage: 25.5 },
+        { segment: 'At Risk', retention: 42, percentage: 6.5 },
+      ]
+    }
+  }
+  
+  // FEATURE INSIGHTS
+  if (insight.type === 'feature') {
+    if (insight.title.includes('Team Collaboration') || insight.title.includes('Enterprise retention')) {
+      return [
+        { feature: 'No Team Collab', retention: 42, users: 450 },
+        { feature: 'With Team Collab', retention: 89, users: 380 },
+      ]
+    } else if (insight.title.includes('API Access') || insight.title.includes('sticky integration')) {
+      return [
+        { group: 'No API', retention: 78, ltv: 6800 },
+        { group: 'With API', retention: 96, ltv: 18200 },
+      ]
+    } else if (insight.title.includes('Mobile App') || insight.title.includes('Professional tier')) {
+      return [
+        { tier: 'Enterprise', adoption: 52, stated: 65 },
+        { tier: 'Professional', adoption: 38, stated: 65 },
+        { tier: 'Starter', adoption: 28, stated: 55 },
+      ]
+    } else if (insight.title.includes('White Label')) {
+      return [
+        { metric: 'Adoption Rate', value: 23 },
+        { metric: 'Satisfaction', value: 92 },
+        { metric: 'Revenue per User', value: 850 },
+      ]
+    }
+  }
+  
+  // ENGAGEMENT INSIGHTS
+  if (insight.type === 'engagement') {
     if (insight.title.includes('engagement drops') || insight.title.includes('day 14')) {
-      // First 30 days engagement data
       return Array.from({ length: 30 }, (_, i) => ({
         day: i + 1,
         withFeatures: 85 - (i > 14 && i < 21 ? (i - 14) * 2 : 0),
         withoutFeatures: 85 - (i > 14 && i < 21 ? (i - 14) * 5 : i > 20 ? 35 : 0)
       }))
     } else if (insight.title.includes('Weekend')) {
-      // Usage by day of week
       return [
         { day: 'Mon', usage: 850, retention: 72 },
         { day: 'Tue', usage: 920, retention: 74 },
@@ -712,7 +762,6 @@ const FeatureInsightsCards = ({
         { day: 'Sun', usage: 480, retention: 68 }
       ]
     } else if (insight.title.includes('Session duration')) {
-      // Session duration vs upgrades
       return [
         { duration: '0-10', upgrades: 8, users: 2400 },
         { duration: '10-15', upgrades: 12, users: 1800 },
@@ -722,7 +771,6 @@ const FeatureInsightsCards = ({
         { duration: '30+', upgrades: 68, users: 600 }
       ]
     } else if (insight.title.includes('Evening') || insight.title.includes('timezone')) {
-      // Usage by hour
       return Array.from({ length: 24 }, (_, i) => ({
         hour: i,
         users: i < 6 ? 100 + i * 20 :
@@ -732,17 +780,159 @@ const FeatureInsightsCards = ({
                800 - (i - 22) * 200
       }))
     }
-    
-    // Default generic trend
-    return Array.from({ length: 12 }, (_, i) => ({
-      period: `Week ${i + 1}`,
-      value: 70 + Math.random() * 20
-    }))
   }
+  
+  return []
+}
 
-  const renderProofChart = (insight: ContextualInsight) => {
-    const data = getProofChartData(insight)
-    
+const renderProofChart = (insight: ContextualInsight) => {
+  const data = getProofChartData(insight)
+  
+  if (!data || data.length === 0) {
+    return <div className="text-sm text-muted-foreground">No supporting data available</div>
+  }
+  
+  // SEGMENT CHARTS
+  if (insight.type === 'segment') {
+    if (insight.title.includes('Champions')) {
+      return (
+        <div className="h-80">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={data}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="metric" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="champions" fill="#10b981" name="Champions" />
+              <Bar dataKey="average" fill="#94a3b8" name="Average" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      )
+    } else if (insight.title.includes('Power Users growing')) {
+      return (
+        <div className="h-80">
+          <ResponsiveContainer width="100%" height="100%">
+            <ComposedChart data={data}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis yAxisId="left" label={{ value: 'Power Users %', angle: -90, position: 'insideLeft' }} />
+              <YAxis yAxisId="right" orientation="right" label={{ value: 'Conversion %', angle: 90, position: 'insideRight' }} />
+              <Tooltip />
+              <Legend />
+              <Line yAxisId="left" type="monotone" dataKey="powerUsers" stroke="#3b82f6" strokeWidth={3} name="Power Users %" />
+              <Line yAxisId="right" type="monotone" dataKey="conversion" stroke="#10b981" strokeWidth={3} name="Conversion to Champions %" />
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
+      )
+    } else if (insight.title.includes('At Risk')) {
+      return (
+        <div className="h-80">
+          <ResponsiveContainer width="100%" height="100%">
+            <ComposedChart data={data}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="day" label={{ value: 'Days', position: 'insideBottom', offset: -5 }} />
+              <YAxis yAxisId="left" label={{ value: 'Engagement Score', angle: -90, position: 'insideLeft' }} />
+              <YAxis yAxisId="right" orientation="right" label={{ value: 'Support Tickets', angle: 90, position: 'insideRight' }} />
+              <Tooltip />
+              <Legend />
+              <Line yAxisId="left" type="monotone" dataKey="engagement" stroke="#ef4444" strokeWidth={3} name="Engagement Score" />
+              <Line yAxisId="right" type="monotone" dataKey="tickets" stroke="#f59e0b" strokeWidth={3} name="Support Tickets" />
+              <ReferenceLine x={20} stroke="#94a3b8" strokeDasharray="3 3" label="Decline Starts" />
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
+      )
+    } else if (insight.title.includes('Regular Users')) {
+      return (
+        <div className="h-80">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={data}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="segment" />
+              <YAxis label={{ value: 'Retention %', angle: -90, position: 'insideLeft' }} domain={[0, 100]} />
+              <Tooltip />
+              <Bar dataKey="retention" fill="#3b82f6" name="Retention Rate %" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      )
+    }
+  }
+  
+  // FEATURE CHARTS
+  if (insight.type === 'feature') {
+    if (insight.title.includes('Team Collaboration') || insight.title.includes('Enterprise retention')) {
+      return (
+        <div className="h-80">
+          <ResponsiveContainer width="100%" height="100%">
+            <ComposedChart data={data}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="feature" />
+              <YAxis yAxisId="left" label={{ value: 'Retention Rate %', angle: -90, position: 'insideLeft' }} />
+              <YAxis yAxisId="right" orientation="right" label={{ value: 'Users', angle: 90, position: 'insideRight' }} />
+              <Tooltip />
+              <Legend />
+              <Bar yAxisId="left" dataKey="retention" fill="#10b981" name="Retention %" />
+              <Line yAxisId="right" type="monotone" dataKey="users" stroke="#3b82f6" strokeWidth={3} name="User Count" />
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
+      )
+    } else if (insight.title.includes('API Access')) {
+      return (
+        <div className="h-80">
+          <ResponsiveContainer width="100%" height="100%">
+            <ComposedChart data={data}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="group" />
+              <YAxis yAxisId="left" label={{ value: 'Retention %', angle: -90, position: 'insideLeft' }} />
+              <YAxis yAxisId="right" orientation="right" label={{ value: 'LTV ($)', angle: 90, position: 'insideRight' }} />
+              <Tooltip formatter={(value: any) => typeof value === 'number' && value > 100 ? `$${value.toLocaleString()}` : `${value}%`} />
+              <Legend />
+              <Bar yAxisId="left" dataKey="retention" fill="#10b981" name="Retention %" />
+              <Bar yAxisId="right" dataKey="ltv" fill="#3b82f6" name="Lifetime Value" />
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
+      )
+    } else if (insight.title.includes('Mobile App')) {
+      return (
+        <div className="h-80">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={data}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="tier" />
+              <YAxis label={{ value: 'Percentage %', angle: -90, position: 'insideLeft' }} domain={[0, 100]} />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="adoption" fill="#ef4444" name="Actual Adoption" />
+              <Bar dataKey="stated" fill="#3b82f6" name="Stated Importance" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      )
+    } else if (insight.title.includes('White Label')) {
+      return (
+        <div className="h-80">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={data}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="metric" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="value" fill="#3b82f6" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      )
+    }
+  }
+  
+  // ENGAGEMENT CHARTS
+  if (insight.type === 'engagement') {
     if (insight.title.includes('engagement drops') || insight.title.includes('day 14')) {
       return (
         <div className="h-80">
@@ -800,8 +990,8 @@ const FeatureInsightsCards = ({
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis 
-                dataKey="hour" 
+              <XAxis
+                dataKey="hour"
                 label={{ value: 'Hour of Day (EST)', position: 'insideBottom', offset: -5 }}
                 tickFormatter={(hour) => `${hour}:00`}
               />
@@ -814,21 +1004,46 @@ const FeatureInsightsCards = ({
         </div>
       )
     }
+  }
+  
+  return <div className="text-sm text-muted-foreground">No supporting data available</div>
+}
+
+  const getChartTitle = (insight: ContextualInsight) => {
+    // Engagement titles
+    if (insight.title.includes('engagement drops') || insight.title.includes('day 14')) {
+      return 'Engagement by Day: First 30 Days'
+    } else if (insight.title.includes('Weekend')) {
+      return 'Usage and Retention by Day of Week'
+    } else if (insight.title.includes('Session duration')) {
+      return 'Session Duration vs Upgrade Rate'
+    } else if (insight.title.includes('Evening') || insight.title.includes('timezone')) {
+      return 'Hourly Usage Distribution (EST)'
+    }
     
-    // Default chart
-    return (
-      <div className="h-80">
-        <ResponsiveContainer width="100%" height="100%">
-          <ComposedChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="period" />
-            <YAxis />
-            <Tooltip />
-            <Line type="monotone" dataKey="value" stroke="#3b82f6" strokeWidth={2} />
-          </ComposedChart>
-        </ResponsiveContainer>
-      </div>
-    )
+    // Feature titles
+    if (insight.title.includes('Team Collaboration')) {
+      return 'Retention by Team Collaboration Usage'
+    } else if (insight.title.includes('API Access')) {
+      return 'API Access Impact on Retention and LTV'
+    } else if (insight.title.includes('Mobile App')) {
+      return 'Mobile App Adoption vs Stated Importance by Tier'
+    } else if (insight.title.includes('White Label')) {
+      return 'White Label Feature Metrics'
+    }
+    
+    // Segment titles
+    if (insight.title.includes('Champions')) {
+      return 'Champions vs Average User Metrics'
+    } else if (insight.title.includes('Power Users growing')) {
+      return 'Power Users Growth and Conversion Trend'
+    } else if (insight.title.includes('At Risk')) {
+      return 'At Risk Segment: Engagement Decline and Support Activity'
+    } else if (insight.title.includes('Regular Users')) {
+      return 'Retention Rate by User Segment'
+    }
+    
+    return 'Supporting Data'
   }
 
   const SortableHeader = ({ column, children }: { column: InsightSortColumn, children: React.ReactNode }) => (
@@ -847,7 +1062,7 @@ const FeatureInsightsCards = ({
     <Card>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
-        <CardDescription>Click column headers to sort. Click "View Data" to see supporting evidence.</CardDescription>
+        <CardDescription>Click column headers to sort. Click View Data to see supporting evidence.</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="border rounded-lg">
@@ -873,16 +1088,16 @@ const FeatureInsightsCards = ({
                           {insight.priority}
                         </Badge>
                       </TableCell>
-                      <TableCell className="font-medium max-w-xl">
-                        <div className="flex items-start gap-2">
-                          <Icon className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                          <div className="min-w-0">
-                            <div className="font-semibold mb-1">{insight.title}</div>
-                            <div className="text-sm text-muted-foreground">{insight.description}</div>
+                     <TableCell className="font-medium">
+  <div className="flex items-start gap-2">
+    <Icon className="h-4 w-4 mt-0.5 flex-shrink-0" />
+    <div className="min-w-0 flex-1">
+      <div className="font-semibold mb-1 break-words">{insight.title}</div>
+      <div className="text-sm text-muted-foreground break-words whitespace-normal">{insight.description}</div>
                             {insight.action && (
                               <div className="flex items-start gap-2 mt-2 p-2 bg-green-50 rounded border border-green-200">
                                 <ArrowRight className="h-4 w-4 mt-0.5 text-blue-600 flex-shrink-0" />
-                                <span className="text-sm text-foreground">{insight.action}</span>
+                                <span className="text-sm text-foreground break-words">{insight.action}</span>
                               </div>
                             )}
                           </div>
@@ -916,12 +1131,8 @@ const FeatureInsightsCards = ({
                         <TableCell colSpan={4} className="bg-gray-50 p-6">
                           <div className="bg-white rounded-lg border p-4">
                             <h4 className="font-semibold text-sm mb-4 text-foreground">
-  {insight.title.includes('engagement drops') || insight.title.includes('day 14') ? 'Engagement by Day: First 30 Days' :
-   insight.title.includes('Weekend') ? 'Usage & Retention by Day of Week' :
-   insight.title.includes('Session duration') ? 'Session Duration vs Upgrade Rate' :
-   insight.title.includes('Evening') || insight.title.includes('timezone') ? 'Hourly Usage Distribution (EST)' :
-   'Supporting Data'}
-</h4>
+                              {getChartTitle(insight)}
+                            </h4>
                             {renderProofChart(insight)}
                           </div>
                         </TableCell>
@@ -1694,7 +1905,7 @@ export default function ProductUsageDashboard() {
   const segmentInsights = useMemo(() => generateSegmentInsights(), [])
   const engagementInsights = useMemo(() => generateEngagementInsights(), [])
   
-  const [activeTab, setActiveTab] = useState('overview')
+  const [activeTab, setActiveTab] = useState('features')
   const [activeFilters, setActiveFilters] = useState<ActiveFilters>({
     segment: 'All Segments',
     planTier: 'All Plans',
@@ -1742,20 +1953,18 @@ export default function ProductUsageDashboard() {
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
+          
           <TabsTrigger value="features">Features</TabsTrigger>
-          <TabsTrigger value="segments">Segments</TabsTrigger>
           <TabsTrigger value="engagement">Engagement</TabsTrigger>
+          <TabsTrigger value="segments">Segments</TabsTrigger>
+          
           <TabsTrigger value="insights">Insights Hub</TabsTrigger>
         </TabsList>
 
         <div className="mt-6">
-          <TabsContent value="overview" className="space-y-6">
-            <ProductHealthKPIs data={usageData} segments={userSegments} />
-            <LatestInsightsPreview recommendations={aiRecommendations} />
-          </TabsContent>
-
           <TabsContent value="features" className="space-y-6">
+              <ProductHealthKPIs data={usageData} segments={userSegments} />
+              <LatestInsightsPreview recommendations={aiRecommendations} />
             <FeatureAdoptionRetentionChart features={featureData} activeFilters={activeFilters} segments={userSegments} />
             <FeatureInsightsCards insights={featureInsights} title="Feature Insights" />
           </TabsContent>
