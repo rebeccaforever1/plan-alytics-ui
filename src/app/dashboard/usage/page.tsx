@@ -1956,7 +1956,6 @@ export default function ProductUsageDashboard() {
           
           <TabsTrigger value="features">Features</TabsTrigger>
           <TabsTrigger value="engagement">Engagement</TabsTrigger>
-          <TabsTrigger value="segments">Segments</TabsTrigger>
           
           <TabsTrigger value="insights">Insights Hub</TabsTrigger>
         </TabsList>
@@ -1969,11 +1968,7 @@ export default function ProductUsageDashboard() {
             <FeatureInsightsCards insights={featureInsights} title="Feature Insights" />
           </TabsContent>
 
-          <TabsContent value="segments" className="space-y-6">
-            <SegmentDistributionChart segments={filteredSegments} />
-            <AutoDiscoveredSegmentsSection segments={autoDiscoveredSegments} />
-            <FeatureInsightsCards insights={segmentInsights} title="Segment Insights" />
-          </TabsContent>
+    
 
           <TabsContent value="engagement" className="space-y-6">
             <EngagementDepthMatrix segments={filteredSegments} />

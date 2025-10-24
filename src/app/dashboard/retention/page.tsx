@@ -17,7 +17,8 @@ import {
   Area,
   ScatterChart,
   Scatter,
-  ZAxis,
+    ZAxis,
+  ReferenceLine,
 } from 'recharts'
 
 import { Button } from '@/components/ui/button'
@@ -61,7 +62,14 @@ import {
   Star,
   Crown,
   Gem,
-  Calendar
+  Calendar,
+  Sparkles,
+  ChevronDown,
+  ChevronUp,
+  ArrowUp,
+  ArrowDown,
+  BarChart3,
+  Activity,
 } from 'lucide-react'
 
 import { Progress } from '@/components/ui/progress'
@@ -72,7 +80,14 @@ import {
   generateDetailedForecastData,
   generateInterventionStrategies,
   generateEffortLevels,
-  generateRiskLevels
+  generateRiskLevels,
+  generateUserSegments,
+  generateAutoDiscoveredSegments,
+  generateSegmentInsights,
+  filterDimensions,
+  UserSegment,
+  AutoDiscoveredSegment,
+  ContextualInsight,
 } from '@/lib/fakeData'
 import {
   Card,
@@ -88,6 +103,18 @@ const Check = ({ className }: { className?: string }) => (
     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
   </svg>
 )
+
+// ————————————————————————
+// Types for Filters
+// ————————————————————————
+
+interface ActiveFilters {
+  segment: string
+  planTier: string
+  geography: string
+  tenureBand: string
+  clvCategory: string
+}
 
 // ————————————————————————
 // Utility functions
@@ -126,6 +153,676 @@ const formatPercentage = (value: number) => {
     minimumFractionDigits: 1,
     maximumFractionDigits: 1,
   }).format(value / 100)
+}
+
+const formatNumber = (value: number) => {
+  return new Intl.NumberFormat('en-US').format(value)
+}
+
+const formatDate = (isoDate: string) => {
+  return new Date(isoDate).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  })
+}
+
+const getPriorityColor = (priority: string) => {
+  switch (priority) {
+    case 'critical': return 'destructive'
+    case 'high': return 'default'
+    case 'medium': return 'secondary'
+    case 'low': return 'outline'
+    default: return 'outline'
+  }
+}
+
+const getPriorityIcon = (priority: string) => {
+  switch (priority) {
+    case 'critical': return AlertTriangle
+    case 'high': return TrendingUp
+    case 'medium': return Activity
+    case 'low': return Clock
+    default: return Activity
+  }
+}
+
+
+// ————————————————————————————
+// Global Filter Bar Component
+// ————————————————————————————
+
+const GlobalFilterBar = ({ 
+  activeFilters, 
+  onFilterChange, 
+  onClearAll 
+}: { 
+  activeFilters: ActiveFilters
+  onFilterChange: (key: keyof ActiveFilters, value: string) => void
+  onClearAll: () => void
+}) => {
+  const hasActiveFilters = Object.values(activeFilters).some(v => !v.startsWith('All'))
+  
+  return (
+    <Card className="mb-6">
+      <CardContent className="pt-6">
+        <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+            <Filter className="h-4 w-4" />
+            Filter by:
+          </div>
+          
+          <Select value={activeFilters.segment} onValueChange={(v) => onFilterChange('segment', v)}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {filterDimensions.segments.map(seg => (
+                <SelectItem key={seg} value={seg}>{seg}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Select value={activeFilters.planTier} onValueChange={(v) => onFilterChange('planTier', v)}>
+            <SelectTrigger className="w-[160px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {filterDimensions.planTiers.map(plan => (
+                <SelectItem key={plan} value={plan}>{plan}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Select value={activeFilters.geography} onValueChange={(v) => onFilterChange('geography', v)}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {filterDimensions.geographies.map(geo => (
+                <SelectItem key={geo} value={geo}>{geo}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Select value={activeFilters.tenureBand} onValueChange={(v) => onFilterChange('tenureBand', v)}>
+            <SelectTrigger className="w-[160px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {filterDimensions.tenureBands.map(tenure => (
+                <SelectItem key={tenure} value={tenure}>{tenure}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Select value={activeFilters.clvCategory} onValueChange={(v) => onFilterChange('clvCategory', v)}>
+            <SelectTrigger className="w-[160px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {filterDimensions.clvCategories.map(clv => (
+                <SelectItem key={clv} value={clv}>{clv}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {hasActiveFilters && (
+            <Button variant="ghost" size="sm" onClick={onClearAll} className="gap-2">
+              <X className="h-4 w-4" />
+              Clear All
+            </Button>
+          )}
+        </div>
+        
+        {hasActiveFilters && (
+          <div className="flex gap-2 mt-3 flex-wrap">
+            {Object.entries(activeFilters).map(([key, value]) => {
+              if (value.startsWith('All')) return null
+              return (
+                <Badge key={key} variant="secondary" className="gap-1">
+                  {value}
+                  <X 
+                    className="h-3 w-3 cursor-pointer" 
+                    onClick={() => onFilterChange(key as keyof ActiveFilters, `All ${key}`)}
+                  />
+                </Badge>
+              )
+            })}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+
+// ————————————————————————————
+// Segments Tab - Distribution Chart
+// ————————————————————————————
+
+const SegmentDistributionChart = ({ 
+  segments 
+}: { 
+  segments: UserSegment[] 
+}) => {
+  const chartData = segments.map(s => ({
+    segment: s.segment,
+    users: s.users,
+    percentage: s.percentage,
+    revenue: (s.users * s.arpu) / 1000 // in thousands
+  }))
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>User Segment Distribution</CardTitle>
+        <CardDescription>
+          User count and revenue contribution by segment
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="h-80">
+          <ResponsiveContainer width="100%" height="100%">
+            <ComposedChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="segment" />
+              <YAxis yAxisId="left" />
+              <YAxis yAxisId="right" orientation="right" />
+              <Tooltip 
+                formatter={(value: number, name: string) => {
+                  if (name === 'users') return [formatNumber(value), 'Users']
+                  if (name === 'revenue') return [formatCurrency(value * 1000), 'Monthly Revenue']
+                  return [value, name]
+                }}
+              />
+              <Legend />
+              <Bar yAxisId="left" dataKey="users" fill="#3b82f6" name="Users" />
+              <Line yAxisId="right" type="monotone" dataKey="revenue" stroke="#10b981" strokeWidth={2} name="Revenue ($K)" />
+            </ComposedChart>
+          </ResponsiveContainer>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ————————————————————————————
+// Segments Tab - Auto-Discovered Segments Sortable Grid
+// ————————————————————————————
+
+type SegmentSortColumn = 'impact' | 'date' | 'users' | 'clv' | 'retention'
+type SegmentSortDirection = 'asc' | 'desc'
+
+const AutoDiscoveredSegmentsSection = ({ 
+  segments 
+}: { 
+  segments: AutoDiscoveredSegment[] 
+}) => {
+  const [sortColumn, setSortColumn] = useState<SegmentSortColumn>('impact')
+  const [sortDirection, setSortDirection] = useState<SegmentSortDirection>('desc')
+  const [expandedId, setExpandedId] = useState<string | null>(null)
+
+  const handleSort = (column: SegmentSortColumn) => {
+    if (sortColumn === column) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortColumn(column)
+      setSortDirection(column === 'impact' || column === 'users' || column === 'clv' || column === 'retention' ? 'desc' : 'asc')
+    }
+  }
+
+  const getSortIcon = (column: SegmentSortColumn) => {
+    if (sortColumn !== column) return <ArrowUp className="h-3 w-3 opacity-30" />
+    return sortDirection === 'asc' ? 
+      <ArrowUp className="h-3 w-3" /> : 
+      <ArrowDown className="h-3 w-3" />
+  }
+
+  const sortedSegments = useMemo(() => {
+    const sorted = [...segments]
+    
+    sorted.sort((a, b) => {
+      let comparison = 0
+      
+      switch (sortColumn) {
+        case 'impact':
+          comparison = a.impactScore - b.impactScore
+          break
+        case 'date':
+          comparison = new Date(a.discoveredDate).getTime() - new Date(b.discoveredDate).getTime()
+          break
+        case 'users':
+          comparison = a.userCount - b.userCount
+          break
+        case 'clv':
+          comparison = a.avgCLV - b.avgCLV
+          break
+        case 'retention':
+          comparison = a.retentionRate - b.retentionRate
+          break
+      }
+      
+      return sortDirection === 'asc' ? comparison : -comparison
+    })
+    
+    return sorted
+  }, [segments, sortColumn, sortDirection])
+
+  const getCategoryColor = (category: string) => {
+    switch (category) {
+      case 'behavioral': return { bg: 'bg-blue-100', text: 'text-blue-800' }
+      case 'lifecycle': return { bg: 'bg-green-100', text: 'text-green-800' }
+      case 'value-based': return { bg: 'bg-purple-100', text: 'text-purple-800' }
+      case 'risk': return { bg: 'bg-red-100', text: 'text-red-800' }
+      default: return { bg: 'bg-gray-100', text: 'text-gray-800' }
+    }
+  }
+
+  const SortableHeader = ({ column, children }: { column: SegmentSortColumn, children: React.ReactNode }) => (
+    <TableHead 
+      className="cursor-pointer hover:bg-gray-50 select-none"
+      onClick={() => handleSort(column)}
+    >
+      <div className="flex items-center gap-1">
+        {children}
+        {getSortIcon(column)}
+      </div>
+    </TableHead>
+  )
+return (
+    <Card>
+      <CardHeader>
+        <div className="flex-1">
+          <CardTitle className="flex items-center gap-2 mb-2">
+            <Sparkles className="h-5 w-5 text-purple-600" />
+            AI-Discovered User Segments
+          </CardTitle>
+          <CardDescription className="text-base">
+            Distinct user groups identified through behavioral pattern analysis, lifecycle stages, value indicators, and risk signals. 
+            Click column headers to sort. Click rows to expand details.
+          </CardDescription>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="border rounded-lg">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Segment</TableHead>
+                <TableHead>Category</TableHead>
+                <SortableHeader column="users">Users</SortableHeader>
+                <SortableHeader column="clv">Avg CLV</SortableHeader>
+                <SortableHeader column="retention">Retention</SortableHeader>
+                <SortableHeader column="impact">Impact</SortableHeader>
+                <SortableHeader column="date">Discovered</SortableHeader>
+                <TableHead></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {sortedSegments.map(segment => {
+                const isExpanded = expandedId === segment.id
+                const colors = getCategoryColor(segment.category)
+                
+                return (
+                  <React.Fragment key={segment.id}>
+                    <TableRow 
+                      className="cursor-pointer hover:bg-gray-50"
+                      onClick={() => setExpandedId(isExpanded ? null : segment.id)}
+                    >
+                      <TableCell className="font-semibold">
+                        {segment.name}
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={`${colors.bg} ${colors.text}`}>
+                          {segment.category}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="font-semibold">
+                        {formatNumber(segment.userCount)}
+                        <span className="text-xs text-muted-foreground ml-1">({segment.percentageOfBase}%)</span>
+                      </TableCell>
+                      <TableCell className="font-semibold">{formatCurrency(segment.avgCLV)}</TableCell>
+                      <TableCell className="font-semibold">{segment.retentionRate}%</TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="font-semibold">
+                          {segment.impactScore}/100
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-sm">{formatDate(segment.discoveredDate)}</TableCell>
+                      <TableCell>
+                        {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                      </TableCell>
+                    </TableRow>
+                    {isExpanded && (
+                      <TableRow>
+                        <TableCell colSpan={8} className="bg-gray-50">
+                          <div className="p-4 space-y-4">
+                            <div className="p-3 bg-purple-50 rounded-lg border border-purple-200">
+                              <h4 className="font-semibold text-sm mb-2 text-foreground">Business Impact:</h4>
+                              <p className="text-sm text-foreground">{segment.whyItMatters}</p>
+                            </div>
+                            <div>
+                              <h4 className="font-semibold text-sm mb-3 text-foreground">Defining Characteristics:</h4>
+                              <div className="grid gap-2">
+                                {segment.keyCharacteristics.map((char, idx) => (
+                                  <div key={idx} className="flex items-start gap-3 p-2 rounded bg-white">
+                                    <div className="w-6 h-6 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                      <span className="text-purple-600 font-bold text-xs">{idx + 1}</span>
+                                    </div>
+                                    <span className="text-sm text-foreground">{char}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                            <div>
+                              <h4 className="font-semibold text-sm mb-2 text-foreground">Top Features Used:</h4>
+                              <div className="flex gap-2 flex-wrap">
+                                {segment.topFeatures.map((feature, idx) => (
+                                  <Badge key={idx} variant="secondary" className="text-xs">
+                                    {feature}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </React.Fragment>
+                )
+              })}
+            </TableBody>
+          </Table>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+
+// ————————————————————————————
+// Contextual Insights Cards - For Segments
+// ————————————————————————————
+
+type InsightSortColumn = 'priority' | 'title'
+type InsightSortDirection = 'asc' | 'desc'
+
+const FeatureInsightsCards = ({ 
+  insights,
+  title 
+}: { 
+  insights: ContextualInsight[]
+  title: string
+}) => {
+  const [sortColumn, setSortColumn] = useState<InsightSortColumn>('priority')
+  const [sortDirection, setSortDirection] = useState<InsightSortDirection>('asc')
+  const [expandedId, setExpandedId] = useState<string | null>(null)
+
+  const handleSort = (column: InsightSortColumn) => {
+    if (sortColumn === column) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortColumn(column)
+      setSortDirection('asc')
+    }
+  }
+
+  const getSortIcon = (column: InsightSortColumn) => {
+    if (sortColumn !== column) return <ArrowUp className="h-3 w-3 opacity-30" />
+    return sortDirection === 'asc' ? 
+      <ArrowUp className="h-3 w-3" /> : 
+      <ArrowDown className="h-3 w-3" />
+  }
+
+  const sortedInsights = useMemo(() => {
+    const sorted = [...insights]
+    
+    sorted.sort((a, b) => {
+      let comparison = 0
+      
+      if (sortColumn === 'priority') {
+        const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 }
+        comparison = priorityOrder[a.priority] - priorityOrder[b.priority]
+      } else {
+        comparison = a.title.localeCompare(b.title)
+      }
+      
+      return sortDirection === 'asc' ? comparison : -comparison
+    })
+    
+    return sorted
+  }, [insights, sortColumn, sortDirection])
+
+// Generate proof chart data based on insight
+  const getProofChartData = (insight: ContextualInsight) => {
+    // SEGMENT INSIGHTS
+    if (insight.type === 'segment') {
+      if (insight.title.includes('Champions')) {
+        return [
+          { metric: 'Users', champions: 8.5, average: 20 },
+          { metric: 'Revenue Share', champions: 32, average: 20 },
+          { metric: 'ARPU', champions: 308, average: 100 },
+        ]
+      } else if (insight.title.includes('Power Users growing')) {
+        return Array.from({ length: 6 }, (_, i) => ({
+          month: `Month ${i + 1}`,
+          powerUsers: 15 + i * 0.5,
+          conversion: 8 + i * 0.15
+        }))
+      } else if (insight.title.includes('At Risk')) {
+        return Array.from({ length: 30 }, (_, i) => ({
+          day: i + 1,
+          engagement: 85 - (i > 20 ? (i - 20) * 2 : 0),
+          tickets: i > 20 ? 30 + (i - 20) * 2 : 30
+        }))
+      } else if (insight.title.includes('Regular Users')) {
+        return [
+          { segment: 'Champions', retention: 96, percentage: 8.5 },
+          { segment: 'Power Users', retention: 89, percentage: 17 },
+          { segment: 'Regular Users', retention: 78, percentage: 42.5 },
+          { segment: 'Casual', retention: 61, percentage: 25.5 },
+          { segment: 'At Risk', retention: 42, percentage: 6.5 },
+        ]
+      }
+    }
+    
+    return []
+  }
+const renderProofChart = (insight: ContextualInsight) => {
+    const data = getProofChartData(insight)
+    
+    if (!data || data.length === 0) {
+      return <div className="text-sm text-muted-foreground">No supporting data available</div>
+    }
+    
+    // SEGMENT CHARTS
+    if (insight.type === 'segment') {
+      if (insight.title.includes('Champions')) {
+        return (
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={data} layout="vertical">
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis type="number" />
+                <YAxis dataKey="metric" type="category" width={100} />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="champions" fill="#10b981" name="Champions" />
+                <Bar dataKey="average" fill="#94a3b8" name="Average" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        )
+      } else if (insight.title.includes('Power Users growing')) {
+        return (
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={data}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis yAxisId="left" />
+                <YAxis yAxisId="right" orientation="right" />
+                <Tooltip />
+                <Legend />
+                <Line yAxisId="left" type="monotone" dataKey="powerUsers" stroke="#3b82f6" strokeWidth={2} name="Power Users %" />
+                <Line yAxisId="right" type="monotone" dataKey="conversion" stroke="#10b981" strokeWidth={2} name="Conversion %" />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        )
+      } else if (insight.title.includes('At Risk')) {
+        return (
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart data={data}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="day" />
+                <YAxis yAxisId="left" />
+                <YAxis yAxisId="right" orientation="right" />
+                <Tooltip />
+                <Legend />
+                <Line yAxisId="left" type="monotone" dataKey="engagement" stroke="#ef4444" strokeWidth={2} name="Engagement Score" />
+                <Bar yAxisId="right" dataKey="tickets" fill="#f59e0b" name="Support Tickets" />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
+        )
+      } else if (insight.title.includes('Regular Users')) {
+        return (
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart data={data}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="segment" />
+                <YAxis yAxisId="left" label={{ value: 'Retention %', angle: -90, position: 'insideLeft' }} />
+                <YAxis yAxisId="right" orientation="right" label={{ value: 'User %', angle: 90, position: 'insideRight' }} />
+                <Tooltip />
+                <Legend />
+                <Bar yAxisId="left" dataKey="retention" fill="#3b82f6" name="Retention Rate" />
+                <Line yAxisId="right" type="monotone" dataKey="percentage" stroke="#10b981" strokeWidth={2} name="% of Users" />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
+        )
+      }
+    }
+    
+    return <div className="text-sm text-muted-foreground">Chart not available</div>
+  }
+
+  const getChartTitle = (insight: ContextualInsight) => {
+    if (insight.title.includes('Champions')) return 'Champions vs Average Users'
+    if (insight.title.includes('Power Users growing')) return 'Power User Growth Trend'
+    if (insight.title.includes('At Risk')) return 'At-Risk Segment Patterns'
+    if (insight.title.includes('Regular Users')) return 'Segment Distribution & Retention'
+    return 'Supporting Data'
+  }
+
+  const SortableHeader = ({ column, children }: { column: InsightSortColumn, children: React.ReactNode }) => (
+    <TableHead 
+      className="cursor-pointer hover:bg-gray-50 select-none"
+      onClick={() => handleSort(column)}
+    >
+      <div className="flex items-center gap-1">
+        {children}
+        {getSortIcon(column)}
+      </div>
+    </TableHead>
+  )
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>
+          Click column headers to sort. Click "Show" to see supporting data.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="border rounded-lg">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <SortableHeader column="priority">Priority</SortableHeader>
+                <SortableHeader column="title">Insight</SortableHeader>
+                <TableHead>Key Metric</TableHead>
+                <TableHead className="text-center">Data</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {sortedInsights.map(insight => {
+                const isExpanded = expandedId === insight.id
+                const Icon = getPriorityIcon(insight.priority)
+                
+                return (
+                  <React.Fragment key={insight.id}>
+                    <TableRow>
+                      <TableCell>
+                        <Badge variant={getPriorityColor(insight.priority)} className="uppercase text-xs font-semibold">
+                          {insight.priority}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="max-w-md">
+                        <div className="space-y-2">
+                          <div className="flex items-start gap-2">
+                            <Icon className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                            <div className="space-y-1">
+                              <div className="font-semibold text-foreground">{insight.title}</div>
+                              <div className="text-sm text-muted-foreground">{insight.description}</div>
+                            </div>
+                          </div>
+                          {insight.action && (
+                            <div className="pl-6 p-2 bg-green-50 rounded border border-green-200">
+                              <div className="text-xs font-semibold text-green-800 mb-1">Recommended Action:</div>
+                              <span className="text-sm text-foreground break-words">{insight.action}</span>
+                            </div>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell className="font-semibold text-blue-600">
+                        {insight.metric || '—'}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setExpandedId(isExpanded ? null : insight.id)}
+                        >
+                          {isExpanded ? (
+                            <>
+                              <ChevronUp className="h-4 w-4 mr-1" />
+                              Hide
+                            </>
+                          ) : (
+                            <>
+                              <BarChart3 className="h-4 w-4 mr-1" />
+                              Show
+                            </>
+                          )}
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                    {isExpanded && (
+                      <TableRow>
+                        <TableCell colSpan={4} className="bg-gray-50 p-6">
+                          <div className="bg-white rounded-lg border p-4">
+                            <h4 className="font-semibold text-sm mb-4 text-foreground">
+                              {getChartTitle(insight)}
+                            </h4>
+                            {renderProofChart(insight)}
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </React.Fragment>
+                )
+              })}
+            </TableBody>
+          </Table>
+        </div>
+      </CardContent>
+    </Card>
+  )
 }
 
 // Cohort Analysis Component
@@ -249,10 +946,42 @@ const CohortAnalysis = ({ data }: { data: any[] }) => {
 }
 
 export default function SegmentsPage() {
-  const [activeTab, setActiveTab] = useState('overview')
+  const [activeTab, setActiveTab] = useState('segments')
   const [selectedCategory, setSelectedCategory] = useState('value-based')
   const [selectedSegment, setSelectedSegment] = useState('platinum')
   const [selectedSubSegment, setSelectedSubSegment] = useState('platinum-high-risk')
+  // Segment data from product usage page
+  const userSegments = useMemo(() => generateUserSegments(), [])
+  const autoDiscoveredSegments = useMemo(() => generateAutoDiscoveredSegments(), [])
+  const segmentInsights = useMemo(() => generateSegmentInsights(), [])
+  
+  const [activeFilters, setActiveFilters] = useState<ActiveFilters>({
+    segment: 'All Segments',
+    planTier: 'All Plans',
+    geography: 'All Regions',
+    tenureBand: 'All Tenure',
+    clvCategory: 'All CLV'
+  })
+
+  const handleFilterChange = (key: keyof ActiveFilters, value: string) => {
+    setActiveFilters(prev => ({ ...prev, [key]: value }))
+  }
+
+  const handleClearAll = () => {
+    setActiveFilters({
+      segment: 'All Segments',
+      planTier: 'All Plans',
+      geography: 'All Regions',
+      tenureBand: 'All Tenure',
+      clvCategory: 'All CLV'
+    })
+  }
+
+  // Filter data based on active filters
+  const filteredSegments = useMemo(() => {
+    if (activeFilters.segment === 'All Segments') return userSegments
+    return userSegments.filter(s => s.segment === activeFilters.segment)
+  }, [userSegments, activeFilters.segment])
 
   // All data now comes from fakeData.ts
   const segmentsData = generateSegments()
@@ -314,15 +1043,24 @@ export default function SegmentsPage() {
           </Select>
         </div>
       </div>
-
+<GlobalFilterBar 
+        activeFilters={activeFilters}
+        onFilterChange={handleFilterChange}
+        onClearAll={handleClearAll}
+      />
       <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="flex overflow-x-auto md:grid md:grid-cols-6 w-full">  
+          <TabsTrigger value="segments">Segments</TabsTrigger>          
           <TabsTrigger value="overview">Retention Strategy</TabsTrigger>
           <TabsTrigger value="cohort">Cohort Analysis</TabsTrigger>
           <TabsTrigger value="investment">Investment Analysis</TabsTrigger>
           <TabsTrigger value="intervention">Intervention Plan</TabsTrigger>
         </TabsList>
-
+<TabsContent value="segments" className="space-y-6">
+          <SegmentDistributionChart segments={filteredSegments} />
+          <AutoDiscoveredSegmentsSection segments={autoDiscoveredSegments} />
+          <FeatureInsightsCards insights={segmentInsights} title="Segment Insights" />
+        </TabsContent>
         <TabsContent value="overview" className="space-y-6">
           {/* Segment Growth Projections */}
           <Card>
