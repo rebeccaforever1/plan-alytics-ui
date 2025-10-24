@@ -1960,7 +1960,7 @@ export default function ProductUsageDashboard() {
           <TabsTrigger value="insights">Insights Hub</TabsTrigger>
         </TabsList>
 
-        <div className="mt-6">
+       
           <TabsContent value="features" className="space-y-6">
               <ProductHealthKPIs data={usageData} segments={userSegments} />
               <LatestInsightsPreview recommendations={aiRecommendations} />
@@ -1977,8 +1977,7 @@ export default function ProductUsageDashboard() {
 
           <TabsContent value="insights" className="space-y-6">
             <AIRecommendationsGrid recommendations={aiRecommendations} />
-          </TabsContent>
-        </div>
+</TabsContent>
       </Tabs>
     </div>
   )
