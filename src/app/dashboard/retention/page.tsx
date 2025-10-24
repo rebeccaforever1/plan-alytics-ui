@@ -1052,7 +1052,7 @@ export default function SegmentsPage() {
           <TabsList className="flex overflow-x-auto md:grid md:grid-cols-6 w-full">  
           <TabsTrigger value="segments">Segments</TabsTrigger>          
           <TabsTrigger value="overview">Retention Strategy</TabsTrigger>
-          <TabsTrigger value="cohort">Cohort Analysis</TabsTrigger>
+        
           <TabsTrigger value="investment">Investment Analysis</TabsTrigger>
           <TabsTrigger value="intervention">Intervention Plan</TabsTrigger>
         </TabsList>
@@ -1280,9 +1280,7 @@ export default function SegmentsPage() {
           )}
         </TabsContent>
 
-        <TabsContent value="cohort" className="space-y-6">
-          <CohortAnalysis data={generateFakeCustomers(1000)} />
-        </TabsContent>
+      
 
         <TabsContent value="investment" className="space-y-6">
           <Card>

@@ -24,6 +24,7 @@ import {
 import { 
   generateFakeCustomers, 
   generateCohortData,
+  generateQuarterlyCohortData, 
   generateCohortRetentionData,
   generateSubscriptionKPIs,         
   generateSubscriptionTrendData,
@@ -55,6 +56,7 @@ import {
 } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import { Progress } from '@/components/ui/progress'
 import {
   Table,
   TableBody,
@@ -380,6 +382,125 @@ const PlanDistributionCharts = ({ data }: { data: any[] }) => {
   )
 }
 
+// Cohort Analysis Component from Retention Page
+const CohortAnalysis = ({ data }: { data: any[] }) => {
+  const cohortData = useMemo(() => generateQuarterlyCohortData(data), [data])
+  const [selectedCohort, setSelectedCohort] = useState(cohortData[0]?.cohort)
+  const currentCohort = cohortData.find(c => c.cohort === selectedCohort) || cohortData[0]
+  
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Cohort Revenue & Retention Breakdown</CardTitle>
+        <CardDescription>
+          Compare revenue generation and retention patterns across acquisition cohorts
+        </CardDescription>
+        <div className="flex items-center gap-2 pt-2">
+          <Select value={selectedCohort} onValueChange={setSelectedCohort}>
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="Select Cohort" />
+            </SelectTrigger>
+            <SelectContent>
+              {cohortData.map(cohort => (
+                <SelectItem key={cohort.cohort} value={cohort.cohort}>
+                  {cohort.cohort}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Retention Rate by Month</h3>
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={currentCohort.retention}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="period" />
+                  <YAxis tickFormatter={value => `${value}%`} />
+                  <Tooltip formatter={(value) => [`${value}%`, 'Retention']} />
+                  <Legend />
+                  <Bar dataKey="rate" fill="#8884d8" name="Retention Rate" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Revenue by Cohort</h3>
+           <div className="h-80">
+  <ResponsiveContainer width="100%" height="100%">
+    <BarChart 
+      data={cohortData.map(cohort => ({
+        cohort: cohort.cohort,
+        revenue: cohort.totalRevenue,
+        customers: cohort.initialCustomers,
+        avgRevenue: cohort.totalRevenue / cohort.initialCustomers
+      }))}
+      layout="horizontal"
+      margin={{ top: 5, right: 30, left: 80, bottom: 5 }}
+    >
+      <CartesianGrid strokeDasharray="3 3" />
+      <XAxis 
+        type="category" 
+        dataKey="cohort" 
+        tick={{ fontSize: 12 }}
+      />
+      <YAxis 
+        type="number" 
+        tickFormatter={(value) => formatCurrency(value)}
+        tick={{ fontSize: 12 }}
+      />
+      <Tooltip 
+        formatter={(value, name) => {
+          if (name === 'revenue') return [formatCurrency(Number(value)), 'Total Revenue']
+          if (name === 'avgRevenue') return [formatCurrency(Number(value)), 'Avg Revenue per Customer']
+          return [value, name]
+        }}
+      />
+      <Legend />
+      <Bar dataKey="revenue" fill="#3b82f6" name="Total Revenue" />
+    </BarChart>
+  </ResponsiveContainer>
+</div>
+          </div>
+        </div>
+        
+        <h3 className="text-lg font-semibold mb-4">Retention Matrix</h3>
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Cohort</TableHead>
+                <TableHead>Customers</TableHead>
+                {currentCohort.retention.map((r, i) => (
+                  <TableHead key={i}>Month {i}</TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {cohortData.map(cohort => (
+                <TableRow key={cohort.cohort} className={cohort.cohort === selectedCohort ? "bg-muted/50" : ""}>
+                  <TableCell className="font-medium">{cohort.cohort}</TableCell>
+                  <TableCell>{cohort.initialCustomers}</TableCell>
+                  {cohort.retention.map((r, i) => (
+                    <TableCell key={i}>
+                      <div className="flex flex-col">
+                        <span>{r.rate}%</span>
+                        <Progress value={r.rate} className="h-1 mt-1" />
+                      </div>
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
 
 const CohortRetentionHeatmap = ({ cohortData }: { cohortData: any[] }) => {
   return (
@@ -634,6 +755,7 @@ const prepareSurvivalChartData = (cohorts: any[]) => {
 
         <TabsContent value="cohorts" className="space-y-6">
           <CohortRetentionHeatmap cohortData={cohortData} />
+          <CohortAnalysis data={generateFakeCustomers(1000)} />
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
      
