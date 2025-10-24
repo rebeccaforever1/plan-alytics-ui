@@ -1952,7 +1952,7 @@ export default function ProductUsageDashboard() {
       />
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="flex overflow-x-auto md:grid md:grid-cols-4 w-full">
           
           <TabsTrigger value="features">Features</TabsTrigger>
           <TabsTrigger value="engagement">Engagement</TabsTrigger>
