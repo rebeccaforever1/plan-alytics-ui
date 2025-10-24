@@ -70,6 +70,7 @@ import {
   ArrowDown,
   BarChart3,
   Activity,
+  X,
 } from 'lucide-react'
 
 import { Progress } from '@/components/ui/progress'
@@ -1025,7 +1026,8 @@ export default function SegmentsPage() {
         </div>
 
         
-        <div className="flex gap-2">
+        {/* TODO: Move to app-level when implementing global filters */}
+        {/* <div className="flex gap-2">
           <Select value={selectedCategory} onValueChange={(value) => {
             setSelectedCategory(value)
             setSelectedSegment(segmentsData[value as keyof typeof segmentsData].segments[0].id)
@@ -1041,13 +1043,16 @@ export default function SegmentsPage() {
               <SelectItem value="geography-based">Geography-based</SelectItem>
             </SelectContent>
           </Select>
-        </div>
+        </div> */}
+
+        
       </div>
-<GlobalFilterBar 
+{/* TODO: Move to app-level when implementing global filters */}
+      {/* <GlobalFilterBar 
         activeFilters={activeFilters}
         onFilterChange={handleFilterChange}
         onClearAll={handleClearAll}
-      />
+      /> */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="flex overflow-x-auto md:grid md:grid-cols-6 w-full">  
           <TabsTrigger value="segments">Segments</TabsTrigger>          
