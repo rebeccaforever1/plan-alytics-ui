@@ -1270,7 +1270,7 @@ export default function RevenuePage() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Academic Foundations</CardTitle>
+              <CardTitle>Theoretical Foundations</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
