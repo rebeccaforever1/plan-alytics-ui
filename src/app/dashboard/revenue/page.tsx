@@ -509,7 +509,7 @@ export default function RevenuePage() {
             <CardHeader>
               <CardTitle>Revenue Quality Analysis</CardTitle>
               <CardDescription>
-                Academic framework measuring revenue sustainability through predictability and composition
+                Measure revenue sustainability through predictability and composition
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -692,7 +692,7 @@ export default function RevenuePage() {
             <CardHeader>
               <CardTitle>Feature Revenue Optimization (Kano Model)</CardTitle>
               <CardDescription>
-                Academic framework prioritizing features based on customer satisfaction vs. revenue impact
+                Prioritize features based on customer satisfaction vs. revenue impact
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -962,7 +962,7 @@ export default function RevenuePage() {
             <CardHeader>
               <CardTitle>Bass Diffusion Model - Revenue Growth Prediction</CardTitle>
               <CardDescription>
-                Academic framework modeling innovation adoption and revenue growth through innovators and imitators
+                How products spread: self-discovery vs. word-of-mouth
               </CardDescription>
             </CardHeader>
             <CardContent>
