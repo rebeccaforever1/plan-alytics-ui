@@ -960,7 +960,7 @@ export default function RevenuePage() {
           {/* Bass Diffusion Model */}
           <Card>
             <CardHeader>
-              <CardTitle>Bass Diffusion Model - Revenue Growth Prediction</CardTitle>
+              <CardTitle>Revenue Growth Prediction - Bass Diffusion Model</CardTitle>
               <CardDescription>
                 How products spread: self-discovery vs. word-of-mouth
               </CardDescription>
@@ -1026,7 +1026,7 @@ export default function RevenuePage() {
   
           <Card>
             <CardHeader>
-              <CardTitle>Weibull Survival Analysis - Revenue Lifecycle</CardTitle>
+              <CardTitle>Revenue Lifecycle - Weibull Survival Analysis</CardTitle>
               <CardDescription>
                  Predict customer lifespan and the risk of losing them over time
               </CardDescription>
