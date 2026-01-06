@@ -1028,7 +1028,7 @@ export default function RevenuePage() {
             <CardHeader>
               <CardTitle>Weibull Survival Analysis - Revenue Lifecycle</CardTitle>
               <CardDescription>
-                Advanced statistical modeling of customer revenue survival and churn hazard rates
+                 Predict customer lifespan and the risk of losing them over time
               </CardDescription>
             </CardHeader>
             <CardContent>
