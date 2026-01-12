@@ -1,10 +1,10 @@
-// changed to subscriptions content instead of overview as that should be teh default-
+// changed to subscriptions content instead of overview as that should be the default-
 
 
 // src/app/dashboard/subscriptions/page.tsx
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import {
   Line,
   Bar,
@@ -38,6 +38,20 @@ import {
   generatePricingRecommendations,
   generateAARRRMetrics,           
 } from '@/lib/fakeData'
+import {
+  getSubscriptionKPIs,
+  getSubscriptionGrowthData,
+  getRevenueChurnData,
+  getPlanBreakdownData,
+  getCohortData,
+  getChurnPredictions,
+  getChurnModelMetrics,
+  getPriceSensitivityData,
+  getAARRRFunnelData,
+  getAcquisitionChannels,
+  getCustomerInterventions,
+  getPricingAnalysis,
+} from '@/lib/subscriptionData'
 import {
   Card,
   CardContent,
@@ -155,10 +169,10 @@ const generateSubscriptionData = () => {
 // ————————————————————————
 // Components
 // ————————————————————————
-const SubscriptionExecutiveSummary = ({ data, metric }: { data: any[]; metric: string }) => {
-  const kpis = useMemo(() => {
-    return generateSubscriptionKPIs(data)
-  }, [data])
+const SubscriptionExecutiveSummary = ({ kpis }: { kpis: any }) => {
+  if (!kpis) {
+    return <div className="text-center py-8">Loading KPIs...</div>
+  }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -226,10 +240,8 @@ const SubscriptionExecutiveSummary = ({ data, metric }: { data: any[]; metric: s
   )
 }
 
-const SubscriptionTrendsChart = ({ data }: { data: any[] }) => {
-  const trendData = useMemo(() => {
-    return generateSubscriptionTrendData()
-  }, [])
+const SubscriptionTrendsChart = ({ trendData }: { trendData: any[] }) => {
+  const dataToUse = trendData && trendData.length > 0 ? trendData : generateSubscriptionTrendData()
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
@@ -241,7 +253,7 @@ const SubscriptionTrendsChart = ({ data }: { data: any[] }) => {
         <CardContent>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={trendData}>
+              <ComposedChart data={dataToUse}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />
                 <YAxis yAxisId="left" />
@@ -265,7 +277,7 @@ const SubscriptionTrendsChart = ({ data }: { data: any[] }) => {
         <CardContent>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={trendData}>
+              <ComposedChart data={dataToUse}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />
                 <YAxis yAxisId="left" />
@@ -286,33 +298,34 @@ const SubscriptionTrendsChart = ({ data }: { data: any[] }) => {
   )
 }
 
-const PlanDistributionCharts = ({ data }: { data: any[] }) => {
-  const planData = useMemo(() => {
-    return generatePlanDistributionData(data)
-  }, [data])
+const PlanDistributionCharts = ({ planData }: { planData: any[] }) => {
+  const dataToUse = planData && planData.length > 0 ? planData : []
 
   const COLORS = {
-    Basic: '#10b981',      // Fresh emerald green
-    Pro: '#6366f1',        // Professional indigo  
-    Enterprise: '#8b5cf6'   // Premium purple
+    Basic: '#10b981',      
+    Pro: '#6366f1',        
+    Enterprise: '#8b5cf6'   
   }
 
-  const totalRevenue = planData.reduce((sum, item) => sum + item.revenue, 0)
+  const totalRevenue = dataToUse.reduce((sum, item) => sum + item.revenue, 0)
 
   const formatPercent = (value: number) => {
     return `${value.toFixed(1)}%`
   }
 
+  if (dataToUse.length === 0) {
+    return <div className="text-center py-8">Loading plan data...</div>
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-      {planData.map((plan) => {
+      {dataToUse.map((plan) => {
         const percentage = totalRevenue > 0 ? (plan.revenue / totalRevenue) * 100 : 0;
         return (
           <Card key={plan.plan} className="relative overflow-hidden hover:shadow-lg transition-shadow">
-            {/* Color accent bar */}
             <div 
               className="absolute top-0 left-0 w-full h-1"
-              style={{ backgroundColor: COLORS[plan.plan] }}
+              style={{ backgroundColor: COLORS[plan.plan as keyof typeof COLORS] }}
             />
             
             <CardContent>
@@ -342,13 +355,12 @@ const PlanDistributionCharts = ({ data }: { data: any[] }) => {
                     </div>
                   </div>
                   
-                  {/* Elegant progress bar */}
                   <div className="w-full bg-gray-100 rounded-full h-2">
                     <div
                       className="h-2 rounded-full transition-all duration-700 ease-out"
                       style={{
                         width: `${Math.min(percentage, 100)}%`,
-                        backgroundColor: COLORS[plan.plan]
+                        backgroundColor: COLORS[plan.plan as keyof typeof COLORS]
                       }}
                     />
                   </div>
@@ -358,7 +370,6 @@ const PlanDistributionCharts = ({ data }: { data: any[] }) => {
                     <span>{plan.customers > 0 ? formatCurrency(plan.avgRevenue) : '$0'} avg</span>
                   </div>
 
-                  {/* Churn indicator */}
                   <div className="pt-2 border-t border-gray-100">
                     <div className="flex items-center justify-between text-xs">
                       <span className="text-gray-500">Churn Rate</span>
@@ -474,7 +485,7 @@ const CohortAnalysis = ({ data }: { data: any[] }) => {
               <TableRow>
                 <TableHead>Cohort</TableHead>
                 <TableHead>Customers</TableHead>
-                {currentCohort.retention.map((r, i) => (
+                {currentCohort.retention.map((r: any, i: number) => (
                   <TableHead key={i}>Month {i}</TableHead>
                 ))}
               </TableRow>
@@ -484,7 +495,7 @@ const CohortAnalysis = ({ data }: { data: any[] }) => {
                 <TableRow key={cohort.cohort} className={cohort.cohort === selectedCohort ? "bg-muted/50" : ""}>
                   <TableCell className="font-medium">{cohort.cohort}</TableCell>
                   <TableCell>{cohort.initialCustomers}</TableCell>
-                  {cohort.retention.map((r, i) => (
+                  {cohort.retention.map((r: any, i: number) => (
                     <TableCell key={i}>
                       <div className="flex flex-col">
                         <span>{r.rate}%</span>
@@ -503,6 +514,21 @@ const CohortAnalysis = ({ data }: { data: any[] }) => {
 }
 
 const CohortRetentionHeatmap = ({ cohortData }: { cohortData: any[] }) => {
+  const dataToUse = cohortData && cohortData.length > 0 ? cohortData : []
+
+  if (dataToUse.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Cohort Analysis</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8">Loading cohort data...</div>
+        </CardContent>
+      </Card>
+    )
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -524,22 +550,25 @@ const CohortRetentionHeatmap = ({ cohortData }: { cohortData: any[] }) => {
               </tr>
             </thead>
             <tbody>
-              {cohortData.map((cohort, rowIndex) => (
-                <tr key={cohort.cohort}>
-                  <td className="p-2 border font-medium">{cohort.cohort}</td>
-                  <td className="p-2 border">{cohort.size}</td>
-                  {Array.from({ length: 12 }, (_, i) => {
-                    const value = cohort[`month${i}`]
-                    const intensity = value / 100
-                    const bgColor = value ? `rgba(34, 197, 94, ${intensity})` : 'transparent'
-                    return (
-                      <td key={i} className="p-2 border text-center" style={{ backgroundColor: bgColor }}>
-                        {value ? `${value.toFixed(0)}%` : '-'}
-                      </td>
-                    )
-                  })}
-                </tr>
-              ))}
+              {dataToUse.map((cohort, rowIndex) => {
+                const retentionArray = cohort.retention || []
+                return (
+                  <tr key={cohort.cohort}>
+                    <td className="p-2 border font-medium">{cohort.cohort}</td>
+                    <td className="p-2 border">{cohort.initialCustomers}</td>
+                    {Array.from({ length: 12 }, (_, i) => {
+                      const value = retentionArray[i]
+                      const intensity = value ? value / 100 : 0
+                      const bgColor = value ? `rgba(34, 197, 94, ${intensity})` : 'transparent'
+                      return (
+                        <td key={i} className="p-2 border text-center" style={{ backgroundColor: bgColor }}>
+                          {value ? `${value.toFixed(0)}%` : '-'}
+                        </td>
+                      )
+                    })}
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         </div>
@@ -559,22 +588,19 @@ const CohortRetentionHeatmap = ({ cohortData }: { cohortData: any[] }) => {
 }
 
 const ChurnRiskDashboard = ({ churnData }: { churnData: any[] }) => {
+  const dataToUse = churnData && churnData.length > 0 ? churnData : []
+
   const riskDistribution = useMemo(() => {
-    const high = churnData.filter(c => c.riskCategory === 'High').length
-    const medium = churnData.filter(c => c.riskCategory === 'Medium').length
-    const low = churnData.filter(c => c.riskCategory === 'Low').length
+    const high = dataToUse.filter(c => c.riskCategory === 'High').length
+    const medium = dataToUse.filter(c => c.riskCategory === 'Medium').length
+    const low = dataToUse.filter(c => c.riskCategory === 'Low').length
     
     return [
       { risk: 'High', count: high, color: '#ef4444' },
       { risk: 'Medium', count: medium, color: '#f59e0b' },
       { risk: 'Low', count: low, color: '#22c55e' },
     ]
-  }, [churnData])
-
-  const highRiskCustomers = churnData
-    .filter(c => c.riskCategory === 'High')
-    .sort((a, b) => b.churnProbability - a.churnProbability)
-    .slice(0, 10)
+  }, [dataToUse])
 
   return (
     <div className="grid grid-cols-1 gap-6">
@@ -584,7 +610,7 @@ const ChurnRiskDashboard = ({ churnData }: { churnData: any[] }) => {
           <CardDescription>Customer segmentation by churn probability</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="h-35">
+          <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={riskDistribution}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -597,18 +623,32 @@ const ChurnRiskDashboard = ({ churnData }: { churnData: any[] }) => {
           </div>
         </CardContent>
       </Card>
-
-    
     </div>
   )
 }
 
 const PricingSensitivityAnalysis = ({ pricingData }: { pricingData: any[] }) => {
+  const dataToUse = pricingData && pricingData.length > 0 ? pricingData : []
+
   const optimalPrice = useMemo(() => {
-    return pricingData.reduce((max, current) => 
+    if (dataToUse.length === 0) return null
+    return dataToUse.reduce((max, current) => 
       current.revenue > max.revenue ? current : max
     )
-  }, [pricingData])
+  }, [dataToUse])
+
+  if (dataToUse.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Price Sensitivity Analysis</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8">Loading pricing data...</div>
+        </CardContent>
+      </Card>
+    )
+  }
 
   return (
     <Card>
@@ -621,28 +661,31 @@ const PricingSensitivityAnalysis = ({ pricingData }: { pricingData: any[] }) => 
       <CardContent>
         <div className="h-96">
           <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart data={pricingData}>
+            <ComposedChart data={dataToUse}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="price" label={{ value: 'Price ($)', position: 'insideBottom', offset: -5 }} />
               <YAxis yAxisId="left" label={{ value: 'Demand', angle: -90, position: 'insideLeft' }} />
               <YAxis yAxisId="right" orientation="right" label={{ value: 'Revenue ($)', angle: 90, position: 'insideRight' }} />
+              <YAxis yAxisId="percentage" orientation="right" label={{ value: 'Acceptance %', angle: -90, position: 'insideRight' }} domain={[0, 100]} dx={50} />
               <Tooltip />
               <Legend />
               <Bar yAxisId="left" dataKey="demand" fill="#8884d8" name="Demand" fillOpacity={0.6} />
               <Line yAxisId="right" type="monotone" dataKey="revenue" stroke="#ff7300" strokeWidth={3} name="Revenue" />
-              <Line yAxisId="left" type="monotone" dataKey="acceptanceRate" stroke="#00C49F" strokeWidth={2} name="Acceptance Rate %" />
-              <ReferenceLine x={optimalPrice.price} stroke="#ef4444" strokeDasharray="5 5" label="Optimal Price" />
+              <Line yAxisId="percentage" type="monotone" dataKey="acceptanceRate" stroke="#00C49F" strokeWidth={2} name="Acceptance Rate %" />
+              {optimalPrice && <ReferenceLine x={optimalPrice.price} stroke="#ef4444" strokeDasharray="5 5" label="Optimal Price" />}
             </ComposedChart>
           </ResponsiveContainer>
         </div>
-        <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-          <h4 className="font-semibold mb-2">Optimal Pricing Recommendation</h4>
-          <p className="text-sm">
-            Based on the price sensitivity analysis, the optimal price point is <strong>${optimalPrice.price}</strong>, 
-            generating <strong>{formatCurrency(optimalPrice.revenue)}</strong> in projected revenue with  
-            <strong>{optimalPrice.demand}</strong> customers at <strong>{optimalPrice.acceptanceRate.toFixed(1)}%</strong> acceptance rate.
-          </p>
-        </div>
+        {optimalPrice && (
+          <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+            <h4 className="font-semibold mb-2">Optimal Pricing Recommendation</h4>
+            <p className="text-sm">
+              Based on the price sensitivity analysis, the optimal price point is <strong>${optimalPrice.price}</strong>, 
+              generating <strong>{formatCurrency(optimalPrice.revenue)}</strong> in projected revenue with  
+              <strong>{optimalPrice.demand}</strong> customers at <strong>{optimalPrice.acceptanceRate.toFixed(1)}%</strong> acceptance rate.
+            </p>
+          </div>
+        )}
       </CardContent>
     </Card>
   )
@@ -651,6 +694,7 @@ const PricingSensitivityAnalysis = ({ pricingData }: { pricingData: any[] }) => 
 // ————————————————————————
 // Main Subscriptions Dashboard
 // ————————————————————————
+
 
 export default function SubscriptionsPage() {
 
@@ -662,17 +706,148 @@ export default function SubscriptionsPage() {
     status: 'all'
   })
   
+  // State for Supabase data
+  const [isLoading, setIsLoading] = useState(true)
+  const [kpis, setKpis] = useState<any>(null)
+  const [trendData, setTrendData] = useState<any[]>([])
+  const [planBreakdown, setPlanBreakdown] = useState<any[]>([])
+  const [cohortData, setCohortData] = useState<any[]>([])
+  const [churnData, setChurnData] = useState<any[]>([])
+  const [modelMetrics, setModelMetrics] = useState<any>(null)
+  const [pricingData, setPricingData] = useState<any[]>([])
+  const [aarrrData, setAarrrData] = useState<any>(null)
+  const [interventionResults, setInterventionResults] = useState<any[]>([])
+  const [pricingRecs, setPricingRecs] = useState<any>({ recommendations: [], westendorpResults: {} })
+
+  // Load data from Supabase
+  useEffect(() => {
+    async function loadAllData() {
+      setIsLoading(false)
+      
+      try {
+        const kpisData = await getSubscriptionKPIs()
+        
+        if (kpisData) {
+          setKpis({
+            activeSubscriptions: {
+              current: kpisData.activeSubscriptions,
+              change: kpisData.activeSubscriptionsChange || 0
+            },
+            mrr: {
+              current: kpisData.mrr,
+              change: kpisData.mrrChange || 0
+            },
+            arpu: {
+              current: kpisData.arpu,
+              change: kpisData.arpuChange || 0
+            },
+            churnRate: {
+              current: kpisData.churnRate,
+              change: kpisData.churnRateChange || 0
+            }
+          })
+        }
+
+        const trendsData = await getSubscriptionGrowthData()
+        setTrendData(trendsData)
+
+        const plansData = await getPlanBreakdownData()
+        setPlanBreakdown(plansData)
+
+        const cohortsData = await getCohortData()
+        setCohortData(cohortsData)
+
+        const churnPredictionsData = await getChurnPredictions()
+        setChurnData(churnPredictionsData)
+
+        const churnModelData = await getChurnModelMetrics()
+        setModelMetrics(churnModelData)
+
+        const pricingDataResult = await getPriceSensitivityData()
+        console.log('Loaded pricing data:', pricingDataResult)
+        setPricingData(pricingDataResult)
+
+        const funnelData = await getAARRRFunnelData()
+        const channelsData = await getAcquisitionChannels()
+        const interventionsData = await getCustomerInterventions()
+        const pricingAnalysisData = await getPricingAnalysis()
+        
+        setInterventionResults(interventionsData)
+        setPricingRecs(pricingAnalysisData)
+        
+        if (funnelData) {
+          setAarrrData({
+            funnel: [
+              {
+                stage: 'Acquisition',
+                value: funnelData.acquisition.value.toLocaleString(),
+                change: `+${funnelData.acquisition.change}%`,
+                color: 'blue'
+              },
+              {
+                stage: 'Activation',
+                value: funnelData.activation.value.toLocaleString(),
+                change: `+${funnelData.activation.change}%`,
+                color: 'green'
+              },
+              {
+                stage: 'Retention',
+                value: funnelData.retention.value.toLocaleString(),
+                change: `+${funnelData.retention.change}%`,
+                color: 'purple'
+              },
+              {
+                stage: 'Referral',
+                value: funnelData.referral.value.toLocaleString(),
+                change: `+${funnelData.referral.change}%`,
+                color: 'orange'
+              },
+              {
+                stage: 'Revenue',
+                value: `$${(funnelData.revenue.value / 1000).toFixed(0)}K`,
+                change: `+${funnelData.revenue.change}%`,
+                color: 'red'
+              }
+            ],
+            chartData: [
+              { stage: 'Visitors', count: funnelData.acquisition.value, conversion: 100 },
+              { stage: 'Signups', count: funnelData.activation.value, conversion: funnelData.conversionRates.visitorsToSignups },
+              { stage: 'Activated', count: Math.round(funnelData.activation.value * funnelData.conversionRates.signupsToActivated / 100), conversion: funnelData.conversionRates.signupsToActivated },
+              { stage: 'Retained', count: funnelData.retention.value, conversion: funnelData.conversionRates.activatedToRetained },
+              { stage: 'Paying', count: Math.round(funnelData.retention.value * funnelData.conversionRates.retainedToPaying / 100), conversion: funnelData.conversionRates.retainedToPaying }
+            ],
+            acquisitionChannels: channelsData,
+            activationMetrics: [
+              { metric: 'Setup Completion', rate: 87, target: 85 },
+              { metric: 'First Action', rate: 92, target: 90 },
+              { metric: 'Feature Discovery', rate: 78, target: 80 }
+            ],
+            revenueOptimization: {
+              arpu: funnelData.revenueOptimization.arpu,
+              expansionMRR: (funnelData.revenueOptimization.expansionMrr / 1000).toFixed(0) + 'K',
+              upsellOpportunities: [
+                { from: 'Basic', to: 'Pro', customers: Math.floor(funnelData.revenueOptimization.upsellOpportunities * 0.6) },
+                { from: 'Pro', to: 'Enterprise', customers: Math.floor(funnelData.revenueOptimization.upsellOpportunities * 0.4) }
+              ]
+            }
+          })
+        }
+
+      } catch (error) {
+        console.error('Error loading dashboard data:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadAllData()
+  }, [])
+
   const subscriptionData = useMemo(() => generateSubscriptionData(), [])
-  const kpis = generateSubscriptionKPIs(subscriptionData)
-  const headerMetrics = generateChurnHeaderMetrics(kpis)
-  const cohortData = useMemo(() => generateCohortRetentionData(), [])
-  const churnData = useMemo(() => generateChurnPredictionData(subscriptionData), [subscriptionData])
-  const modelMetrics = generateChurnModelMetrics()
-  const pricingData = useMemo(() => generatePricingSensitivityData(), [])
+  const headerMetrics = kpis ? generateChurnHeaderMetrics(kpis) : { totalAtRisk: 0, churnRate: 0, savedThisMonth: 0 }
   const strategies = generatePreventionStrategies()
-  const interventionResults = generateInterventionResults()
-  const pricingRecs = generatePricingRecommendations()
-  const aarrrData = generateAARRRMetrics()
+
+  
 // Generate churn prediction data
 
 
@@ -683,7 +858,8 @@ export default function SubscriptionsPage() {
   for (let i = 0; i < 12; i++) {
     const row: { month: number; [key: string]: number } = { month: i }
     cohorts.forEach((cohort) => {
-      row[cohort.cohort] = cohort[`month${i}`]
+      const retention = cohort.retention || []
+      row[cohort.cohort] = retention[i] || 0
     })
     result.push(row)
   }
@@ -699,7 +875,8 @@ const prepareSurvivalChartData = (cohorts: any[]) => {
     const row: { month: number; [key: string]: number } = { month: i }
     cohorts.forEach((cohort) => {
       const cohortLabel = cohort.cohort || `Cohort ${i}`
-      row[cohortLabel] = cohort[`month${i}`] ?? 0
+      const retention = cohort.retention || []
+      row[cohortLabel] = retention[i] ?? 0
     })
     result.push(row)
   }
@@ -715,6 +892,8 @@ const prepareSurvivalChartData = (cohorts: any[]) => {
     })
   }, [subscriptionData, filters])
 
+
+
   return (
     <div className="container mx-auto py-8 space-y-8">
       <div className="flex justify-between items-start mb-8">
@@ -725,17 +904,12 @@ const prepareSurvivalChartData = (cohorts: any[]) => {
           </p>
         </div>
         <div className="flex flex-wrap gap-4">
-      
- 
-          
           <Button variant="outline" onClick={() => exportEnhancedCSV(filteredData, filters, 'subscription_data.csv')}>
             <Download className="mr-2 h-4 w-4" />
             Export
           </Button>
         </div>
       </div>
-
-      
 
       <Tabs defaultValue="overview" className="space-y-6">
         <TabsList className="flex overflow-x-auto md:grid md:grid-cols-6 w-full">  
@@ -744,13 +918,12 @@ const prepareSurvivalChartData = (cohorts: any[]) => {
           <TabsTrigger value="churn">Churn Prediction</TabsTrigger>
           <TabsTrigger value="pricing">Price Sensitivity</TabsTrigger>
           <TabsTrigger value="funnel">AARRR Funnel</TabsTrigger>
-         
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
-          <SubscriptionExecutiveSummary data={filteredData} metric={metric} />
-          <SubscriptionTrendsChart data={filteredData} />
-          <PlanDistributionCharts data={filteredData} />
+          <SubscriptionExecutiveSummary kpis={kpis} />
+          <SubscriptionTrendsChart trendData={trendData} />
+          <PlanDistributionCharts planData={planBreakdown} />
         </TabsContent>
 
         <TabsContent value="cohorts" className="space-y-6">
@@ -807,19 +980,24 @@ const prepareSurvivalChartData = (cohorts: any[]) => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {cohortData.slice(0, 8).map((cohort) => (
-                      <TableRow key={cohort.cohort}>
-                        <TableCell className="font-medium">{cohort.cohort}</TableCell>
-                        <TableCell>{cohort.size}</TableCell>
-                        <TableCell>{cohort.month6 ? `${cohort.month6.toFixed(1)}%` : 'N/A'}</TableCell>
-                        <TableCell>{cohort.month11 ? `${cohort.month11.toFixed(1)}%` : 'N/A'}</TableCell>
-                        <TableCell>
-                          <Badge variant={cohort.month6 > 60 ? 'default' : cohort.month6 > 40 ? 'secondary' : 'destructive'}>
-                            {cohort.month6 > 60 ? 'Excellent' : cohort.month6 > 40 ? 'Good' : 'Needs Attention'}
-                          </Badge>
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                    {cohortData.slice(0, 8).map((cohort) => {
+                      const retention = cohort.retention || []
+                      const month6 = retention[6] || 0
+                      const month11 = retention[11] || 0
+                      return (
+                        <TableRow key={cohort.cohort}>
+                          <TableCell className="font-medium">{cohort.cohort}</TableCell>
+                          <TableCell>{cohort.initialCustomers}</TableCell>
+                          <TableCell>{month6 ? `${month6.toFixed(1)}%` : 'N/A'}</TableCell>
+                          <TableCell>{month11 ? `${month11.toFixed(1)}%` : 'N/A'}</TableCell>
+                          <TableCell>
+                            <Badge variant={month6 > 60 ? 'default' : month6 > 40 ? 'secondary' : 'destructive'}>
+                              {month6 > 60 ? 'Excellent' : month6 > 40 ? 'Good' : 'Needs Attention'}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      )
+                    })}
                   </TableBody>
                 </Table>
               </CardContent>
@@ -828,9 +1006,6 @@ const prepareSurvivalChartData = (cohorts: any[]) => {
         </TabsContent>
 
       <TabsContent value="churn" className="space-y-6">
-  {/* Enhanced Dashboard Header with Key Metrics */}
-
-
 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border">
   <div>
     <h2 className="text-2xl font-bold text-gray-800">Customer Churn Prediction</h2>
@@ -854,11 +1029,9 @@ const prepareSurvivalChartData = (cohorts: any[]) => {
   </div>
 </div>
   
-  {/* Enhanced Dashboard Component */}
   <ChurnRiskDashboard churnData={churnData} />
   
   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-    {/* Enhanced Model Performance Card */}
     <Card className="shadow-md hover:shadow-lg transition-shadow">
       <CardHeader className="bg-gradient-to-r from-gray-50 to-blue-50 border-b">
         <div className="flex justify-between items-center">
@@ -877,68 +1050,71 @@ const prepareSurvivalChartData = (cohorts: any[]) => {
         </div>
       </CardHeader>
      <CardContent className="pt-6">
-  <div className="space-y-6">
-    <div className="grid grid-cols-2 gap-4">
-      <div className="text-center p-4 bg-blue-50 rounded-lg border border-blue-100">
-        <p className="text-sm text-muted-foreground">Model Accuracy</p>
-        <p className="text-2xl font-bold text-blue-600">{modelMetrics.accuracy}%</p>
-        <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
-          <div className="bg-blue-600 h-1.5 rounded-full" style={{ width: `${modelMetrics.accuracy}%` }}></div>
-        </div>
-      </div>
-      <div className="text-center p-4 bg-green-50 rounded-lg border border-green-100">
-        <p className="text-sm text-muted-foreground">Precision</p>
-        <p className="text-2xl font-bold text-green-600">{modelMetrics.precision}%</p>
-        <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
-          <div className="bg-green-600 h-1.5 rounded-full" style={{ width: `${modelMetrics.precision}%` }}></div>
-        </div>
-      </div>
-    </div>
-    
-    <div>
-      <div className="flex justify-between items-center mb-3">
-        <h4 className="font-semibold">Feature Importance</h4>
-        <span className="text-xs text-muted-foreground">Impact on churn prediction</span>
-      </div>
-      <div className="space-y-3">
-        {modelMetrics.featureImportance.map((item) => (
-          <div key={item.feature} className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-md transition-colors">
-            <div className="flex items-center gap-3">
-              <div className={`p-1 rounded-md ${
-                item.trend === 'up' ? 'bg-red-100 text-red-600' : 
-                item.trend === 'down' ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600'
-              }`}>
-                {item.trend === 'up' ? <TrendingUp className="h-4 w-4" /> : 
-                 item.trend === 'down' ? <TrendingDown className="h-4 w-4" /> : 
-                 <Minus className="h-4 w-4" />}
-              </div>
-              <span className="text-sm">{item.feature}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-20 h-2 bg-gray-200 rounded-full overflow-hidden">
-                <div 
-                  className="h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full" 
-                  style={{ width: `${item.importance}%` }}
-                />
-              </div>
-              <span className="text-xs font-medium text-gray-700 w-8">{item.importance}%</span>
-            </div>
+  {modelMetrics ? (
+    <div className="space-y-6">
+      <div className="grid grid-cols-2 gap-4">
+        <div className="text-center p-4 bg-blue-50 rounded-lg border border-blue-100">
+          <p className="text-sm text-muted-foreground">Model Accuracy</p>
+          <p className="text-2xl font-bold text-blue-600">{modelMetrics.accuracy}%</p>
+          <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+            <div className="bg-blue-600 h-1.5 rounded-full" style={{ width: `${modelMetrics.accuracy}%` }}></div>
           </div>
-        ))}
+        </div>
+        <div className="text-center p-4 bg-green-50 rounded-lg border border-green-100">
+          <p className="text-sm text-muted-foreground">Precision</p>
+          <p className="text-2xl font-bold text-green-600">{modelMetrics.precision}%</p>
+          <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+            <div className="bg-green-600 h-1.5 rounded-full" style={{ width: `${modelMetrics.precision}%` }}></div>
+          </div>
+        </div>
+      </div>
+      
+      <div>
+        <div className="flex justify-between items-center mb-3">
+          <h4 className="font-semibold">Feature Importance</h4>
+          <span className="text-xs text-muted-foreground">Impact on churn prediction</span>
+        </div>
+        <div className="space-y-3">
+          {modelMetrics.featureImportance.map((item: any) => (
+            <div key={item.feature} className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-md transition-colors">
+              <div className="flex items-center gap-3">
+                <div className={`p-1 rounded-md ${
+                  item.trend === 'up' ? 'bg-red-100 text-red-600' : 
+                  item.trend === 'down' ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600'
+                }`}>
+                  {item.trend === 'up' ? <TrendingUp className="h-4 w-4" /> : 
+                   item.trend === 'down' ? <TrendingDown className="h-4 w-4" /> : 
+                   <Minus className="h-4 w-4" />}
+                </div>
+                <span className="text-sm">{item.feature}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-20 h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div 
+                    className="h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full" 
+                    style={{ width: `${item.importance}%` }}
+                  />
+                </div>
+                <span className="text-xs font-medium text-gray-700 w-8">{item.importance}%</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      <div className="pt-2 border-t">
+        <button className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors">
+          <span>View detailed model metrics</span>
+          <ArrowRight className="h-4 w-4" />
+        </button>
       </div>
     </div>
-    
-    <div className="pt-2 border-t">
-      <button className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800 transition-colors">
-        <span>View detailed model metrics</span>
-        <ArrowRight className="h-4 w-4" />
-      </button>
-    </div>
-  </div>
+  ) : (
+    <div className="text-center py-8">Loading model metrics...</div>
+  )}
 </CardContent>
     </Card>
 
-    {/* Enhanced Prevention Strategies Card */}
     <Card className="shadow-md hover:shadow-lg transition-shadow">
       <CardHeader className="bg-gradient-to-r from-gray-50 to-blue-50 border-b">
         <div className="flex justify-between items-center">
@@ -954,7 +1130,7 @@ const prepareSurvivalChartData = (cohorts: any[]) => {
       </CardHeader>
       <CardContent className="pt-6">
   <div className="space-y-4">
-    {strategies.map((strategy) => (
+    {strategies.map((strategy: any) => (
       <div key={strategy.risk} className={`p-4 bg-${strategy.color}-50 border border-${strategy.color}-200 rounded-lg transition-transform hover:scale-[1.01]`}>
         <div className="flex items-start justify-between mb-2">
           <h4 className={`font-semibold text-${strategy.color}-800`}>{strategy.risk} Risk ({strategy.risk === 'High' ? 'Immediate Action' : strategy.risk === 'Medium' ? 'Proactive' : 'Nurture'})</h4>
@@ -964,7 +1140,7 @@ const prepareSurvivalChartData = (cohorts: any[]) => {
           </Badge>
         </div>
         <ul className={`text-sm text-${strategy.color}-700 space-y-2`}>
-          {strategy.actions.map((action, index) => (
+          {strategy.actions.map((action: string, index: number) => (
             <li key={index} className="flex items-start">
               {strategy.risk === 'High' ? <CircleAlert className="h-4 w-4 mt-0.5 mr-2 flex-shrink-0" /> :
                strategy.risk === 'Medium' ? <Bell className="h-4 w-4 mt-0.5 mr-2 flex-shrink-0" /> :
@@ -987,7 +1163,6 @@ const prepareSurvivalChartData = (cohorts: any[]) => {
     </Card>
   </div>
   
-  {/* Additional Section: Recent Interventions */}
   <Card>
   <CardHeader className="bg-gradient-to-r from-gray-50 to-blue-50 border-b">
     <CardTitle>Recent Intervention Results</CardTitle>
@@ -1006,7 +1181,7 @@ const prepareSurvivalChartData = (cohorts: any[]) => {
           </tr>
         </thead>
         <tbody className="divide-y">
-          {interventionResults.map((item, index) => (
+          {interventionResults.map((item: any, index: number) => (
             <tr key={index} className="hover:bg-gray-50 transition-colors">
               <td className="py-3 px-4">{item.customer}</td>
               <td className="py-3 px-4">
@@ -1056,15 +1231,20 @@ const prepareSurvivalChartData = (cohorts: any[]) => {
             <XAxis 
               dataKey="price" 
               label={{ value: 'Price ($)', position: 'insideBottom', offset: -5 }}
-              
             />
             <YAxis 
-              label={{ value: 'Units / Rate (%)', angle: -90, position: 'insideLeft' }}
-              
+              yAxisId="left"
+              label={{ value: 'Demand (Units)', angle: -90, position: 'insideLeft' }}
+            />
+            <YAxis 
+              yAxisId="right"
+              orientation="right"
+              label={{ value: 'Acceptance Rate (%)', angle: -90, position: 'insideRight' }}
+              domain={[0, 100]}
             />
             <Tooltip 
               formatter={(value, name) => {
-                if (name === 'Acceptance Rate') return [`${value}%`, name];
+                if (name === 'Acceptance Rate (%)') return [`${value}%`, name];
                 return [value, name];
               }}
             />
@@ -1072,6 +1252,7 @@ const prepareSurvivalChartData = (cohorts: any[]) => {
              verticalAlign='top'
             />
             <Line 
+              yAxisId="left"
               type="monotone" 
               dataKey="demand" 
               stroke="#8884d8" 
@@ -1079,6 +1260,7 @@ const prepareSurvivalChartData = (cohorts: any[]) => {
               name="Demand (Units)" 
             />
             <Line 
+              yAxisId="right"
               type="monotone" 
               dataKey="acceptanceRate" 
               stroke="#82ca9d" 
@@ -1100,7 +1282,6 @@ const prepareSurvivalChartData = (cohorts: any[]) => {
       where demand = 100 - (price × 0.5). In production, use actual historical 
       pricing data and customer response rates.
     </div>
-    {/* Chart here */}
   </CardContent>
 </Card>
 </div>
@@ -1112,7 +1293,7 @@ const prepareSurvivalChartData = (cohorts: any[]) => {
   <CardContent>
     <div className="space-y-4">
       <div className="grid grid-cols-1 gap-3">
-        {pricingRecs.recommendations.map((rec) => (
+        {pricingRecs.recommendations.map((rec: any) => (
           <div key={rec.title} className={`p-3 ${rec.color === 'blue' ? 'bg-blue-50' : rec.color === 'green' ? 'bg-green-50' : 'bg-purple-50'} rounded-lg`}>
             <h4 className="font-semibold mb-1">{rec.title}</h4>
             <p className="text-sm text-muted-foreground">{rec.description}</p>
@@ -1122,12 +1303,15 @@ const prepareSurvivalChartData = (cohorts: any[]) => {
       
 
       <div className="border-t pt-3">
-        <h4 className="font-semibold mb-2">Van Westendorp Results</h4>
+        <h4 className="font-semibold mb-2">Van Westendorp Results (Basic Plan)</h4>
         <div className="grid grid-cols-2 gap-2 text-xs">
           <div>Point of Marginal Cheapness: <strong>${pricingRecs.westendorpResults.cheapness}</strong></div>
           <div>Point of Marginal Expensiveness: <strong>${pricingRecs.westendorpResults.expensiveness}</strong></div>
           <div>Optimal Price Point: <strong>${pricingRecs.westendorpResults.optimal}</strong></div>
           <div>Indifference Price Point: <strong>${pricingRecs.westendorpResults.indifference}</strong></div>
+        </div>
+        <div className="mt-2 text-xs text-muted-foreground">
+          <em>Note: The Price Sensitivity chart above shows Pro plan ($219 optimal). Van Westendorp shown here is for Basic plan ($69 optimal).</em>
         </div>
       </div>
     </div>
@@ -1138,6 +1322,8 @@ const prepareSurvivalChartData = (cohorts: any[]) => {
 </TabsContent>
 
 <TabsContent value="funnel" className="space-y-6">
+  {aarrrData ? (
+    <>
 <Card>
   <CardHeader>
     <CardTitle>AARRR Pirate Metrics Funnel</CardTitle>
@@ -1145,7 +1331,7 @@ const prepareSurvivalChartData = (cohorts: any[]) => {
   </CardHeader>
   <CardContent>
     <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-6">
-      {aarrrData.funnel.map((metric) => (
+      {aarrrData.funnel.map((metric: any) => (
         <Card key={metric.stage} className={`border-l-4 ${metric.color === 'blue' ? 'border-l-blue-500' : metric.color === 'green' ? 'border-l-green-500' : metric.color === 'purple' ? 'border-l-purple-500' : metric.color === 'orange' ? 'border-l-orange-500' : 'border-l-red-500'}`}>
           <CardContent className="pt-4">
             <div className="text-center">
@@ -1183,14 +1369,14 @@ const prepareSurvivalChartData = (cohorts: any[]) => {
     </CardHeader>
     <CardContent>
       <div className="space-y-3">
-        {aarrrData.acquisitionChannels.map((channel) => (
+        {aarrrData.acquisitionChannels.map((channel: any) => (
           <div key={channel.channel} className="flex justify-between items-center p-2 border rounded">
             <div>
               <p className="font-medium">{channel.channel}</p>
               <p className="text-xs text-muted-foreground">{channel.customers} customers</p>
             </div>
             <div className="text-right">
-              <p className="text-sm">CAC: ${channel.cost}</p>
+              <p className="text-sm">CAC: ${channel.cac ? channel.cac.toFixed(2) : channel.cost}</p>
               <p className="text-xs text-muted-foreground">LTV: ${channel.ltv}</p>
             </div>
           </div>
@@ -1206,7 +1392,7 @@ const prepareSurvivalChartData = (cohorts: any[]) => {
     </CardHeader>
     <CardContent>
       <div className="space-y-3">
-        {aarrrData.activationMetrics.map((item) => (
+        {aarrrData.activationMetrics.map((item: any) => (
           <div key={item.metric} className="space-y-1">
             <div className="flex justify-between text-sm">
               <span>{item.metric}</span>
@@ -1246,7 +1432,7 @@ const prepareSurvivalChartData = (cohorts: any[]) => {
         <div className="space-y-2">
           <h4 className="font-semibold text-sm">Upsell Opportunities</h4>
           <div className="text-xs space-y-1">
-            {aarrrData.revenueOptimization.upsellOpportunities.map((opp) => (
+            {aarrrData.revenueOptimization.upsellOpportunities.map((opp: any) => (
               <div key={`${opp.from}-${opp.to}`} className="flex justify-between">
                 <span>{opp.from} {opp.to && `→ ${opp.to}`}</span>
                 <span className="font-medium">{opp.customers} customers</span>
@@ -1258,6 +1444,10 @@ const prepareSurvivalChartData = (cohorts: any[]) => {
     </CardContent>
   </Card>
   </div>
+    </>
+  ) : (
+    <div className="text-center py-8">Loading AARRR data...</div>
+  )}
  
         </TabsContent>
       </Tabs>

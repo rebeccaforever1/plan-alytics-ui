@@ -1,7 +1,7 @@
 // src/app/dashboard/revenue/page.tsx
 'use client'
 
-import React, { useState, useMemo, useCallback } from 'react'
+import React, { useState, useMemo, useCallback, useEffect } from 'react'
 import {
   Line,
   Bar,
@@ -26,6 +26,11 @@ import {
 } from 'recharts'
 
 import { generateFakeCustomers } from '@/lib/fakeData'
+import {
+  getRevenueKPIs,
+  getRevenueTimeSeries,
+  getRevenueDistributionData,
+} from '@/lib/revenueData'
 import {
   Card,
   CardContent,
@@ -295,14 +300,45 @@ export default function RevenuePage() {
   const [dateRange, setDateRange] = useState({ start: '', end: '' })
   const [showUncertainty, setShowUncertainty] = useState(true)
   
+  // Database state
+  const [isLoading, setIsLoading] = useState(true)
+  const [revenueQualityData, setRevenueQualityData] = useState<any[]>([])
+  const [fakeConcentrationData, setFakeConcentrationData] = useState<any[]>([])
+  const [entropyData, setEntropyData] = useState<any>({ 
+    diversificationIndex: 0.996,
+    entropy: 0,
+    gini: 0,
+    segmentRevenue: []
+  })
+  const [dbZipfRSquared, setDbZipfRSquared] = useState(0)
+  
+  // Load from database
+  useEffect(() => {
+    async function loadData() {
+      setIsLoading(true)
+      try {
+        const timeSeriesData = await getRevenueTimeSeries()
+        const distributionData = await getRevenueDistributionData()
+        
+        setRevenueQualityData(timeSeriesData)
+        setFakeConcentrationData(distributionData.concentrationData)
+        setDbZipfRSquared(distributionData.zipfData.rSquared)
+        setEntropyData(distributionData.entropyData)
+      } catch (error) {
+        console.error('Error loading revenue data:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    loadData()
+  }, [])
+  
   const customers = useMemo(() => generateFakeCustomers(1000), [])
-  const revenueQualityData = useMemo(() => generateRevenueQualityData(), [])
   const zipfData = useMemo(() => generateZipfAnalysis(customers), [customers])
   const bassData = useMemo(() => generateBassDiffusionData(), [])
-  const entropyData = useMemo(() => generateRevenueEntropyData(customers), [customers])
   const kanoData = useMemo(() => generateKanoAnalysis(), [])
   const forecastData = useMemo(() => generateForecastData(), [])
-  const rSquared = useZipfRSquared(zipfData)
+  const rSquared = dbZipfRSquared || useZipfRSquared(zipfData)
 
   const exportCSV = useCallback((data: any[], filename: string) => {
     const csvHeader = Object.keys(data[0]).join(',') + '\n'
@@ -323,7 +359,6 @@ export default function RevenuePage() {
   }, [])
 
 
-  const concentrationData = useMemo(() => generateRevenueConcentrationData(customers), [customers])
 
 
   // Weibull data generation
@@ -375,7 +410,13 @@ export default function RevenuePage() {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
-          <RevenueKPIOverview data={revenueQualityData} />
+      {isLoading ? (
+        <div className="text-center py-8">Loading revenue data...</div>
+      ) : revenueQualityData.length > 0 ? (
+        <RevenueKPIOverview data={revenueQualityData} />
+      ) : (
+        <div className="text-center py-8 text-red-500">Error loading revenue data</div>
+      )}
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
@@ -663,7 +704,7 @@ export default function RevenuePage() {
                   
                   <div>
                     <h4 className="font-semibold mb-3">Revenue Concentration</h4>
-                   {concentrationData.map((item) => (
+                   {fakeConcentrationData.map((item) => (
                       <div key={item.percentile} className="flex justify-between text-sm mb-2">
                         <span>{item.percentile} of customers</span>
                         <span className="font-medium">{item.share}% of revenue</span>
