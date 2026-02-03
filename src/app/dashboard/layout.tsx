@@ -250,8 +250,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
       {/* Logo - Always visible */}
       <div className="flex items-center justify-center mb-6 px-2">
         <Image
-          src="/plan-alytics_logo.png"
-          alt="Plan-alytics"
+          src="/sticksy_logo.png"
+          alt="Sticksy"
           width={225}
           height={60}
           className={cn(
