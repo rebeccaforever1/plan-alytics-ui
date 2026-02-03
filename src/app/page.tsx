@@ -29,8 +29,8 @@ export default function Home() {
             <div className="flex items-center space-x-4">
               <a href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }) }} className="cursor-pointer">
                 <Image 
-                  src="/plan-alytics_logo.png" 
-                  alt="Plan-alytics" 
+                  src="/Sticksy_logo.png" 
+                  alt="Sticksy" 
                   width={320} 
                   height={85}
                   className="h-20 w-auto object-contain"
@@ -91,17 +91,17 @@ export default function Home() {
         <div className="max-w-6xl mx-auto text-center">
           <div className="mb-6">
             <span className="inline-block px-6 py-2 bg-gradient-to-r from-teal-700 to-emerald-600 text-white rounded-full text-lg font-semibold mb-4">
-              Introducing Plan-alytics
+              Introducing Sticksy
             </span>
           </div>
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-black text-slate-900 mb-6 leading-tight">
-            Plan-alytics: <br/>
+            Sticksy: <br/>
             <span className="bg-gradient-to-r from-teal-700 to-emerald-600 bg-clip-text text-transparent">
               Advanced Subscription Intelligence
             </span>
           </h1>
           <p className="text-xl text-slate-600 mb-8 max-w-4xl mx-auto leading-relaxed">
-            Plan-alytics transforms your subscription data into strategic insights with cutting-edge predictive analytics, 
+            Sticksy transforms your subscription data into strategic insights with cutting-edge predictive analytics, 
             real-time dashboards, and intelligent recommendations that drive growth.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -109,7 +109,7 @@ export default function Home() {
               onClick={() => router.push('/dashboard')}
               className="px-10 py-4 bg-gradient-to-r from-teal-700 to-emerald-600 text-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 text-lg font-bold hover:from-teal-800 hover:to-emerald-700 transform hover:scale-105 hover:-translate-y-1"
             >
-              Experience Plan-alytics →
+              Experience Sticksy →
             </button>
             <button
               onClick={() => handleAnchorClick({ preventDefault: () => {} }, 'dashboard')}
@@ -154,10 +154,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Plan-alytics Benefits */}
+      {/* Sticksy Benefits */}
       <section className="py-16 px-6 bg-gradient-to-r from-teal-700 to-emerald-600 text-white">
         <div className="max-w-6xl mx-auto text-center">
-          <h2 className="text-4xl font-bold mb-8">Why Plan-alytics?</h2>
+          <h2 className="text-4xl font-bold mb-8">Why Sticksy?</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
               <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mx-auto mb-4">
@@ -167,7 +167,7 @@ export default function Home() {
               </div>
               <div className="text-3xl font-bold mb-2">89%</div>
               <div className="text-lg">Churn Reduction</div>
-              <div className="text-sm opacity-80 mt-2">Average improvement with Plan-alytics insights</div>
+              <div className="text-sm opacity-80 mt-2">Average improvement with Sticksy insights</div>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
               <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mx-auto mb-4">
@@ -177,7 +177,7 @@ export default function Home() {
               </div>
               <div className="text-3xl font-bold mb-2">3.2x</div>
               <div className="text-lg">Revenue Growth</div>
-              <div className="text-sm opacity-80 mt-2">Faster growth using Plan-alytics predictions</div>
+              <div className="text-sm opacity-80 mt-2">Faster growth using Sticksy predictions</div>
             </div>
             <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
               <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mx-auto mb-4">
@@ -187,7 +187,7 @@ export default function Home() {
               </div>
               <div className="text-3xl font-bold mb-2">24/7</div>
               <div className="text-lg">Actionable Insights</div>
-              <div className="text-sm opacity-80 mt-2">Plan-alytics uses the past to help you shape the future</div>
+              <div className="text-sm opacity-80 mt-2">Sticksy uses the past to help you shape the future</div>
             </div>
           </div>
         </div>
@@ -197,7 +197,7 @@ export default function Home() {
       <section id="features" className="py-16 px-6 bg-white">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-slate-900 mb-4">Plan-alytics Core Features</h2>
+            <h2 className="text-4xl font-bold text-slate-900 mb-4">Sticksy Core Features</h2>
             <p className="text-xl text-slate-600">Everything you need to understand your customers.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -207,7 +207,7 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-3">Plan-alytics AI Predictions</h3>
+              <h3 className="text-2xl font-bold text-slate-900 mb-3">Sticksy AI Predictions</h3>
               <p className="text-slate-600 leading-relaxed mb-4">Our machine learning engines team up with AI to forecast subscription trends, customer behavior, and revenue patterns with accuracy you have to see to believe.</p>
               <p className="text-teal-700 font-semibold">→ Predict churn before it happens</p>
             </div>
@@ -218,8 +218,8 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-3">Plan-alytics Live Dashboards</h3>
-              <p className="text-slate-600 leading-relaxed mb-4">Monitor your subscription metrics intentionally with Plan-alytics' intelligent dashboards that highlight what matters most to your business.</p>
+              <h3 className="text-2xl font-bold text-slate-900 mb-3">Sticksy Live Dashboards</h3>
+              <p className="text-slate-600 leading-relaxed mb-4">Monitor your subscription metrics intentionally with Sticksy' intelligent dashboards that highlight what matters most to your business.</p>
               <p className="text-teal-700 font-semibold">→ Track KPIs that matter</p>
             </div>
 
@@ -229,8 +229,8 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-3">Plan-alytics Smart Insights</h3>
-              <p className="text-slate-600 leading-relaxed mb-4">Get actionable recommendations powered by Plan-alytics AI to reduce churn, optimize pricing, and maximize customer lifetime value.</p>
+              <h3 className="text-2xl font-bold text-slate-900 mb-3">Sticksy Smart Insights</h3>
+              <p className="text-slate-600 leading-relaxed mb-4">Get actionable recommendations powered by Sticksy AI to reduce churn, optimize pricing, and maximize customer lifetime value.</p>
               <p className="text-teal-700 font-semibold">→ Auto-generate personalized recommendations</p>
             </div>
           </div>
@@ -240,8 +240,8 @@ export default function Home() {
       {/* Dashboard Preview */}
       <section id="dashboard" className="py-16 px-6 bg-gradient-to-br from-teal-50/50 to-emerald-50/30">
         <div className="max-w-6xl mx-auto text-center">
-          <h2 className="text-4xl font-bold text-slate-900 mb-4">See Plan-alytics In Action</h2>
-          <p className="text-xl text-slate-600 mb-8 max-w-3xl mx-auto">Experience the Plan-alytics dashboard that transforms how subscription businesses operate.</p>
+          <h2 className="text-4xl font-bold text-slate-900 mb-4">See Sticksy In Action</h2>
+          <p className="text-xl text-slate-600 mb-8 max-w-3xl mx-auto">Experience the Sticksy dashboard that transforms how subscription businesses operate.</p>
           <p className="text-slate-500 mb-12 max-w-2xl mx-auto">Monitor key metrics, predict churn, and optimize your subscription business with our interactive dashboard.</p>
           
           <div className="bg-white p-3 rounded-2xl shadow-2xl inline-block w-full max-w-5xl border border-teal-100">
@@ -252,7 +252,7 @@ export default function Home() {
                 <div className="w-3 h-3 rounded-full bg-green-500"></div>
               </div>
               <div className="flex-1 bg-slate-800 rounded-lg px-3 py-1 text-slate-400 text-sm text-left">
-                plan-alytics-ui.vercel.app/dashboard
+                Sticksy-ui.vercel.app/dashboard
               </div>
             </div>
             
@@ -261,9 +261,9 @@ export default function Home() {
             <div className="rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
                       <div className="hidden md:block">
                 <iframe
-                  src="https://plan-alytics-ui.vercel.app/dashboard/"
+                  src="https://Sticksy-ui.vercel.app/dashboard/"
                   className="w-full h-[500px] border-none"
-                  title="Plan-alytics Dashboard Preview"
+                  title="Sticksy Dashboard Preview"
                   loading="lazy"
                 />
               </div>
@@ -273,40 +273,40 @@ export default function Home() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                   </svg>
                 </div>
-                <h3 className="text-2xl font-semibold text-slate-900 mb-3">Plan-alytics Dashboard</h3>
+                <h3 className="text-2xl font-semibold text-slate-900 mb-3">Sticksy Dashboard</h3>
                 <p className="text-slate-600 mb-6">Best experienced on desktop for full analytics power.</p>
                 <a 
-                  href="https://plan-alytics-ui.vercel.app/dashboard/" 
+                  href="https://Sticksy-ui.vercel.app/dashboard/" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="inline-block px-6 py-3 bg-gradient-to-r from-teal-700 to-emerald-600 text-white rounded-xl font-semibold hover:from-teal-800 hover:to-emerald-700 transition-all duration-300"
                 >
-                  Open Plan-alytics →
+                  Open Sticksy →
                 </a>
               </div>
             </div>
             <div className="mt-4 hidden md:block">
               <a 
-                href="https://plan-alytics-ui.vercel.app/dashboard/" 
+                href="https://Sticksy-ui.vercel.app/dashboard/" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-teal-700 hover:text-teal-800 font-semibold hover:underline transition-colors"
               >
-                Launch Full Plan-alytics Dashboard →
+                Launch Full Sticksy Dashboard →
               </a>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Plan-alytics Testimonial */}
+      {/* Sticksy Testimonial */}
       <section className="py-16 px-6 bg-white">
         <div className="max-w-4xl mx-auto text-center">
           <div className="bg-gradient-to-r from-teal-50 to-emerald-50 rounded-2xl p-8 border border-teal-100">
-            <div className="text-3xl font-bold text-teal-800 mb-4">"Plan-alytics changed how we do business."</div>
+            <div className="text-3xl font-bold text-teal-800 mb-4">"Sticksy changed how we do business."</div>
             <p className="text-xl text-slate-600 mb-6">
-              "Since implementing Plan-alytics, we've reduced churn by over 50% and increased our monthly recurring revenue by 240%. 
-              The predictive insights from Plan-alytics changed the game."
+              "Since implementing Sticksy, we've reduced churn by over 50% and increased our monthly recurring revenue by 240%. 
+              The predictive insights from Sticksy changed the game."
             </p>
             <div className="text-lg font-semibold text-slate-800">
               Sarah Whitman, CEO at SubscribeFlow
@@ -319,9 +319,9 @@ export default function Home() {
       <section id="contact" className="py-16 px-6 bg-gradient-to-r from-slate-900 via-slate-800 to-teal-900 text-white">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-6">Ready for Plan-alytics?</h2>
+            <h2 className="text-4xl font-bold mb-6">Ready for Sticksy?</h2>
             <p className="text-xl opacity-90 max-w-2xl mx-auto">
-              Join the subscription businesses already using Plan-alytics to drive growth and reduce churn.
+              Join the subscription businesses already using Sticksy to drive growth and reduce churn.
             </p>
           </div>
           
@@ -364,7 +364,7 @@ export default function Home() {
             </div>
             
     <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 flex-1 border border-white/20 shadow-2xl">
-  <h3 className="text-2xl font-bold mb-6 text-center">Get Started with Plan-alytics</h3>
+  <h3 className="text-2xl font-bold mb-6 text-center">Get Started with Sticksy</h3>
   <div className="space-y-4">
     <button
       className="w-full py-3 bg-gradient-to-r from-teal-600 to-emerald-500 text-white rounded-xl font-semibold hover:from-teal-700 hover:to-emerald-600 transition-all duration-300"
@@ -396,8 +396,8 @@ export default function Home() {
       {/* Footer */}
       <footer className="py-8 px-6 bg-slate-900 text-white text-center border-t border-slate-800">
         <div className="max-w-6xl mx-auto">
-          <p className="text-slate-400">© {new Date().getFullYear()} Plan-alytics. A product of LBS Ventures. All rights reserved.</p>
-          <p className="text-slate-500 text-sm mt-2">Plan-alytics is here for you.</p>
+          <p className="text-slate-400">© {new Date().getFullYear()} Sticksy. A product of RSBR LLC. All rights reserved.</p>
+          <p className="text-slate-500 text-sm mt-2">Sticksy is here for you.</p>
         </div>
       </footer>
     </div>
