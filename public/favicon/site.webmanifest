@@ -1,21 +1,19 @@
 {
-  "name": "Plan-alytics",
-  "short_name": "pl-ytics",
+  "name": "Sticksy",
+  "short_name": "Sticksy",
   "icons": [
     {
-      "src": "/favicon.ico/web-app-manifest-192x192.png",
+      "src": "/web-app-manifest-192x192.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
+      "type": "image/png"
     },
     {
-      "src": "/favicon.ico/web-app-manifest-512x512.png",
+      "src": "/web-app-manifest-512x512.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
+      "type": "image/png"
     }
   ],
-  "theme_color": "#147778",
-  "background_color": "#147778",
+  "theme_color": "#000000",
+  "background_color": "#000000",
   "display": "standalone"
 }
