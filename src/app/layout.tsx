@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Plan-alytics',
+  title: 'Sticksy',
   description: 'Advanced subscription analytics and retention insights platform',
   icons: {
     icon: [
