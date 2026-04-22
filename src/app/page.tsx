@@ -30,7 +30,7 @@ export default function Home() {
               <a href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }) }} className="cursor-pointer">
                 <Image 
                   src="/Sticksy_logo.png" 
-                  alt="Sticksy" 
+                  alt="sticksy.ai" 
                   width={320} 
                   height={85}
                   className="h-20 w-auto object-contain"
