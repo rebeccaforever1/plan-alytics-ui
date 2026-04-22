@@ -29,7 +29,7 @@ export default function Home() {
             <div className="flex items-center space-x-4">
               <a href="#" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }) }} className="cursor-pointer">
                 <Image 
-                  src="/Sticksy_logo.png" 
+                  src="/sticksy_logo.png" 
                   alt="sticksy.ai" 
                   width={320} 
                   height={85}
