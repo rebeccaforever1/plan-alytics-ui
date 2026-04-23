@@ -209,7 +209,7 @@ export default function Home() {
               </div>
               <h3 className="text-2xl font-bold text-slate-900 mb-3">Sticksy AI Predictions</h3>
               <p className="text-[#3A1A00] leading-relaxed mb-4">Our machine learning engines team up with AI to forecast subscription trends, customer behavior, and revenue patterns with accuracy you have to see to believe.</p>
-              <p className="text-teal-700 font-semibold">→ Predict churn before it happens</p>
+              <p className="text-brown-700 font-semibold">→ Predict churn before it happens</p>
             </div>
 
             <div className="group bg-gradient-to-b from-white to-emerald-50/30 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-emerald-100/50 hover:border-emerald-200 hover:-translate-y-1">
@@ -220,7 +220,7 @@ export default function Home() {
               </div>
               <h3 className="text-2xl font-bold text-slate-900 mb-3">Sticksy Live Dashboards</h3>
               <p className="text-[#3A1A00] leading-relaxed mb-4">Monitor your subscription metrics intentionally with Sticksy' intelligent dashboards that highlight what matters most to your business.</p>
-              <p className="text-teal-700 font-semibold">→ Track KPIs that matter</p>
+              <p className="text-brown-700 font-semibold">→ Track KPIs that matter</p>
             </div>
 
             <div className="group bg-gradient-to-b from-white to-slate-50/50 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-slate-100 hover:border-slate-200 hover:-translate-y-1">
@@ -231,7 +231,7 @@ export default function Home() {
               </div>
               <h3 className="text-2xl font-bold text-slate-900 mb-3">Sticksy Smart Insights</h3>
               <p className="text-[#3A1A00] leading-relaxed mb-4">Get actionable recommendations powered by Sticksy AI to reduce churn, optimize pricing, and maximize customer lifetime value.</p>
-              <p className="text-teal-700 font-semibold">→ Auto-generate personalized recommendations</p>
+              <p className="text-brown-700 font-semibold">→ Auto-generate personalized recommendations</p>
             </div>
           </div>
         </div>
@@ -326,7 +326,7 @@ export default function Home() {
           </div>
           
           <div className="flex flex-col md:flex-row gap-8">
-          
+
             
     <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 flex-1 border border-white/20 shadow-2xl">
 <h3 className="text-2xl font-bold mb-6 text-center text-[#FFF3D6]">Get Started with Sticksy</h3>  <div className="space-y-4">
