@@ -545,7 +545,7 @@ function ReportResults() {
             Connect your member data and get the full report — with names, predictions, and a specific playbook for each segment.
           </p>
           <div className="cta-actions" style={{ display: 'flex', gap: 16, justifyContent: 'center', alignItems: 'center' }}>
-            <a href="/dashboard" className="btn-gold">
+            <a href="/dashboard/access" className="btn-gold">
               See the live dashboard
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                 <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>

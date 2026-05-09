@@ -589,7 +589,7 @@ export default function Home() {
           color: '#1f1a0e', textDecoration: 'none', letterSpacing: '-0.01em',
         }}>sticksy</a>
         <div className="footer-links" style={{ display: 'flex', gap: 28 }}>
-          {[['Sample Report', '/sample-report'], ['Dashboard', '/dashboard'], ['Contact', 'mailto:hello@sticksy.ai']].map(([label, href]) => (
+          {[['Sample Report', '/sample-report'], ['Dashboard', '/dashboard/access'], ['Contact', 'mailto:hello@sticksy.ai']].map(([label, href]) => (
             <a key={label} href={href} style={{
               color: 'rgba(31,26,14,0.4)', textDecoration: 'none',
               fontSize: 12, letterSpacing: '0.1em', textTransform: 'uppercase',

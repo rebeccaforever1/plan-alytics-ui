@@ -513,7 +513,7 @@ export default function SampleReport() {
                 <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </a>
-            <a href="/dashboard" className="btn-outline">
+            <a href="/dashboard/access" className="btn-outline">
               See the live dashboard
             </a>
           </div>
