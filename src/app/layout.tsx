@@ -10,7 +10,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Sticksy — Member Intelligence",
+  title: "Sticksy — Member Retention",
   description: "Know who stays, who leaves, and what to do about it. Member intelligence for businesses that run on loyalty.",
   icons: {
     icon: [
